@@ -5,7 +5,7 @@
 #PBS -o /home/cmb-11/plr/hli465/FormatVCFbgz/output
 #PBS -l nodes=1:ppn=1
 #PBS -l mem=100gb,pmem=100gb,vmem=100gb
-win <- 10^3
+win <- 10^4
 chr=read.table("/home/cmb-11/plr/hli465/FormatVCFbgz/chr1")
 count=floor(nrow(chr)/win)
 usedata <- chr[,-(1:2)]
@@ -32,4 +32,4 @@ get.eigenvector <- function(x, d) {
     return(PCs)
 }
 PCs <- sapply(1:count, get.eigenvector, d=usedata)
-write.table(PCs,"/home/cmb-11/plr/hli465/FormatVCFbgz/fluctuation_PCA_win_103_chr1.txt",sep="\t")
+write.table(PCs,"/home/cmb-11/plr/hli465/FormatVCFbgz/fluctuation_PCA_win_104_chr1.txt",sep="\t")
