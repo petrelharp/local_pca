@@ -14,4 +14,4 @@ M=rep(M,times=ncol(data))
 M=matrix(M,nrow=nrow(data),ncol=ncol(data),byrow=FALSE)
 data=data-M
 cov=cov(data,use="pairwise")
-write.table(cov,"/home/cmb-11/plr/hli465/FormatVCFbgz/cov_data_for_chr1.txt",sep="\t")
+write.table(cov,"/home/cmb-11/plr/hli465/FormatVCFbgz/cov_data_for_chr1_new.txt",sep="\t")
