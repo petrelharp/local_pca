@@ -9,11 +9,11 @@
 #'
 #' @param x List as output by eigen_windows().
 #' @param normalize Normalize the matrices to have the same norm?
-#' @param do.parallel Use mclapply?
+#' @param mc.cores If this is greater than 1, parallel::mclapply will be used.
 #' @return A symmetric, numeric matrix with number of columns equal to the number of columns in eigen.win$values.
 #' @export
-pc_dist <- function( x, normalize=TRUE, do.parallel=TRUE ) {
-    this.lapply <- if (do.parallel) { function (...) parallel::mclapply(...,mc.cores=parallel::detectCores()) } else { lapply }
+pc_dist <- function( x, normalize=TRUE, mc.cores=1 ) {
+    this.lapply <- if (mc.cores>1) { function (...) parallel::mclapply(...,mc.cores=mc.cores) } else { lapply }
     if (normalize) {
         x$values <- sweep( x$values, 2, sqrt(colSums(x$values^2)), "/" )
     }
