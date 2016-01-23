@@ -13,6 +13,7 @@
 #' @return A symmetric, numeric matrix with number of columns equal to the number of columns in eigen.win$values.
 #' @export
 pc_dist <- function( x, normalize=TRUE, do.parallel=TRUE ) {
+    this.lapply <- if (do.parallel) { function (...) parallel::mclapply(...,mc.cores=parallel::detectCores()) } else { lapply }
     if (normalize) {
         x$values <- sweep( x$values, 2, sqrt(colSums(x$values^2)), "/" )
     }
