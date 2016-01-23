@@ -26,7 +26,8 @@ pc_dist <- function( x, normalize=TRUE, do.parallel=TRUE ) {
                     dist_from_pcs( x$values[,i], emat(x$vectors[,i]), x$values[,j], emat(x$vectors[,j]) )
                 } )
             } ) )
-    return(out)
+    # symmetrize
+    return( (out + t(out))/2 )
 }
 
 
