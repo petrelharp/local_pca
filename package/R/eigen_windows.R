@@ -12,7 +12,7 @@
 #' @param do.parallel Use mclapply?
 #' @return A named list, with components
 #'   $values : A numeric matrix of eigenvalues, one column for each window and k rows.
-#'   $vectors : A list whose j-th element is a numeric matrix of j-th eigenvectors, one column for each window.
+#'   $vectors : A numeric matrix, one column for each windows, having the eigenvectors in order (so it has k * ncol(matrix) rows).
 #' @export
 eigen_windows <- function (data, win, k, do.parallel=TRUE) {
     this.lapply <- if (do.parallel) { function (...) parallel::mclapply(...,mc.cores=parallel::detectCores()) } else { lapply }
@@ -25,9 +25,9 @@ eigen_windows <- function (data, win, k, do.parallel=TRUE) {
         # returns in order (values, vectors)
         return( c( PCA$values[1:k], PCA$vectors[,1:k] ) )
     }
-    eigen.mat <- do.call( rbind, this.lapply( 1:floor(nrow(data)/win), .local ) )
+    eigen.mat <- do.call( cbind, this.lapply( 1:floor(nrow(data)/win), .local ) )
     return( list(
             values = eigen.mat[1:k,],
-            vectors = lapply(1:k,function(j) { eigen.mat[ncol(data)*k+(1:ncol(data)),] })
+            vectors = eigen.mat[-(1:k),]
         ) )
 }

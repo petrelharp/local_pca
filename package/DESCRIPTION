@@ -1,7 +1,7 @@
 Package: lostruct
 Title: Construct and Cluster Local Population Structure
 Version: 0.0.0.9000
-Authors@R: c( person("Han", "Li", email = "hli465@usc.edu", role = c("aut", "cre")), person("Peter", "Ralph", email = "petrel.harp@gmail.com", role = c("aut", "cre")) )
+Authors@R: c( person("Han", "Li", email = "hli465@usc.edu", role = c("aut")), person("Peter", "Ralph", email = "petrel.harp@gmail.com", role = c("aut", "cre")) )
 Description: Constructs, clusters, and visualizes population structure along a genome.
 Depends: R (>= 3.2.2)
 License: GPL-3
