@@ -6,9 +6,9 @@
 #PBS -l nodes=1:ppn=1
 #PBS -l mem=100gb,pmem=100gb,vmem=100gb
 
-coded <- as.matrix(read.table("/home/cmb-11/plr/hli465/POPRES/coded_data_chr1.txt"))
+coded <- as.matrix(read.table("coded_data_chr1.txt"))
 M <- rowMeans(coded,na.rm=TRUE)
 coded <- coded-M
 cov <- cov(coded,use="pairwise")
-write.table(cov,"/home/cmb-11/plr/hli465/POPRES/cov_data_for_chr1.txt",sep="\t")
+write.table(cov,"cov_data_for_chr1.txt",sep="\t")
 

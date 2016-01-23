@@ -5,10 +5,15 @@
 #PBS -o /home/cmb-11/plr/hli465/POPRES/output
 #PBS -l nodes=1:ppn=1
 #PBS -l mem=20gb,pmem=20gb,vmem=20gb
+
 win <- 100
-coded <- read.table("/home/cmb-11/plr/hli465/POPRES/coded_data_chr1.txt")
+coded <- read.table("coded_data_chr1.txt")
 k <- 1:(floor(nrow(coded)/win))
-usedata <- coded
+
+#' Given the index of a window and the data frame,
+#' returns the first two eigenvectors and eigenvalues of the covariance matrix of that window
+#' in the order (vec1,value1,vec2,value2).
+#'
 get.eigenvector <- function(x, d) {
     chunk <- d[((x-1)*win + 1):(x*win), ]
     temp<-chunk
@@ -30,5 +35,6 @@ get.eigenvector <- function(x, d) {
     PCs=c(PC1,lam1,PC2,lam2)
     return(PCs)
 }
-PCs <- sapply(k, get.eigenvector, d=usedata)
-write.table(PCs,"/home/cmb-11/plr/hli465/POPRES/fluctuation_PCA_win_100_chr1.txt",sep="\t")
+
+PCs <- sapply(k, get.eigenvector, d=coded)
+write.table(PCs,"fluctuation_PCA_win_100_chr1.txt",sep="\t")
