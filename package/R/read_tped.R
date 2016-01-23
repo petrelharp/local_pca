@@ -12,7 +12,8 @@
 #'
 #' @param file Input .tped file.
 #' @param chrom Vector of chromosome name(s) to include.
-#' @param triallelic Include triallelic sites?
+#' @param triallelic Include triallelic sites? Defaults to TRUE.
+#' @return An integer matrix with one row per site and one column per individual.
 #' @export
 read_tped <- function (file, chrom, triallelic=TRUE) {
     chr <- read.table(pipe(paste0("zcat ", file, " | grep '^\\(", paste(chrom,collapse="\\|"),"\\)\\>'")), stringsAsFactors=FALSE)
@@ -22,6 +23,7 @@ read_tped <- function (file, chrom, triallelic=TRUE) {
     # totals[j,2] gives the total number of C's at the j-th site
     totals <- sapply( seq_along(bases), function (k) { rowSums( geno==k, na.rm=TRUE ) } )
     if (!triallelic) {
+        # remove triallelic sites
         which.triallelic <- ( rowSums(totals>0) > 2 )
         totals[which.triallelic,] <- NA
     }
@@ -31,8 +33,8 @@ read_tped <- function (file, chrom, triallelic=TRUE) {
 
     # code the genotype matrix
     coded <- matrix( NA, nrow=nrow(geno), ncol(geno) )
-    coded[ geno==major ] <- 0
-    coded[ geno!=major ] <- 1
+    coded[ geno==major ] <- 0L
+    coded[ geno!=major ] <- 1L
 
     # convert to diploids
     n <- ncol(coded)/2
