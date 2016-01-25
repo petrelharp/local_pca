@@ -5,7 +5,7 @@
 #PBS -o /home/cmb-11/plr/hli465/POPRES/fluctuation_PCA/output
 #PBS -l nodes=1:ppn=1
 #PBS -l mem=100gb,pmem=100gb,vmem=100gb
-PCAs=as.matrix(read.table("fluctuation_PCA/fluctuation_PCA_win_100_chr1.txt"))
+PCAs=as.matrix(read.table("fluctuation_PCA_win_100_chr1.txt"))
 index <- (1:ncol(PCAs))[!is.na(PCAs[1,])]
 k=which(is.na(PCAs[1,]))
 if(length(k)==0) {PCA=PCAs}
