@@ -1,15 +1,109 @@
 \documentclass{article}
 \usepackage{amsmath,amssymb}
 \usepackage{fullpage}
+\usepackage[authoryear]{natbib}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+%\usepackage{latexml} % for \iflatexml
+\usepackage{color}
+\usepackage[dvipsnames]{xcolor}
+
+\bibliographystyle{plainnat}
+
+
+\title{Population structure along the genome}
+\author{
+Han Li
+\\and\\
+Peter Ralph
+}
 
 
 \begin{document}
 
+Other phrases that might go into a better title?
+\begin{itemize}
+    \item How selection affects relatedness
+    \item Inhomogeneous kinship
+    \item There's more than one kinship matrix
+    \item Local PCA reveals inversions and the effects of selection
+    \item Unsupervised learning of genomic patterns of relatedness
+\end{itemize}
 
-Put the text in here!
 
-Here is some \emph{more}.
+%%%%%%%%%%%%
+\section{Introduction}
 
 
+Catchy start: the kinship matrix goes back to almost Mendel and is essential in GWAS;
+however, it is well-known that actual relatednesses have a lot of noise about the expected value,
+and depend on where on the genome you look;
+this is why scans for selective sweeps work.
+
+Review of kinship matrix: 
+it's either an expected kinship, given the pedigree;
+or an estimated genome-wide average.
+Wright's path coefficients \citep{wright1943isolation}.
+Why it helps with confounding for GWAS.
+Graham \& Vince's paper, maybe.
+Like IBD, is only well-defined in a known pedigree, up to the founders.
+
+Kinship matrices differ for sex chromosomes and the like.
+
+Review of selection causing differential patterns along the genome.
+Locally everything is treelike (gene trees);
+kinship matrix is an average of these (write equation for this).
+Selective sweeps cause local recent ancestry/short trees.
+Balancing selection causes deep trees.
+Background selection, shallow ones.
+Refs: hitchhiking \citep{maynardsmith1974hitchhiking},
+selection on LD \citep{mcvean2007structure},
+
+Review of methods looking along the genome:
+argweaver, HMM between species, ???
+
+What is "population structure"?
+Asks which "populations" are closely related, more diverged, how much diversity do they harbor.
+Often geographic.
+Vital in exploratory data analysis.
+It is a summary of kinship: 
+lack of migration between pops causes a deficit in connections through the pedigree,
+and so affects kinship.
+
+Review of methods for visualizing pop structure:
+PCA, etcetera.
+Include maps of homozygosity.
+
+Other semi-related stuff:
+estimation of covariance matrices;
+local pca(?);
+
+\subsection{Applications}
+
+humans:
+effects of selection \citep{sabeti2006positive}
+dataset(s)
+
+drosophila:
+effects of selection \citep{sella2009pervasive},
+inversions,
+dataset(s)
+
+medicago:
+
+
+%%%%%%%%%%%%
+\section{Methods}
+
+
+%%%%%%%%%%%%
+\section{Results}
+
+
+%%%%%%%%%%%%
+\section{Discussion}
+
+%%%%%%%%%%%%%
+\bibliography{references}
 
 \end{document}
