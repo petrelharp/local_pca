@@ -47,6 +47,7 @@ Wright's path coefficients \citep{wright1943isolation}.
 Why it helps with confounding for GWAS.
 Graham \& Vince's paper, maybe.
 Like IBD, is only well-defined in a known pedigree, up to the founders.
+Kinship and confounding reviewed in \citet{astle2009population}.
 
 Kinship matrices differ for sex chromosomes and the like.
 
@@ -56,8 +57,14 @@ kinship matrix is an average of these (write equation for this).
 Selective sweeps cause local recent ancestry/short trees.
 Balancing selection causes deep trees.
 Background selection, shallow ones.
+Extreme examples of free gene flow in some places between species: e.g. Heliconius.
+Introgression may be nonuniform, e.g. neanderthal, others.
 Refs: hitchhiking \citep{maynardsmith1974hitchhiking},
-selection on LD \citep{mcvean2007structure},
+\citet{kim2011hitchhiking} study hitchhiking in a spatially subdivided population,
+\citet{mcvean2007structure} looks at the effect of selection on LD.
+\citet{barton2000genetic} reviews hitchhiking.
+\citet{bierne2010distinctive} discusses how hitchhiking effect decreases with geographic distance.
+\citet{charlesworth2003review} reviews patterns of diversity, relating spatial structure to effects of selection.
 
 Review of methods looking along the genome:
 argweaver, HMM between species, ???
@@ -69,19 +76,25 @@ Vital in exploratory data analysis.
 It is a summary of kinship: 
 lack of migration between pops causes a deficit in connections through the pedigree,
 and so affects kinship.
+Wright defined $F_{ST}$ in \citep{wright1949genetical}, and says ``It has probably occurred to the reader that the coefficientof inbreeding may mean very different
+things in different cases.''
 
 Review of methods for visualizing pop structure:
-PCA, etcetera.
-Include maps of homozygosity.
-
+PCA, structure \citep{falush2003inference}, EEMS, \citep{petkova2014visualizing}, \citep{yang2012modelbased},
+Maps of heterozygosity \citep{ramachandran2005support}.
+Genealogical interpretation of PCA by \citet{mcvean2009genealogical}.
 Other semi-related stuff:
 estimation of covariance matrices;
 local pca(?);
 
 \subsection{Applications}
 
+We apply this to three species.
+
 humans:
-effects of selection \citep{sabeti2006positive}
+effects of selection are seen \citep{sabeti2006positive}.
+\citet{duforetfrebourg2015detecting} showed that variants known to underly locally adaptive traits correlated most strongly with PCs.
+\citet{tian2008analysis} noted that removing the segregating inversion on chromosome 8 changed the PCA for a set of 1400 Europeans
 dataset(s)
 
 drosophila:
