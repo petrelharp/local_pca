@@ -32,6 +32,63 @@ About 37 years ago, \citet{menozzi1978synthetic} first applied Principal compone
 
 \noindent Based on the principal components, we can estimate the similarity of population structure contained in each genome window. To visualize the closeness for each window with regard to the population structure, we constructed matrix based on the first two PCs for each window and got the pairwise Euclidean distance between those matrixes, then use multidimensional scaling to reduces the pairwise distance matrix to lower dimension while preserve the distance information between windows as well as possible \cite{key5}. To interpret the results of MDS, we combine known genome feature information for each species, such as the distribution of inversions, heterochromatin chunk and gene density along the genome. For different species, we got different explanation for the variation of population structure along the genome.
 
+\section{Other Introduction}
+
+
+Catchy start: the kinship matrix goes back to almost Mendel and is essential in GWAS;
+however, it is well-known that actual relatednesses have a lot of noise about the expected value,
+and depend on where on the genome you look;
+this is why scans for selective sweeps work.
+
+Review of kinship matrix: 
+it's either an expected kinship, given the pedigree;
+or an estimated genome-wide average.
+Wright's path coefficients \citep{wright1943isolation}.
+Why it helps with confounding for GWAS.
+Graham \& Vince's paper, maybe.
+Like IBD, is only well-defined in a known pedigree, up to the founders.
+Kinship and confounding reviewed in \citet{astle2009population}.
+
+Kinship matrices differ for sex chromosomes and the like.
+
+Review of selection causing differential patterns along the genome.
+Locally everything is treelike (gene trees);
+kinship matrix is an average of these (write equation for this).
+Selective sweeps cause local recent ancestry/short trees.
+Balancing selection causes deep trees.
+Background selection, shallow ones.
+Extreme examples of free gene flow in some places between species: e.g. Heliconius.
+Introgression may be nonuniform, e.g. neanderthal, others.
+Refs: hitchhiking \citep{maynardsmith1974hitchhiking},
+\citet{kim2011hitchhiking} study hitchhiking in a spatially subdivided population,
+\citet{mcvean2007structure} looks at the effect of selection on LD.
+\citet{barton2000genetic} reviews hitchhiking.
+\citet{bierne2010distinctive} discusses how hitchhiking effect decreases with geographic distance.
+\citet{charlesworth2003review} reviews patterns of diversity, relating spatial structure to effects of selection.
+
+Review of methods looking along the genome:
+argweaver, HMM between species, ???
+
+What is "population structure"?
+Asks which "populations" are closely related, more diverged, how much diversity do they harbor.
+Often geographic.
+Vital in exploratory data analysis.
+It is a summary of kinship: 
+lack of migration between pops causes a deficit in connections through the pedigree,
+and so affects kinship.
+Wright defined $F_{ST}$ in \citep{wright1949genetical}, and says ``It has probably occurred to the reader that the coefficientof inbreeding may mean very different
+things in different cases.''
+
+Review of methods for visualizing pop structure:
+PCA, structure \citep{falush2003inference}, EEMS, \citep{petkova2014visualizing}, \citep{yang2012modelbased},
+Maps of heterozygosity \citep{ramachandran2005support}.
+Genealogical interpretation of PCA by \citet{mcvean2009genealogical}.
+Other semi-related stuff:
+estimation of covariance matrices;
+local pca(?);
+
+
+
 \section{Method}
 \subsection{Recode the DNA sequence to a matrix consisting of 0,1,2 (and NA).}
 For human SNP data from POPRES \cite{key8}, we use the allele that has highest frequency in the samples as the reference allele for each position. If an allele is same with the reference allele, we recode it as 0; if an allele is different from the reference allele, we recode it as 1; for positions that have missing data, we recode them as NA. Since human genome is diploid, we add the value for the two alleles and then one chromosome will eventually be recode to a sequence consisting of 0,1,2 (and NA). There are 3965 samples in total, (346 African-Americas; 73 Asians; 3187 Europeans; 359 Indian Asians); then the genome data for human is recoded to a matrix that has 3965 columns, each column for an individual's genotype. We process the data separately for the 22 autosomes in human. For \textit{Drosophila}, we first process the sequencing data (from DPGP and John pool's lab) to SNP data by eliminating the positions that have all the same alleles. Due to high density of missing data for some parts in the genome, we then delete the samples with more than 8\% NAs and positions with more than 20\%. The cutoff points 8\% and 20\% are determined from the corresponding distributions of NAs in samples and at positions. After we got the SNP data for \textit{Drosophila}, we recode it \textit{Drosophila}to matrices with 0,1,2 (and NA) for each chromosome arms (Chr2L, Chr2R, Chr3L, Chr3R, ChrX) similar to the process for human genome. Since the \textit{Drosophila} samples here are all homogenous, the matrices are indeed consisting of 0,1 (and NA). For \textit{Medicago truncatula}, we use the SNP data from Medicago Hapmap and recode it to matrices with 0,1,2 (and NA) for each of the 8 chromosomes.
