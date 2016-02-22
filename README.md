@@ -1,6 +1,9 @@
 Local PCA/population structure (lostruct)
 =========================================
 
+To load the package, make sure you have `devtools` (by doing `install.packages("devtools")`),
+and then running `library(devtools); load_all("PATH/TO/THIS/DIRECTORY/package")`.
+
 ## Workflow
 
 The general order to see the code is 
