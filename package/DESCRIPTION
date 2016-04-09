@@ -6,3 +6,11 @@ Description: Constructs, clusters, and visualizes population structure along a g
 Depends: R (>= 3.2.2)
 License: GPL-3
 LazyData: true
+Imports:
+    data.table
+RoxygenNote: 5.0.1
+Suggests:
+    knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr

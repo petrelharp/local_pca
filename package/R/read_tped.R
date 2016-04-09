@@ -10,13 +10,15 @@
 #' A .tped has one row per SNP, *two* columns per sample.  The first column is chromosome, the fourth is position.
 #' Does no error checking: let the user beware.
 #'
-#' @param file Input .tped file.
+#' @param file Input .tped filename.
 #' @param chrom Vector of chromosome name(s) to include.
 #' @param triallelic Include triallelic sites? Defaults to TRUE.
 #' @return An integer matrix with one row per site and one column per individual.
 #' @export
 read_tped <- function (file, chrom, triallelic=TRUE) {
-    chr <- read.table(pipe(paste0("zcat ", file, " | grep '^\\(", paste(chrom,collapse="\\|"),"\\)\\>'")), stringsAsFactors=FALSE)
+    thecat <- if ( grepl(".gz$",file) ) { "zcat" } else { "cat" }
+    # chr <- read.table(pipe(paste0(thecat, " ", file, " | grep '^\\(", paste(chrom,collapse="\\|"),"\\)\\>'")), stringsAsFactors=FALSE)
+    chr <- data.table::fread((paste0(thecat, " ", file, " | grep '^\\(", paste(chrom,collapse="\\|"),"\\)\\>'")), stringsAsFactors=FALSE)
     bases <- c("A","C","G","T")
     geno <- match(as.matrix(chr[,-(1:4)]),bases)
     dim(geno) <- c( nrow(chr), ncol(chr)-4L )
