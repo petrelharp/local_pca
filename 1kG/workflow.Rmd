@@ -1,0 +1,51 @@
+---
+title: "Local PCA on 1000 genomes"
+date: "`r date()`"
+---
+
+
+```{r setup, include=FALSE}
+library(devtools)
+load_all("../package")
+# Chromosome map lengths, from:
+.chrlens <- c( 262.00830, 244.03647, 209.97332, 197.48005, 189.58412, 174.70526, 172.35610, 156.52810, 146.28861, 160.40336, 143.88007, 156.40816, 119.34065, 104.83476, 110.93523, 118.68929, 119.61966, 105.74726, 92.57134, 83.62057, 54.79314, 55.59191 )
+.chrstarts <- c(0, cumsum(.chrlens) )
+# and in bp
+.chrbps <- as.numeric( c( 247135059, 242663303, 199318155, 191167888, 180625439, 170747902, 158798338, 146264218, 140185941, 135284541, 134449982, 132276874, 114092980, 106356482, 100210760, 88684276, 78605474, 76115554, 63785051, 62376958, 46902240, 49522492 ) )
+.chrbpstarts <- c(0,cumsum(.chrbps))
+```
+
+# The data
+
+We have VCFs from *phase 3* of the 1000 genomes, in separate VCF files by chromosome,
+from 2504 individuals.
+Of these, 24 are relatives; we'll remove these.
+```{r vcfs}
+vcfs <- list.files("phase3",".*vcf.gz$", full.names=TRUE)
+full.sample.info <- read.csv("20130606_sample_info.csv",header=TRUE,stringsAsFactors=FALSE)
+vcf.header <- scan( pipe( paste0( "zcat ", vcfs[1], " | head -n 1000 | grep '^#[^#]'")), what='char' )
+vcf.indivs <- vcf.header[-(1:9)]
+all( vcf.indivs %in% full.sample.info$Sample )
+sample.info <- subset(full.sample.info, Sample %in% vcf.indivs)
+rellies <- unlist(subset(sample.info, ! ( Relationship %in% c("", "unrels", "unrel", "not father")) )[,7:14])
+rellies <- unlist( strsplit( rellies[nchar(rellies)>0], "[ ,]" ) )
+included.rellies <- intersect( rellies, vcf.indivs )
+sample.info$usethese <- ! ( sample.info$Sample %in% included.rellies )
+table(subset(sample.info,usethese)$Population)
+```
+
+Now, we would like to find the eigendecomposition
+of each genomic window.
+We'll start with chromosome 22.
+```{r chr22, cache=TRUE}
+vcf.chr22 <- grep("chr22",vcfs,value=TRUE)
+# first do a scan to find the scale we're dealing with
+coords <- scan( pipe( paste0( "zcat ", vcf.chr22, " | grep -v '^#' | cut -f 2 " ) ) )
+length(coords)
+summary( diff(coords) )
+# percent of spacings less than 100bp
+mean(diff(coords)<100)
+length(coords)
+```
+On chromsome 22, which is 1.7% of the genome, there are 1.1 million SNPs,
+median spacing between SNPs is 20bp, and 95% of spacings are below 100bp.
