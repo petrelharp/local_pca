@@ -12,14 +12,12 @@
 \usepackage[hidelinks]{hyperref}
 
 
-\title{Using Local PCA to Investigate Population Structure Along the Genome}
+\title{Local PCA Shows How Population Structure Differs Along the Genome}
 \author{Han Li, Peter Ralph}
 %\date{}							% Activate to display a given date or no date
 
 \usepackage{color}
-\usepackage{marginnote}
 \newcommand{\plr}[1]{{\em \color{blue} #1}}
-\newcommand{\plrm}[1]{\marginnote{\em \color{blue} #1}}
 
 
 \begin{document}
@@ -28,68 +26,51 @@
 %\subsection{}
 \doublespacing
 
+\plr{Note: your intro focuses on PCA more than mine, which is trying to be about population structure generally.}
+
 \section{Introduction}
-\plr{Should cite something, probably Astle \& Balding in this paragraph.}
-\plr{(Try to make these next three sentences into one sentence.)}
+
 The kinship matrix contains the kinship coefficient for pairwise individuals. 
 Kinship coefficient defines the genetic relatedness between individuals.
 It is the probability that two alleles randomly selected from two individuals are inherited from the most recent common ancester.
-\plr{(This definition is not quite right: two alleles are \emph{always} inherited from their most recent common ancestor.)}
 It could be estimated from given pedigree or from genome-wide covariances of genotype markers. 
-\plr{(Estimating the "kinship matrix" from pedigrees, or from covariances, are two different things.)}
-It is well-known that for kinship matrix, actual relatednesses have a lot of noise about the expected value, 
-\plr{(explain what the expected value is)}
-and depend on where on the genome you look; 
-this is why scans for selective sweeps work.
-\plr{(do you think this last comment about scans for selective sweeps needs explanation?)}
+It is well-known that for kinship matrix, actual relatednesses have a lot of noise about the expected value, and depend on where on the genome you look; this is why scans for selective sweeps work.
 Populations are often structured in some way while there are systematic genetic variation between populations. 
-\plr{(Instead, how about: 
-Structure in the kinship matrix, such as a correlation between geographic proximity and relatedness,
-is often referred to as ``population structure''.)}
 
-About 37 years ago, \citet{menozzi1978synthetic} first applied principal component analysis (PCA) in population genetics to construct maps summarizing genetic variation \plr{(instead, ``summarizing population structure''?)} \citep{menozzi1978synthetic}. 
+About 37 years ago, \citet{menozzi1978synthetic} first applied principal component analysis (PCA) in population genetics to construct maps summarizing genetic variation \citep{menozzi1978synthetic}. 
 Nowadays, PCA is a widely used powerful non-parametric method to extract information from genetic data.  
-PCA results are derived from the covariance matrix of genotype matrix.
-\plr{(We can call this the ``genetic covariance matrix''.)}
+PCA results are derived from the covariance matrix of genotype matrix. 
 The results of PCA can be directly related to the underlying genealogical history of the samples, 
-such as \plr{mean} coalescence time (time to most recent common ancestor) and migration rate between populations \citep{novembre2008interpreting,mcvean2009genealogical}. 
+such as coalescence time (time to most recent common ancestor) and migration rate between populations \citep{novembre2008interpreting,mcvean2009genealogical}. 
 Through dimension-reduction, PCA can identify key components of population structure, which describes how different samples are related, and are often closely related to geography. 
 Plots of the first two principal components (PCs) can mimic the samples' geographic origin to some extent. 
 Since population structure describes how different samples are related, samples living closer tend to be more genetically similar and thus tend to be clustered in PC plots \citep{novembre2008genes,patterson2006population}. 
-However this relatedness is limited while there's recent migration or for group with nongeographic kinship patterns, for example, social or religious groups. \citep{astle2009population}
+However this relatedness is limited while there's recent migration or for group with nongeographic kinship patterns,for example, social or religious groups. \citep{astle2009population}
 
 PCA is often used in genome-wide association studies (GWAS) for stratification correction \citep{price2006principal}. 
-However, different parts of \plr{the} genome have different genetic features. 
+However, different parts of genome have different genetic features. 
 First, each site of DNA may have different gene tree. 
 The covariance matrix of genotype matrix averages those gene trees. 
 For a genomic region, if individuals have alleles closer in gene tree, they tends to be more close in PC projections for that region. 
-\plr{(I don't think it makes sense to say that alleles are close in a gene tree.)}
 Different DNA segments may have different gene tree and therefore different population structure for those segments. 
 Second, the strength of linked selection differs for different DNA segments, and produces different population structure in region under linked selection compared to other region. 
-\plr{(Add citations for the following.)}
 Selective sweeps cause local recent ancestry or short trees.
 Balancing selection causes deep trees.
 Background selection causes shallow ones.
 Third, if a chromosome inversion is polymorphic in the sample, the regions around the breakpoints of inversions usually have high linkage disequilibrium and the two directions of a inversion will have different linked alleles around the breakpoints. Recombination suppression across inversions thus results in different genome structure and population structure. 
-\plr{(I don't think noise affects population structure, since I'd define population structure to be something like the mean, and that noise just obscures population structure.)}
-\plr{(Should mention (and cite) why the effects of introgression might be different along the genome.)}
 Other effects, like noise, introgression might also influence population structure.
 
 Investigating the genomic variation along the genome can help us to have a better understanding of the relation between genome structure and population structure, and could possibly lead to more powerful methods for GWAS.
 
-\plr{(Replace ``this'' with what you mean by ``this'' in the next sentence.)}
 To investigate this, we cut each chromosome into windows (with hundreds to thousands of SNPs in each), applied PCA to each window, and visualized how population structure, as summarized by PCA, varies along windows.
 
 In this project, we used SNP data for human, \textit{Medicago truncatula}, and whole genome sequencing data for \textit{Drosophila}.
 Based on the principal components, we can estimate the similarity of population structure contained in each genome window. 
-To quantify similarity of population structure between windows, we constructed for each window an approximate, scaled covariance matrix based on the first two PCs \plr{and} measured the pairwise Euclidean distance between those matrices.
-We use multidimensional scaling \plr{(MDS)} to visualize the relationships between windows, which reduces the pairwise distance matrix to lower dimension while preserving the distance information between windows as well as possible \citep{borg2005modern}. 
+To quantify similarity of population structure between windows, we constructed for each window an approximate, scaled covariance matrix based on the first two PCs measured the pairwise Euclidean distance between those matrices.
+We use multidimensional scaling to visualize the relationships between windows, which reduces the pairwise distance matrix to lower dimension while preserving the distance information between windows as well as possible \citep{borg2005modern}. 
 To interpret the results of MDS, we combine known genome feature information for each species, such as the distribution of inversions, and heterochromatin and gene density along the genome. Each species showed distinct patterns, reflecting differences in their biology. 
 
-\plr{(These two sentences need more detail. How does what we're doing differ from them?  Especially, say, chromopainter, argweaver, and \url{http://www.ncbi.nlm.nih.gov/pubmed/26945783}?  What does local PCA mean in other places, or at lesat, what other fields is it used in?)}
 Other methods for visualizing population structure are like STRUCTURE, \citep{pritchard2000inference,falush2003inference, falush2007inference,hubisz2009inferring} model-based approach, \citep{yang2012modelbased} maps of heterozygosity \citep{ramachandran2005support}. The term ``local PCA" is also used in some other region for different meanings. \citep{manjon2013diffusion,kambhatla1997dimension,weingessel2000local}
-
-
 
 
 
@@ -164,7 +145,7 @@ Since human genome is diploid, we add the value for the two alleles and then one
 Then the genome data for human is recoded to a matrix that has 3965 columns, each column for an individual's genotype. 
 We process the data separately for the 22 autosomes in human.
 
-For \textit{Drosophila}, we use the sequencing data from DPGP and John pool's lab, which together has 380 samples from 16 countries.
+For \textit{Drosophila}, we use the sequencing data from DPGP and John pool's lab \citet{lack2015drosophila}, which together has 380 samples from 16 countries.
 We first process the sequencing data (from DPGP and John pool's lab) to SNP data by eliminating the positions that have all the same alleles. 
 Each chromosome arms we investigated (Chr2L, Chr2R, Chr3L, Chr3R, ChrX) has 2-3 million SNPs.
 Due to high density of missing data for some parts in the genome, we then delete the samples with more than 8\% NAs and positions with more than 20\%. 
@@ -175,20 +156,17 @@ Since the \textit{Drosophila} samples here are all homogenous, the matrices are 
 For \textit{Medicago truncatula}, we use the SNP data from Medicago Hapmap. It has 263 samples from 24 countries. 
 We recode it to matrices with 0,1,2 (and NA) for each of the 8 chromosomes. Each chromosome has 3-5 million SNPs
 
-\subsection{Cut each genome into windows}
+\subsection{PCA in genomic windows}
 
 \plr{this describes PCA, not cutting into windows? and, the next section?}
-We cut each recoded matrix into sub matrixes by that have the same columns but fewer rows than the original matrix. Then apply Principal Component Analysis (PCA) on each window. Here's a brief summary about how is PCA carried out on genomic data \citep{mcvean2009genealogical}. Starting with the recoded genotype matrix Z, where Z is a L*N matrix ( L is SNP number ; N is sample size), then zero-center the matrix Z to X to make the data rows have equal variance. Get the covariance matrix of X (denote as matrix C) and compute the eigenvectors and eigenvalues of the covariance matrix C. The \textit{i}th principal component is the \textit{i}th eigenvector of C.
+We cut each recoded matrix into sub matrixes by that have the same columns but fewer rows than the original matrix. Then apply Principal Component Analysis (PCA) on each window. Here's a brief summary about how is PCA carried out on genomic data \citep{mcvean2009genealogical}. Starting with the recoded genotype matrix Z, where Z is a L*N matrix ( L is SNP number ; N is sample size), then zero-center the matrix Z to X to make the data rows have equal mean. ($X_{si}=Z_{si}-\frac{1}{n}\sum_{j=1}^{n}Z_{sj}$) Get the covariance matrix of X (denote as matrix C) and compute the eigenvectors and eigenvalues of the covariance matrix C. ($C=\frac{1}{n-1}XX^{T}$ ) The \textit{i}th principal component is the \textit{i}th eigenvector of C.
 \plr{(put equations into the text in the right place)}
-\begin{equation}
-X_{si}=Z_{si}-\frac{1}{n}\sum_{j=1}^{n}Z_{sj} 
-\end{equation}
-\begin{equation}
-C=\frac{1}{n-1}XX^{T}
-\end{equation}
 
-\subsubsection{Genomic PCA on windows}
-PCA on each window is getting the eigenvectors of covariance matrix of the cut recoded matrix. PCA plots (generally using PC2 against PC1) can show population structure, which describes how different samples are related. We want to investigate the variation of population structure along the genome. So we apply PCA on each window to check the population structure along the genome.
+PCA on each window is getting the eigenvectors of covariance matrix of the cut recoded matrix. PCA plots generally use PC2 against PC1.
+PC1 and PC2 refer to the first and second principal component respectively. 
+PCA plots can show population structure, which describes how different samples are related. 
+We want to investigate the variation of population structure along the genome. 
+So we apply PCA on each window to check the population structure along the genome.
 \subsubsection{Choose window length}
 The window length should neither be too long or too short. The longer the windows, the more accurate is the estimate of population structure in that window. However, for better resolution, we need to find a length that is reasonably short. If we use the first principal component as a measure of population structure, then to choose a proper length for a
 window, we need to find a balance between variance of the first principal components inside a window and that between windows. The variance between windows is estimated as mean variance of the first principal component for each window. The variance inside a window is estimated using the jackknife block when cutting the window into 10 equal size smaller windows \cite{efron1982jackknife}. Table \ref{tab:window_sizes} shows the comparison of variance within a window and that between windows for chromosome arms in \textit{Drosophila}. Finally, we choose 100 SNPs, 1000 SNPs and 10000 SNPs as window length for human, \textit{Drosophila}, and \textit{Medicago} separately.
@@ -240,7 +218,9 @@ Due to the property of eigenvectors,we could use the following method to calcula
 
 \begin{equation}
 V_{1}=\sqrt{\frac{\lambda _{1i}}{\lambda _{1i}+\lambda _{2i}}}PC1_{i} \qquad
-V_{2}=\sqrt{\frac{\lambda _{2i}}{\lambda _{1i}+\lambda _{2i}}}PC2_{i}
+V_{2}=\sqrt{\frac{\lambda _{2i}}{\lambda _{1i}+\lambda _{2i}}}PC2_{i} \qquad
+U_{1}=\sqrt{\frac{\lambda _{1j}}{\lambda _{1j}+\lambda _{2j}}}PC1_{j} \qquad
+U_{2}=\sqrt{\frac{\lambda _{2j}}{\lambda _{1j}+\lambda _{2j}}}PC2_{j}
 \end{equation}
 
 \begin{align}
@@ -286,47 +266,62 @@ We checked the results for chromosome arms Chr2L, Chr2R, Chr3L, Chr3R and ChrX s
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=0.9\textwidth]{Fig1_Together_MDS_plot_Chr2L}
+       \includegraphics[width=0.9\textwidth]{Fig1_Together_MDS_plot_Chr2L_final_abline}
     \end{center}
     \caption{
-         a) Two dimensional MDS plot for chromosome arm Chr2L in \textit{Drosophila}. Each point in the plot stands for a window. The distance between windows shows the similarity of population structure for windows. b) The color corresponding to that in a) and thus shows a relative position for each window in a) along the genome. c) MDS 1D plot for Chr2L in \textit{Drosophila}, using the first coordinate in a) against the window id along the genome. The green, red, blue points are corresponding to the windows in the green, red, blue circled extremes in a).
+         Variation in structure for windows on chromosome arm Chr2L. 
+         Each represents a window: (a) shows the MDS visualization of relationships between windows. 
+         (b) and (c) show the position (midpoint) of each window against the first and second MDS coordinates, respectively. 
+         Colors are consistent for (a) (b) and (c).
+         Vertical black lines show the breakpoints of known polymorphic inversions In(2L)t.
          \plr{(I think it's a bit confusing having both MDS1D and MDS2D: can we instead of MDS1D on the right, just plot the first coordinate of MDS2D?  And, somehow make the colors agree between the two figures? (not sure how to do this)}
          \label{fig:mds_chr2L}
     }
 \end{figure}
 
 
-We pick a window for each extreme, and take out 5\% windows that have the smallest distance to it in the original pairwise distance matrix, then combine those windows for each extreme and apply PCA on them. (Fig.2) We can see the obvious difference between their PCA plots. This difference stands for variation of population structure along the genome in \textit{Drosophila} Chr2L.
+We pick a window for each extreme, and take out 5\% windows that are closest to it in the MDS 2D plot , then combine those windows for each extreme and apply PCA on them. (Figure \ref{fig:pca_chr2L}) We can see the obvious difference between their PCA plots. This difference stands for variation of population structure along the genome in \textit{Drosophila} Chr2L.
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=0.9\textwidth]{Fig2_all_pca_plots_for_Chr2L_3peaks}
+       \includegraphics[width=0.9\textwidth]{Fig2_all_pca_plots_for_Chr2L_3peaks_byMDS}
     \end{center}
     \caption{
-        PCA plots for each peak in Figure \ref{fig:mds_chr2L}a and for whole Chr2L in \textit{Drosophila}. The color of the square corresponds to the circles of the 3 extremes in Fig.1a. (Also labeled same as 1,2,3)
+        PCA plots for each peak in Figure \ref{fig:mds_chr2L}a. 
+        Each point represents a sample. 
+        The plots are plotting the second principal components against the first principal components. 
+        (a) shows the windows colored green in Figure 1; 
+        (b) shows orange windows; and (c) shows purple windows.
          \label{fig:pca_chr2L}
     }
 \end{figure}
 
 \plr{Use figure labels, like ``Figure {\textbackslash}ref\{fig:mds{\textunderscore}chr2L\}'' instead of ``Figure 1''.}
 
-There's a known inversion in Chr2L in \textit{Drosophila}, In(2L)t, with breakpoints at 2225744bp and 13154180bp. \citep{corbett2012population} We recolored the PCA plots in Fig.2 a,b,c by the direction of the inversion for each sample using data from John Pool's lab. (Fig.3) 
+There's a known inversion in Chr2L in \textit{Drosophila}, In(2L)t, with breakpoints at 2225744bp and 13154180bp. \citep{corbett2012population} We recolored the PCA plots in Figure \ref{fig:pca_chr2L} a,b,c by the direction of the inversion for each sample using data from John Pool's lab \citep{lack2015drosophila}. Figure \ref{fig:color_inver}
 \plr{(citation?)}
-The results show that the clustering in PCA plots are mainly due to inversions for the red and green extremes in Fig.2a,b (especially for green extreme). What's more, we found that the two breakpoints of In(2L)t are located in the two clusters of the green points in Fig.1c. Similar results are found in other chromosome arms that have known inversions (Chr2R,
-Chr3L, Chr3R) in Drosophila. (See supplementary for more details) These facts show that the variation of population structure along the Drosophila genome is mainly due to inversions.
+The results show that PCA plots, and thus population structure, varies significantly along the genome, with most variation closely related to inversions. 
+Extremes of structure occurred around inversion breakpoints or in the centers of inversions (green and orange parts in Chr2L).
+The corresponding PCA plots show that locally, population structure is mostly determined by which orientation of the inversion each sample has.
+Similar results are found in other chromosome arms that have known polymorphic inversions (Chr2R, Chr3L, Chr3R) in \textit{Drosophila}. (See supplementary for more details)
+These facts show that the variation of population structure along the Drosophila genome is mainly due to inversions.
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=0.9\textwidth]{Fig3_all_pca_plots_for_Chr2L_3peaks_color_by_In_2L_t}
+       \includegraphics[width=0.9\textwidth]{Fig3_all_pca_plots_for_Chr2L_3peaks_color_by_In2Lt_byMDS}
     \end{center}
     \caption{
-         PCA plots colored by direction of In(2L)t direction for each peak in Chr2L MDS 2D plot. Red dots for samples with inversion, green dots for samples without inversion.
-        \label{fig:pde_clines}
+         As in Figure 2, except that samples are colored by orientation of the corresponding polymorphic inversion, In(2L)t.
+        \label{fig:color_inver}
     }
 \end{figure}
 
 \subsection{Human}
-We ran our method separately on all 22 autosomes. For chromosomes 3, 8, 15 and 17 have known inversions and the corresponding breakpoints \citep{antonacci2009characterization}. We found that the outlying windows in one-dimensional MDS plots coincide with the position of inversions for those 4 chromosomes.(Fig.4) As in Drosophila, the biggest source of variability in population structure along human chromosomes is inversion. Other chromosomes haven't had experimentally validated inversions, but there are many predicted inversions, and PCA might provide a way to validate those predicted inversion. \citep{ma2012investigation} (See supplementary for other chromosomes' MDS results for human)
+We ran our method separately on all 22 autosomes. 
+We found that the windows that are outliers in the first MDS coordinate (Figure \ref{fig:mds_human}b) coincide with the position of known polymorphic inversions on 8p23. 
+Similar results are found in other chromosomes that have known polymorphic inversions (Chromosome 15, Chromosome 17) in Human. (See supplementary for more details)
+Similar to Drosophila, the biggest source of variability in population structure along each human chromosome seems to be polymorphic inversions. Other chromosomes showed similar results around predicted inversions: PCA might provide an additional way to identify inversions \citep{ma2012investigation}.
+When we run the process for all 22 autosomes together, the outlying signal of chromosome 8 is still impressing. (See supplementary for all 22 autosomes' MDS results for human)
 
 \plr{Readers will wonder if the "triangle" looks the same in humans and Medicago as in Drosophila. Should we add them, or just put these in the supplement?}
 
@@ -334,11 +329,14 @@ We ran our method separately on all 22 autosomes. For chromosomes 3, 8, 15 and 1
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=0.7\textwidth]{fig4}
+       \includegraphics[width=0.7\textwidth]{Fig4_POPRES_Together_MDS_plot_chr8_final_abline}
     \end{center}
     \caption{
-         MDS results for human genome (chr3, chr8, chr15, chr17, chr6, chr12). The x-axis is the position on the genome in window number, and y-axis is the first coordinate of MDS. Black dots stand for windows, red lines show positions of inversions.
-        \label{fig:pde_clines}
+         Variation in structure between windows on human chromosome 8. Each point in the plot represents a window. 
+         (a) shows the MDS visualization of relationships between windows; 
+         (b) and third (c) show the two MDS coordinates of each window against its position (midpoint) along the chromosome. 
+         The vertical red lines show the breakpoints of the known inversion on 8p23. \citep{antonacci2009characterization}
+        \label{fig:mds_human}
     }
 \end{figure}
 
@@ -346,8 +344,10 @@ We ran our method separately on all 22 autosomes. For chromosomes 3, 8, 15 and 1
 \subsection{\textit{Medicago truncatula}}
 We checked the MDS results for all 8 chromosomes. 
 \plr{The results looked different than the other two species, with much less pronounced peaks...}
-We found the position of the peak for each MDS plot has a coincidence with the position of heterochromatic regions. This means the population structure in the windows located in heterochromatin tends to have higher similarity, since those windows are closer in MDS plots. (Fig.5) Biologically,
-heterochromatic regions have lower gene density and may be less subject to selection \citep{kulikova2001integration,paape2013selection}. Then we checked the MDS results against gene density along the genome for each chromosome using gene models in Mt4.0 JBrowse. Numerically, the first MDS coordinate value is negatively correlated to the gene count for each window, which shows the correlation between MDS result and gene density. (Fig.6) This fact shows that in \textit{Medicago}, the variation of population structure is correlated with heterochromatin and gene density, and is perhaps due to linked selection.
+We found the position of the peak for each MDS plot has a coincidence with the position of heterochromatic regions. This means the population structure in the windows located in heterochromatin tends to have higher similarity, since those windows are closer in MDS plots. (Figure \ref{fig:mds_medicago}) Biologically,
+heterochromatic regions have lower gene density and may be less subject to selection \citep{kulikova2001integration,paape2013selection}. Then we checked the MDS results against gene density along the genome for each chromosome using gene models in Mt4.0 JBrowse. Numerically, the first MDS coordinate value is negatively correlated to the gene count for each window, which shows the correlation between MDS result and gene density. (Figure \ref{fig:mds_gene_count}) 
+This fact shows that in \textit{Medicago truncatula}, variation in population structure, as measured by the first MDS coordinate, is negatively correlated to gene density. 
+Unlike in the human and Drosophila genomes, in \textit{Medicago truncatula}, major variation in population structure is likely due to linked selection. 
 
 \begin{figure}
     \begin{center}
@@ -356,7 +356,7 @@ heterochromatic regions have lower gene density and may be less subject to selec
     \caption{
          MDS results for the \textit{Medicago} genome (chr1-8), using first coordinate of MDS against the middle position of each window along each chromosome. 
          The bars under MDS plots are diagrams for each chromosome showing the relative position of heterochromatin (the deep purple part on each bar) \citep{kulikova2004satellite, kulikova2001integration}.
-        \label{fig:pde_clines}
+        \label{fig:mds_medicago}
     }
 \end{figure}
 
@@ -366,8 +366,12 @@ heterochromatic regions have lower gene density and may be less subject to selec
        \includegraphics[width=0.9\textwidth]{Fig6_MDS_1D_and_gene_count_and_lm_chr3_based_all_chr_win104}
     \end{center}
     \caption{
-        The first coordinate of MDS plotting against gene models gene count for chromosome 3 in \textit{Medicago}. (See supplementary for other chromosomes' MDS results against gene count for Medicago)
-        \label{fig:pde_clines}
+        First MDS coordinate against gene density for chromosome 3. 
+        (A) First MDS coordinate against the position (midpoint) of each window. 
+        (B) Gene count for each window against the position of each window; 
+        (C) The first MDS coordinate is significantly correlated with gene count (r=XXX, p=XXX). 
+        (See supplementary for other chromosomes' MDS results against gene count for \textit{Medicago})
+        \label{fig:mds_gene_count}
     }
 \end{figure}
 
