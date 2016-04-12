@@ -217,10 +217,12 @@ Due to the property of eigenvectors,we could use the following method to calcula
 \plr{Define $D$.}
 
 \begin{equation}
-V_{1}=\sqrt{\frac{\lambda _{1i}}{\lambda _{1i}+\lambda _{2i}}}PC1_{i} \qquad
-V_{2}=\sqrt{\frac{\lambda _{2i}}{\lambda _{1i}+\lambda _{2i}}}PC2_{i} \qquad
-U_{1}=\sqrt{\frac{\lambda _{1j}}{\lambda _{1j}+\lambda _{2j}}}PC1_{j} \qquad
-U_{2}=\sqrt{\frac{\lambda _{2j}}{\lambda _{1j}+\lambda _{2j}}}PC2_{j}
+    \begin{aligned}
+        V_{1}&=\sqrt{\frac{\lambda _{1i}}{\lambda _{1i}+\lambda _{2i}}}PC1_{i} \qquad
+        V_{2}&=\sqrt{\frac{\lambda _{2i}}{\lambda _{1i}+\lambda _{2i}}}PC2_{i} \\
+        U_{1}&=\sqrt{\frac{\lambda _{1j}}{\lambda _{1j}+\lambda _{2j}}}PC1_{j} \qquad
+        U_{2}&=\sqrt{\frac{\lambda _{2j}}{\lambda _{1j}+\lambda _{2j}}}PC2_{j}
+    \end{aligned}
 \end{equation}
 
 \begin{align}
@@ -274,7 +276,6 @@ We checked the results for chromosome arms Chr2L, Chr2R, Chr3L, Chr3R and ChrX s
          (b) and (c) show the position (midpoint) of each window against the first and second MDS coordinates, respectively. 
          Colors are consistent for (a) (b) and (c).
          Vertical black lines show the breakpoints of known polymorphic inversions In(2L)t.
-         \plr{(I think it's a bit confusing having both MDS1D and MDS2D: can we instead of MDS1D on the right, just plot the first coordinate of MDS2D?  And, somehow make the colors agree between the two figures? (not sure how to do this)}
          \label{fig:mds_chr2L}
     }
 \end{figure}
@@ -296,7 +297,6 @@ We pick a window for each extreme, and take out 5\% windows that are closest to 
     }
 \end{figure}
 
-\plr{Use figure labels, like ``Figure {\textbackslash}ref\{fig:mds{\textunderscore}chr2L\}'' instead of ``Figure 1''.}
 
 There's a known inversion in Chr2L in \textit{Drosophila}, In(2L)t, with breakpoints at 2225744bp and 13154180bp. \citep{corbett2012population} We recolored the PCA plots in Figure \ref{fig:pca_chr2L} a,b,c by the direction of the inversion for each sample using data from John Pool's lab \citep{lack2015drosophila}. Figure \ref{fig:color_inver}
 \plr{(citation?)}
