@@ -51,22 +51,6 @@
          inkscape:connector-curvature="0" />
     </marker>
     <marker
-       inkscape:isstock="true"
-       style="overflow:visible"
-       id="marker6920"
-       refX="0"
-       refY="0"
-       orient="auto"
-       inkscape:stockid="Arrow2Mend"
-       inkscape:collect="always">
-      <path
-         transform="scale(-0.6,-0.6)"
-         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
-         style="fill:#ff8310;fill-opacity:1;fill-rule:evenodd;stroke:#ff8310;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
-         id="path6922"
-         inkscape:connector-curvature="0" />
-    </marker>
-    <marker
        inkscape:stockid="Arrow2Mend"
        orient="auto"
        refY="0"
@@ -244,8 +228,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="367.51482"
-     inkscape:cy="203.587"
+     inkscape:cx="367.81544"
+     inkscape:cy="142.26925"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -441,14 +425,14 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:10px;line-height:100%;font-family:'URW Palladio L';-inkscape-font-specification:'URW Palladio L, Medium';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="64.748734"
-       y="150.69699"
+       x="244.74873"
+       y="160.69699"
        id="text4287"
        sodipodi:linespacing="100%"><tspan
          sodipodi:role="line"
          id="tspan4289"
-         x="64.748734"
-         y="150.69699">window #</tspan></text>
+         x="244.74873"
+         y="160.69699">window #</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:10px;line-height:100%;font-family:'URW Palladio L';-inkscape-font-specification:'URW Palladio L, Medium';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -1475,7 +1459,7 @@ JK8RrqBIVk8AAAAASUVORK5CYII=
          y="269.50507">... </tspan></text>
     <path
        style="fill:none;fill-rule:evenodd;stroke:#fb0000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker5950)"
-       d="m 152.85714,155.93363 c -0.71429,22.85714 15,46.42858 15,68.57143"
+       d="m 155.71428,157.07649 c -0.71429,22.85714 12.14286,45.28572 12.14286,67.42857"
        id="path4424"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
@@ -1483,7 +1467,7 @@ JK8RrqBIVk8AAAAASUVORK5CYII=
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
        id="path4738"
-       d="m 219,154.50506 c -0.71429,22.85714 53.82269,50.46919 68.4699,72.61204"
+       d="m 217.57143,157.50506 c -0.71429,22.85714 55.25126,47.46919 69.89847,69.61204"
        style="fill:none;fill-rule:evenodd;stroke:#130bff;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker4740)" />
     <text
        xml:space="preserve"
@@ -4507,20 +4491,20 @@ YII=
     <path
        inkscape:connector-curvature="0"
        id="path6918"
-       d="m 474.28572,355.21935 c 0,25.71429 60.71428,5.71428 87.85713,50.71428"
-       style="fill:none;fill-rule:evenodd;stroke:#ff8310;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker6920)"
+       d="m 474.03318,355.97696 c 0,25.71429 99.85769,-4.89232 110.08049,47.68383"
+       style="fill:none;fill-rule:evenodd;stroke:#ff8310;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:"
        sodipodi:nodetypes="cc" />
     <path
        sodipodi:nodetypes="cc"
        style="fill:none;fill-rule:evenodd;stroke:#ff8310;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker7868)"
-       d="m 538.28572,355.21935 c 0,25.71429 45.71428,6.42857 49.99999,49.99999"
+       d="m 538.28572,355.21935 c 0,25.71429 41.16859,7.18618 45.4543,50.7576"
        id="path7866"
        inkscape:connector-curvature="0" />
     <path
        inkscape:connector-curvature="0"
        id="path8004"
-       d="m 572.28572,355.21935 c 0,25.71429 19.28571,3.57142 24.2857,48.57142"
-       style="fill:none;fill-rule:evenodd;stroke:#ff8310;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#marker8006)"
+       d="m 572.28572,355.21935 c 0,25.71429 6.40626,3.3189 11.40625,48.31889"
+       style="fill:none;fill-rule:evenodd;stroke:#ff8310;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        sodipodi:nodetypes="cc" />
     <text
        xml:space="preserve"
@@ -4545,5 +4529,27 @@ YII=
          x="463.42859"
          y="473.21933"
          id="tspan8566">windows</tspan></text>
+    <text
+       sodipodi:linespacing="100%"
+       id="text10334"
+       y="360.69699"
+       x="590.74872"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:10px;line-height:100%;font-family:'URW Palladio L';-inkscape-font-specification:'URW Palladio L, Medium';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       xml:space="preserve"><tspan
+         y="360.69699"
+         x="590.74872"
+         id="tspan10336"
+         sodipodi:role="line">window #</tspan></text>
+    <text
+       sodipodi:linespacing="100%"
+       id="text10338"
+       y="100.69699"
+       x="84.748734"
+       style="font-style:normal;font-variant:normal;font-weight:500;font-stretch:normal;font-size:10px;line-height:100%;font-family:'URW Palladio L';-inkscape-font-specification:'URW Palladio L, Medium';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       xml:space="preserve"><tspan
+         y="100.69699"
+         x="84.748734"
+         sodipodi:role="line"
+         id="tspan10342">samples</tspan></text>
   </g>
 </svg>
