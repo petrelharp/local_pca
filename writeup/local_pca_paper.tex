@@ -83,6 +83,7 @@ distribution of inversions, and heterochromatin and gene density along the
 genome. Each species showed distinct patterns, reflecting differences in their
 biology. 
 
+\plr{Improve this paragraph:}
 Other methods for visualizing population structure are like STRUCTURE,
 \citep{pritchard2000inference,falush2003inference,
 falush2007inference,hubisz2009inferring} 
@@ -93,9 +94,12 @@ maps of heterozygosity
 
 A number of methods for dimensionality reduction also use a strategy of ``local PCA''
 \citep[e.g.][]{manjon2013diffusion,kambhatla1997dimension,weingessel2000local,roweis2000nonlinear},
-performing PCA not on the entire dataset but instead on subsets,
+performing PCA not on the entire dataset but instead on subsets of observations,
 providing ``local'' pictures which are then stitched back together to give a global picture.
-This differs from our use of the term in that we restrict to subsets of \emph{variables} instead of subsets of observations.
+At first sight,
+this differs from our use of the term in that we restrict to subsets of \emph{variables} instead of subsets of observations.
+However, if we flip perspectives and think of each genetic variant as an observation,
+our method shares common threads, although the ultimate goals and methods for visualization are different.
 Future methods for visualization of genomic data
 may benefit from other advances in this substantial literature \citep[reviewed in][]{vandermaaten2009dimensionality}.
 
