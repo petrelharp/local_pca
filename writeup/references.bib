@@ -806,17 +806,6 @@ under panmixia.
   publisher={Public Library of Science}
 }
 
-@article{kambhatla1997dimension,
-  title={Dimension reduction by local principal component analysis},
-  author={Kambhatla, Nandakishore and Leen, Todd K},
-  journal={Neural Computation},
-  volume={9},
-  number={7},
-  pages={1493--1516},
-  year={1997},
-  publisher={MIT Press}
-}
-
 @article{weingessel2000local,
   title={Local PCA algorithms},
   author={Weingessel, Andreas and Hornik, Kurt},
@@ -826,6 +815,113 @@ under panmixia.
   pages={1242--1250},
   year={2000},
   publisher={IEEE}
+}
+
+@article{kambhatla1997dimension,
+  abstract = {Reducing or eliminating statistical redundancy between the components of high-dimensional vector data enables a lower-dimensional representation without significant loss of information. Recognizing the limitations of principal component analysis (PCA), researchers in the statistics and neural network communities have developed nonlinear extensions of PCA. This article develops a local linear approach to dimension reduction that provides accurate representations and is fast to compute. We exercise the algorithms on speech and image data, and compare performance with PCA and with neural network implementations of nonlinear PCA. We find that both nonlinear techniques can provide more accurate representations than PCA and show that the local linear techniques outperform neural network implementations.},
+  added-at = {2016-04-14T01:16:57.000+0200},
+  author = {Kambhatla, N. and Leen, T. K.},
+  biburl = {http://www.bibsonomy.org/bibtex/26c86cdd0d073c165097e520222afb032/peter.ralph},
+  doi = {10.1162/neco.1997.9.7.1493},
+  interhash = {2dd7c686fa72d98dd19e4e6b7a2be01c},
+  intrahash = {6c86cdd0d073c165097e520222afb032},
+  issn = {0899-7667},
+  journal = {Neural Computation},
+  keywords = {PCA local_PCA machine_learning methods},
+  month = {July},
+  number = 7,
+  pages = {1493-1516},
+  timestamp = {2016-04-14T01:16:57.000+0200},
+  title = {Dimension Reduction by Local Principal Component Analysis},
+  url = {http://ieeexplore.ieee.org/xpl/freeabs_all.jsp?arnumber=6795533},
+  volume = 9,
+  year = 1997
+}
+
+@article{vandermaaten2009dimensionality,
+  abstract = {In recent years, a variety of nonlinear dimensionality reduction techniques have been
+proposed that aim to address the limitations of traditional techniques such as PCA
+and classical scaling. The paper presents a review and systematic comparison of
+these techniques. The performances of the nonlinear techniques are investigated on
+artificial and natural tasks. The results of the experiments reveal that nonlinear tech-
+niques perform well on selected artificial tasks, but that this strong performance does
+not necessarily extend to real-world tasks. The paper explains these results by identi-
+fying weaknesses of current nonlinear techniques, and suggests how the performance
+of nonlinear dimensionality reduction techniques may be improved.
+
+Real-world data, such as speech signals, digital photographs, or fMRI scans, usually has a high dimen-
+sionality. In order to handle such real-world data adequately, its dimensionality needs to be reduced.
+Dimensionality reduction is the transformation of high-dimensional data into a meaningful representa-
+tion of reduced dimensionality. Ideally, the reduced representation should have a dimensionality that
+corresponds to the intrinsic dimensionality of the data. The intrinsic dimensionality of data is the mini-
+mum number of parameters needed to account for the observed properties of the data [49]. Dimension-
+ality reduction is important in many domains, since it mitigates the curse of dimensionality and other
+undesired properties of high-dimensional spaces [69]. As a result, dimensionality reduction facilitates,
+among others, classification, visualization, and compression of high-dimensional data. Traditionally, di-
+mensionality reduction was performed using linear techniques such as Principal Components Analysis
+(PCA) [98], factor analysis [117], and classical scaling [126]. However, these linear techniques cannot
+adequately handle complex nonlinear data.
+In the last decade, a large number of nonlinear techniques for dimensionality reduction have been
+proposed. See for an overview, e.g., [26, 110, 83, 131]. In contrast to the traditional linear techniques,
+the nonlinear techniques have the ability to deal with complex nonlinear data. In particular for real-
+world data, the nonlinear dimensionality reduction techniques may offer an advantage, because real-
+world data is likely to form a highly nonlinear manifold. Previous studies have shown that nonlinear
+techniques outperform their linear counterparts on complex artificial tasks. For instance, the Swiss roll
+dataset comprises a set of points that lie on a spiral-like two-dimensional manifold that is embedded
+within a three-dimensional space. A vast number of nonlinear techniques are perfectly able to find this
+embedding, whereas linear techniques fail to do so. In contrast to these successes on artificial datasets,
+successful applications of nonlinear dimensionality reduction techniques on natural datasets are less
+convincing. Beyond this observation, it is not clear to what extent the performances of the various
+dimensionality reduction techniques differ on artificial and natural tasks (a comparison is performed in
+[94], but this comparison is very limited in scope with respect to the number of techniques and tasks
+that are addressed).
+Motivated by the lack of a systematic comparison of dimensionality reduction techniques, this paper
+presents a comparative study of the most important linear dimensionality reduction technique (PCA),
+and twelve frontranked nonlinear dimensionality reduction techniques. The aims of the paper are (1)
+to investigate to what extent novel nonlinear dimensionality reduction techniques outperform the tradi-
+tional PCA on real-world datasets and (2) to identify the inherent weaknesses of the twelve nonlinear
+dimensionality reduction techniques. The investigation is performed by both a theoretical and an empir-
+ical evaluation of the dimensionality reduction techniques. The identification is performed by a careful
+analysis of the empirical results on specifically designed artificial datasets and on a selection of real-
+world datasets.
+Next to PCA, the paper investigates the following twelve nonlinear techniques: (1) Kernel PCA,
+(2) Isomap, (3) Maximum Variance Unfolding, (4) diffusion maps, (5) Locally Linear Embedding,
+(6) Laplacian Eigenmaps, (7) Hessian LLE, (8) Local Tangent Space Analysis, (9) Sammon mapping,
+(10) multilayer autoencoders, (11) Locally Linear Coordination, and (12) manifold charting.},
+  added-at = {2016-04-14T01:21:52.000+0200},
+  author = {Van Der Maaten, Laurens and Postma, Eric and Van den Herik, Jaap},
+  biburl = {http://www.bibsonomy.org/bibtex/2ed03568f0e9bca9cdaf6b25304e55940/peter.ralph},
+  interhash = {f1c39ec766293d0203a327a6dd5d9948},
+  intrahash = {ed03568f0e9bca9cdaf6b25304e55940},
+  journal = {J Mach Learn Res},
+  keywords = {PCA data_analysis machine_learning methods review visualization},
+  pages = {66-71},
+  timestamp = {2016-04-14T01:23:22.000+0200},
+  title = {Dimensionality reduction: a comparative review},
+  volume = 10,
+  year = 2009
+}
+
+@article{roweis2000nonlinear,
+  abstract = {Many areas of science depend on exploratory data analysis and visualization. The need to analyze large amounts of multivariate data raises the fundamental problem of dimensionality reduction: how to discover compact representations of high-dimensional data. Here, we introduce locally linear embedding (LLE), an unsupervised learning algorithm that computes low-dimensional, neighborhood-preserving embeddings of high-dimensional inputs. Unlike clustering methods for local dimensionality reduction, LLE maps its inputs into a single global coordinate system of lower dimensionality, and its optimizations do not involve local minima. By exploiting the local symmetries of linear reconstructions, LLE is able to learn the global structure of nonlinear manifolds, such as those generated by images of faces or documents of text.},
+  added-at = {2016-04-14T01:45:07.000+0200},
+  author = {Roweis, Sam T. and Saul, Lawrence K.},
+  biburl = {http://www.bibsonomy.org/bibtex/2cccdcfb847911c5899f3f35f9f1b5de5/peter.ralph},
+  doi = {10.1126/science.290.5500.2323},
+  eprint = {http://science.sciencemag.org/content/290/5500/2323.full.pdf},
+  interhash = {e4ae1bddd3d395677778454060783c55},
+  intrahash = {cccdcfb847911c5899f3f35f9f1b5de5},
+  issn = {0036-8075},
+  journal = {Science},
+  keywords = {dimensionality_reduction exploratory_data_analysis linear_algebra local_PCA locally_linear_embedding methods statistics visualization},
+  number = 5500,
+  pages = {2323--2326},
+  publisher = {American Association for the Advancement of Science},
+  timestamp = {2016-04-14T01:45:07.000+0200},
+  title = {Nonlinear Dimensionality Reduction by Locally Linear Embedding},
+  url = {http://science.sciencemag.org/content/290/5500/2323},
+  volume = 290,
+  year = 2000
 }
 
 

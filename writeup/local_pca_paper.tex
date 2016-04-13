@@ -60,18 +60,43 @@ Background selection causes shallow ones.
 Third, if a chromosome inversion is polymorphic in the sample, the regions around the breakpoints of inversions usually have high linkage disequilibrium and the two directions of a inversion will have different linked alleles around the breakpoints. Recombination suppression across inversions thus results in different genome structure and population structure. 
 Other effects, like noise, introgression might also influence population structure.
 
-Investigating the genomic variation along the genome can help us to have a better understanding of the relation between genome structure and population structure, and could possibly lead to more powerful methods for GWAS.
+Investigating the genomic variation along the genome can help us to have a
+better understanding of the relation between genome structure and population
+structure, and could possibly lead to more powerful methods for GWAS.
 
-To investigate this, we cut each chromosome into windows (with hundreds to thousands of SNPs in each), applied PCA to each window, and visualized how population structure, as summarized by PCA, varies along windows.
+To investigate this, we cut each chromosome into windows (with hundreds to
+thousands of SNPs in each), applied PCA to each window, and visualized how
+population structure, as summarized by PCA, varies along windows.
 
-In this project, we used SNP data for human, \textit{Medicago truncatula}, and whole genome sequencing data for \textit{Drosophila}.
-Based on the principal components, we can estimate the similarity of population structure contained in each genome window. 
-To quantify similarity of population structure between windows, we constructed for each window an approximate, scaled covariance matrix based on the first two PCs measured the pairwise Euclidean distance between those matrices.
-We use multidimensional scaling to visualize the relationships between windows, which reduces the pairwise distance matrix to lower dimension while preserving the distance information between windows as well as possible \citep{borg2005modern}. 
-To interpret the results of MDS, we combine known genome feature information for each species, such as the distribution of inversions, and heterochromatin and gene density along the genome. Each species showed distinct patterns, reflecting differences in their biology. 
+In this project, we used SNP data for human, \textit{Medicago truncatula}, and
+whole genome sequencing data for \textit{Drosophila}.  Based on the principal
+components, we can estimate the similarity of population structure contained in
+each genome window.  To quantify similarity of population structure between
+windows, we constructed for each window an approximate, scaled covariance
+matrix based on the first two PCs measured the pairwise Euclidean distance
+between those matrices.  We use multidimensional scaling to visualize the
+relationships between windows, which reduces the pairwise distance matrix to
+lower dimension while preserving the distance information between windows as
+well as possible \citep{borg2005modern}.  To interpret the results of MDS, we
+combine known genome feature information for each species, such as the
+distribution of inversions, and heterochromatin and gene density along the
+genome. Each species showed distinct patterns, reflecting differences in their
+biology. 
 
-Other methods for visualizing population structure are like STRUCTURE, \citep{pritchard2000inference,falush2003inference, falush2007inference,hubisz2009inferring} model-based approach, \citep{yang2012modelbased} maps of heterozygosity \citep{ramachandran2005support}. The term ``local PCA" is also used in some other region for different meanings. \citep{manjon2013diffusion,kambhatla1997dimension,weingessel2000local}
+Other methods for visualizing population structure are like STRUCTURE,
+\citep{pritchard2000inference,falush2003inference,
+falush2007inference,hubisz2009inferring} 
+model-based approach,
+\citep{yang2012modelbased} 
+maps of heterozygosity
+\citep{ramachandran2005support}. 
 
+A number of methods for dimensionality reduction also use a strategy of ``local PCA''
+\citep[e.g.][]{manjon2013diffusion,kambhatla1997dimension,weingessel2000local,roweis2000nonlinear},
+performing PCA not on the entire dataset but instead on subsets,
+providing ``local'' pictures which are then stitched back together to give a global picture.
+Our method shares this common thread, but differs somewhat in the context and goals,
+and future methods may benefit from this substantial literature \citep[reviewed in][]{vandermaaten2009dimensionality}.
 
 
 \section{Other Introduction}
