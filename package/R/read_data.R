@@ -9,7 +9,7 @@
 #'
 #' @param x Character matrix of alleles.
 #' @param ploidy Number of columns per individual.
-#' @param triallelic Include triallelic sites? Defaults to TRUE.
+#' @param triallelic Include triallelic sites? Defaults to TRUE; otherwise sets these to NA.
 #' @return An integer matrix with one row per site and one column per individual.
 #' @export
 recode_numeric <- function (x, ploidy=2, triallelic=TRUE) {
@@ -56,7 +56,7 @@ recode_numeric <- function (x, ploidy=2, triallelic=TRUE) {
 #'
 #' @param file Input .tped filename.
 #' @param chrom Vector of chromosome name(s) to include (defaults to all).
-#' @param triallelic Include triallelic sites? Defaults to TRUE.
+#' @param triallelic Include triallelic sites? Defaults to TRUE; otherwise sets these to NA.
 #' @param phased Are the data phased? (i.e., should return one column per individual or two?)
 #' @return An integer matrix with one row per site and one (or two, if phased) column per individual.
 #' @export

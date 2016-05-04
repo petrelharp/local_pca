@@ -1,0 +1,135 @@
+# Local PCA on *Medicago truncatula* Hapmap
+
+
+# Data
+
+Filtered SNP calls from Mt4.0 were downloaded from [medicagohapmap.org](http://medicagohapmap.org/) on 5/4/2016:
+```
+mkdir -p data; cd data
+wget http://www.medicagohapmap.org/downloads/Mt40/Mt4.0_HapMap_README.pdf
+for CHROM in 1 2 3 4 5 6 7 8 u;
+do
+    echo "Getting $CHROM"
+    wget http://www.medicagohapmap.org/downloads/Mt40/snps_by_chr/chr${CHROM}-filtered-set-2014Apr15.bcf
+    wget http://www.medicagohapmap.org/downloads/Mt40/snps_by_chr/chr${CHROM}-filtered-set-2014Apr15.csi
+done
+```
+For some reason these .csi index files don't work; so we need to remake them:
+```
+for CHROM in 2 3 4 5 6 7 8 u;
+do
+    bcftools index -f chr${CHROM}-filtered-set-2014Apr15.bcf
+done
+```
+
+## Samples
+
+The file of sample info was obtained from the HTML table at [http://www.medicagohapmap.org/hapmap/germplasm](http://www.medicagohapmap.org/hapmap/germplasm).
+To check this contains information about all samples,
+first get the list of samples in the .bcf files:
+```
+bcftools query -l chr1-filtered-set-2014Apr15.bcf > samples_in_bcf.txt
+```
+then compare to the table of information:
+```{r sample_info}
+samples <- read.table("sample_info.tsv", sep="\t", header=TRUE)
+bcf.samples <- scan("samples_in_bcf.txt", what='char')
+setdiff( bcf.samples , samples$ID )
+```
+For some reason, the bcf files refer to `HM020-I` while in the the sample info file there is `HM020`.
+We'll assume they are the same (but keep an eye on that one!).
+Here's where they're all from:
+```{r show_sample_info}
+bcf.samples <- gsub("-I","",bcf.samples)
+samples <- droplevels(subset(samples, ID %in% bcf.samples))
+sort( table(samples$Country.of.Origin) )
+```
+
+## Recoding
+
+Recall that VCF files have the following columns:
+
+> CHROM  POS     ID      REF     ALT     QUAL    FILTER  INFO    FORMAT  
+
+We use [bcftools](https://github.com/samtools/bcftools) to extract information, for instance:
+```
+# list of sites
+bcftools query -f '%CHROM\t%POS\n' -r chr1:1-400 chr1-filtered-set-2014Apr15.bcf
+# genotypes
+bcftools query -f '%CHROM\t%POS[\t%GT]\n' -r chr1:1-400 chr1-filtered-set-2014Apr15.bcf
+# genotypes of first four individuals, numerically
+bcftools query -f '%CHROM\t%POS[\t%GT]\n' -r chr1:1-400 chr1-filtered-set-2014Apr15.bcf -s 'HM001,HM002,HM003,HM004' | sed -e 's_0/0_0_g' -e 's_\(0/1\)\|\(1/0\)_1_g' -e 's_1/1_2_g'
+```
+
+To get windows out of the VCF file and recode them, we'll just pipe a call to `bcftools`.
+Here's a dummy version that will pull out windows of 100 SNPs for only the first four individuals.
+```{r win_fn}
+get.indivs <- "'HM001,HM002,HM003,HM004'"
+bcf.file <- "chr1-filtered-set-2014Apr15.bcf"
+# first read in the info about sites
+bcf.con <- pipe(paste("bcftools query -f '%CHROM\\t%POS\\n' -r chr1:1-100000",bcf.file),open="r")
+bcf.sites <- read.table(bcf.con, sep='\t')
+colnames(bcf.sites) <- c("chrom","pos")
+close(bcf.con)
+# now use bcftools to pull out sites we want
+#' This gives a string of the form "chr:start-end,chr:start-end" as required by bcftools
+get_regions <- function (sites) {
+    if (nrow(sites)==0) { return( NULL ) }
+    pos <- as.numeric( sites[,2] )
+    do.call( paste, c( tapply( 1:nrow(sites), sites[,1], function (kk) {
+                            paste0( sites[kk[1],1], ":", min(pos[kk]), "-", max(pos[kk]) )
+                        } ), list(sep=",") ) )
+}
+#' This will pull out bits of the bcf file corresponding to a regions string and convert it to numeric
+get_sites <- function (regions) {
+    gt.text <- data.table::fread( paste( c("bcftools", "query", "-f", "'[ %GT]\\n'", "-r", regions, "-s", get.indivs, bcf.file), collapse=" " ), header=FALSE, sep=' ', data.table=FALSE )
+    gt <- c(0,1,1,2)[match( unlist(gt.text), c("0/0","0/1","1/0","1/1") )]
+    dim(gt) <- dim(gt.text)
+    return(gt)
+}
+win.fn <- function (n,win.snps=100) {
+    sites <- bcf.sites[seq(1+(n-1)*win.snps,length.out=win.snps),]
+    regions <- get_regions(sites)
+    get_sites(regions)
+}
+win.fn(20,10)  # get the 20th window of 10 SNPs
+```
+
+Here's an alternate version that pulls out windows based on basepairs.
+Note that this version assumes we have only one chromosome, starting at zero.
+```{r win_fn_bp}
+win.fn.bp <- function (n,win.bp=200) {
+    win.start <- 1+(n-1)*win.bp
+    win.end <- win.start + win.bp-1
+    regions <- get_regions( cbind( chrom="chr1", pos=c(win.start,win.end) ) )
+    get_sites(regions)
+}
+win.fn.bp(20,50)
+```
+
+
+## Computing eigenvectors of covariance matrices
+
+Now we are set up to use `lostruct::eigen_windows()` to compute and write out the eigenstructure for windows along the genome.
+
+Here's how to do that for the first 4 windows of length 100 SNPs, with the simplified version: just four individuals.
+```{r simple_snp_pcas}
+eigen_windows( 
+        data=bcf.file,
+        win.fn=function(data,n,...){ win.fn(n,...) },
+        do.windows=1:4,
+        k=2,
+        win.snps=100
+    )
+```
+Here's the same thing on windows of length 1000bps:
+```{r simple_bp_pcas}
+eigen_windows( 
+        data=bcf.file,
+        win.fn=function(data,n,...){ win.fn.bp(n,...) },
+        do.windows=1:4,
+        k=2,
+        win.bp=1000
+    )
+```
+

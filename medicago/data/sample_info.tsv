@@ -1,0 +1,339 @@
+ID	Line	"Population of Origin"	"Country of Origin"	Category	"Seeds From"	Status
+HM001	L000163	SA22322	Syria	CC8	INRA-Montpellier	Processed
+HM002	L000174	SA28064	Cyprus	CC8	INRA-Montpellier	Processed
+HM003	L000544	ESP105-L	Spain	CC8	INRA-Montpellier	Processed
+HM004	L000736	DZA045-6	Algeria	CC8	INRA-Montpellier	Processed
+HM005	L000734	DZA315-16	Algeria	CC8	INRA-Montpellier	Processed
+HM006	L000530	F83005-5	France	CC8	INRA-Montpellier	Processed
+HM007	L000651	Salses71B	France	CC8	INRA-Montpellier	Processed
+HM008	L000368	DZA012-J	Algeria	CC8	INRA-Montpellier	Processed
+HM009	L000555	GRC020-B	Greece	CC16	INRA-Montpellier	Processed
+HM010	L000154	SA24714	Italy	CC16	INRA-Montpellier	Processed
+HM011	L000543	DZA327-7	Algeria	CC16	INRA-Montpellier	Processed
+HM012	L000239	SA26063	Morocco	CC16	INRA-Montpellier	Processed
+HM013	L000648	Salses42B	France	CC16	INRA-Montpellier	Processed
+HM014	L000542	DZA233-4	Algeria	CC16	INRA-Montpellier	Processed
+HM015	L000550	F11013-3	France	CC16	INRA-Montpellier	Processed
+HM016	L000049	SA09707	Tunisia	CC16	INRA-Montpellier	Processed
+HM017		A10		RIL Parent	ENSAT-Toulouse	Processed
+HM018		A20		RIL Parent	ENSAT-Toulouse	Processed
+HM019	L000527	Borung		RIL Parent	INRA-Montpellier	Processed
+HM020	TN1.11	TN1.11		RIL Parent	ENSAT-Toulouse	Processed
+HM021	TN1.21	TN1.21		RIL Parent	ENSAT-Toulouse	Processed
+HM022	TN3.23	TN3.23		RIL Parent	ENSAT-Toulouse	Processed
+HM023	TN6.18	TN6.18		RIL Parent	ENSAT-Toulouse	Processed
+HM024	TN8.3	TN8.3		RIL Parent	ENSAT-Toulouse	Processed
+HM025	TN9.22	TN9.22		RIL Parent	ENSAT-Toulouse	Processed
+HM026	L000450	F11008-C	France	RIL Parent/CC96	INRA-Montpellier	Processed
+HM027	L000531	F83005-9	France	RIL Parent/CC144	INRA-Montpellier	Processed
+HM028	L000342	DZA241-2	Algeria	RIL Parent/CC144	INRA-Montpellier	Processed
+HM029	L000729	R108-C3		M. tricycla	INRA-Montpellier	Processed
+HM030	L000518	F11013-27		M. littoralis	INRA-Montpellier	Processed
+HM031	L000545	ESP158-A	Spain	CC32	INRA-Montpellier	Processed
+HM032	L000549	F11005-E	France	CC32	INRA-Montpellier	Processed
+HM033	L000552	F20047-A	France, Corsica	CC32	INRA-Montpellier	Processed
+HM034	L000554	F20089-B	France, Corsica	CC32	INRA-Montpellier	Processed
+HM035	L000679	F66017	France	CC32	INRA-Montpellier	Processed
+HM036	L000337	GRC042-1	Greece	CC32	INRA-Montpellier	Processed
+HM037	L000557	GRC064-B	Greece	CC32	INRA-Montpellier	Processed
+HM038	L000369	PRT180-A	Portugal	CC32	INRA-Montpellier	Processed
+HM039	L000263	SA03116	Israel	CC32	INRA-Montpellier	Processed
+HM040	L000321	SA03780	Italy	CC32	INRA-Montpellier	Processed
+HM041	L000198	SA09048	Libya	CC32	INRA-Montpellier	Processed
+HM042	L000290	SA09119	Turkey	CC32	INRA-Montpellier	Processed
+HM043	L000310	SA09944	Tunisia	CC32	INRA-Montpellier	Processed
+HM044	L000245	SA14161	Jordan	CC32	INRA-Montpellier	Processed
+HM045	L000144	SA14163	Jordan	CC32	INRA-Montpellier	Processed
+HM046	L000213	SA27882	Morocco	CC32	INRA-Montpellier	Processed
+HM047	L000654	DZA014	Algeria	CC64	INRA-Montpellier	Processed
+HM048	L000475	DZA016-F	Algeria	CC64	INRA-Montpellier	Processed
+HM049	L000360	DZA058-5	Algeria	CC64	INRA-Montpellier	Processed
+HM050	L000477	DZA058-J	Algeria	CC64	INRA-Montpellier	Processed
+HM051	L000357	DZA202-4	Algeria	CC64	INRA-Montpellier	Processed
+HM052	L000639	DZA210-3	Algeria	CC64	INRA-Montpellier	Processed
+HM053	L000601	DZA246-6	Algeria	CC64	INRA-Montpellier	Processed
+HM054	L000395	DZA309-A	Algeria	CC64	INRA-Montpellier	Processed
+HM055	L000675	DZA326	Algeria	CC64	INRA-Montpellier	Processed
+HM056	L000416	ESP074-A	Spain	CC64	INRA-Montpellier	Processed
+HM057	L000512	ESP155-D	Spain	CC64	INRA-Montpellier	Processed
+HM058	L000513	ESP163-E	Spain	CC64	INRA-Montpellier	Processed
+HM059	L000449	F11012-A	France	CC64	INRA-Montpellier	Processed
+HM060	L000520	F20015-10	France, Corsica	CC64	INRA-Montpellier	Processed
+HM061	L000645	GRC033-B2	Greece	CC64	INRA-Montpellier	Processed
+HM062	L000379	GRC063-D	Greece	CC64	INRA-Montpellier	Processed
+HM063	L000525	PRT176-F	Portugal	CC64	INRA-Montpellier	Processed
+HM064	L000371	PRT178-D	Portugal	CC64	INRA-Montpellier	Processed
+HM065	L000370	PRT179-J	Portugal	CC64	INRA-Montpellier	Processed
+HM066	L000204	SA01489	Israel	CC64	INRA-Montpellier	Processed
+HM067	L000265	SA01526	Algeria	CC64	INRA-Montpellier	Processed
+HM068	L000274	SA03648	Portugal	CC64	INRA-Montpellier	Processed
+HM069	L000276	SA07749	Tunisia	CC64	INRA-Montpellier	Processed
+HM070	L000307	SA08625	Morocco	CC64	INRA-Montpellier	Processed
+HM071	L000297	SA08626	Morocco	CC64	INRA-Montpellier	Processed
+HM072	L000061	SA09357	Algeria	CC64	INRA-Montpellier	Processed
+HM073	L000052	SA09710	Tunisia	CC64	INRA-Montpellier	Processed
+HM074	L000314	SA09866	Algeria	CC64	INRA-Montpellier	Processed
+HM075	L000130	SA12451	Italy	CC64	INRA-Montpellier	Processed
+HM076	L000234	SA23859	Tunisia	CC64	INRA-Montpellier	Processed
+HM077	L000232	SA27062	Greece	CC64	INRA-Montpellier	Processed
+HM078	L000228	SA27063	Greece	CC64	INRA-Montpellier	Processed
+HM079	L000362	DZA045-4c	Algeria	CC96	INRA-Montpellier	Processed
+HM080	L000637	DZA061-B3d	Algeria	CC96	INRA-Montpellier	Processed
+HM081	L000356	DZA202-5	Algeria	CC96	INRA-Montpellier	Processed
+HM082	L000355	DZA210-2	Algeria	CC96	INRA-Montpellier	Processed
+HM083	L000354	DZA210-5	Algeria	CC96	INRA-Montpellier	Processed
+HM084	L000394	DZA243-6	Algeria	CC96	INRA-Montpellier	Processed
+HM085	L000673	DZA319	Algeria	CC96	INRA-Montpellier	Processed
+HM086	L000674	DZA322--	Algeria	CC96	INRA-Montpellier	Processed
+HM087	L000397	DZA323-1	Algeria	CC96	INRA-Montpellier	Processed
+HM088	L000497	DZA323-D	Algeria	CC96	INRA-Montpellier	Processed
+HM089	L000431	ESP155-A	Spain	CC96	INRA-Montpellier	Processed
+HM090	L000437	ESP163-A	Spain	CC96	INRA-Montpellier	Processed
+HM091	L000548	ESP171-F	Spain	CC96	INRA-Montpellier	Processed
+HM092	L000443	ESP174-A	Spain	CC96	INRA-Montpellier	Processed
+HM093	L000444	ESP173-A	Spain	CC96	INRA-Montpellier	Processed
+HM094	L000574	F13006-1	France	CC96	INRA-Montpellier	Processed
+HM095	L000458	F20025-4	France, Corsica	CC96	INRA-Montpellier	Processed
+HM096	L000460	F20026-F	France, Corsica	CC96	INRA-Montpellier	Processed
+HM097	L000522	F83005-G	France	CC96	INRA-Montpellier	Processed
+HM098	L000523	PRT176-12	Portugal	CC96	INRA-Montpellier	Processed
+HM099	L000202	SA02840	Cyprus	CC96	INRA-Montpellier	Processed
+HM101		A17_Varma			Doug Cook, UC Davis	Processed
+HM102		CADL		alfalfa	Charlie Brummer, UGA	Processed
+HM103	L000302	SA04087	Tunisia	CC96	INRA-Montpellier	Processed
+HM104	L000303	SA08604	Algeria	CC96	INRA-Montpellier	Processed
+HM105	L000293	SA09137	Algeria	CC96	INRA-Montpellier	Processed
+HM106	L000060	SA09434	Tunisia	CC96	INRA-Montpellier	Processed
+HM107	L000047	SA09670	Algeria	CC96	INRA-Montpellier	Processed
+HM108	L000317	SA09715	Tunisia	CC96	INRA-Montpellier	Processed
+HM109	L000126	SA11959	Israel	CC96	INRA-Montpellier	Processed
+HM110	L000225	SA21560	Libya	CC96	INRA-Montpellier	Processed
+HM111	L000219	SA27192	Italy	CC96	INRA-Montpellier	Processed
+HM112	L000178	SA28097	Cyprus	CC96	INRA-Montpellier	Processed
+HM113	L000537	CRE007-J	Greece, Crete	CC144	INRA-Montpellier	Processed
+HM114	L000338	CRE009-A	Greece, Crete	CC144	INRA-Montpellier	Processed
+HM115	L000529	Cyprus_C	Cyprus	CC144	INRA-Montpellier	Processed
+HM116	L000659	DZA211	Algeria	CC144	INRA-Montpellier	Processed
+HM117	L000401	ESP031-A	Spain	CC144	INRA-Montpellier	Processed
+HM118	L000410	ESP043-B	Spain	CC144	INRA-Montpellier	Processed
+HM119	L000414	ESP050-B	Spain	CC144	INRA-Montpellier	Processed
+HM120	L000482	ESP095-C	Spain	CC144	INRA-Montpellier	Processed
+HM121	L000430	ESP104-A	Spain	CC144	INRA-Montpellier	Processed
+HM122	L000546	Esp159-11	Spain	CC144	INRA-Montpellier	Processed
+HM123	L000440	ESP163-B	Spain	CC144	INRA-Montpellier	Processed
+HM124	L000547	Esp165-D	Spain	CC144	INRA-Montpellier	Processed
+HM125	L000445	ESP175-A	Spain	CC144	INRA-Montpellier	Processed
+HM126	L000456	F20015-L	France, Corsica	CC144	INRA-Montpellier	Processed
+HM127	L000455	F20025-F	France, Corsica	CC144	INRA-Montpellier	Processed
+HM128	L000620	F20058-6	France, Corsica	CC144	INRA-Montpellier	Processed
+HM129	L000468	F20069-A	France, Corsica	CC144	INRA-Montpellier	Processed
+HM130	L000467	F20069-C	France, Corsica	CC144	INRA-Montpellier	Processed
+HM131	L000551	F34042-D	France	CC144	INRA-Montpellier	Processed
+HM132	L000376	GRC093-C	Greece	CC144	INRA-Montpellier	Processed
+HM133	L000375	GRC098-A	Greece	CC144	INRA-Montpellier	Processed
+HM134	L000267	SA02084	Greece	CC144	INRA-Montpellier	Processed
+HM135	L000332	SA02748	Israel	CC144	INRA-Montpellier	Processed
+HM136	L000270	SA02820	Turkey	CC144	INRA-Montpellier	Processed
+HM137	L000322	SA03749	Israel	CC144	INRA-Montpellier	Processed
+HM138	L000283	SA08454	Libya	CC144	INRA-Montpellier	Processed
+HM139	L000306	SA08623	Morocco	CC144	INRA-Montpellier	Processed
+HM140	L000286	SA09049	Libya	CC144	INRA-Montpellier	Processed
+HM141	L000044	SA09456	Tunisia	CC144	INRA-Montpellier	Processed
+HM142	L000315	SA09820	Libya	CC144	INRA-Montpellier	Processed
+HM143	L000132	SA10481	Tunisia	CC144	INRA-Montpellier	Processed
+HM144	L000241	SA15951	Portugal, Madeira	CC144	INRA-Montpellier	Processed
+HM145	L000146	SA19964	Turkey	CC144	INRA-Montpellier	Processed
+HM146	L000237	SA21302	Libya	CC144	INRA-Montpellier	Processed
+HM147	L000161	SA21362	Libya	CC144	INRA-Montpellier	Processed
+HM148	L000162	SA21590	Libya	CC144	INRA-Montpellier	Processed
+HM149	L000148	SA21819	Cyprus	CC144	INRA-Montpellier	Processed
+HM150	L000238	SA22323	Syria	CC144	INRA-Montpellier	Processed
+HM151	L000165	SA25226	Italy	CC144	INRA-Montpellier	Processed
+HM152	L000166	SA25654	Morocco	CC144	INRA-Montpellier	Processed
+HM153	L000168	SA25898	Italy	CC144	INRA-Montpellier	Processed
+HM154	L000173	SA27778	Morocco	CC144	INRA-Montpellier	Processed
+HM155	L000216	SA27961	Morocco	CC144	INRA-Montpellier	Processed
+HM156	L000217	SA28089	Cyprus	CC144	INRA-Montpellier	Processed
+HM157	L000215	SA28099	Cyprus	CC144	INRA-Montpellier	Processed
+HM158	L000649	Salse46B	France	CC144	INRA-Montpellier	Processed
+HM159	L000680	arboretu	France	CC192	INRA-Montpellier	Processed
+HM160	L000340	CRE005-A	Greece, Crete	CC192	INRA-Montpellier	Processed
+HM161	L000365	DZA033-2	Algeria	CC192	INRA-Montpellier	Processed
+HM162	L000538	DZA055-H	Algeria	CC192	INRA-Montpellier	Processed
+HM163	L000358	DZA061-11	Algeria	CC192	INRA-Montpellier	Processed
+HM164	L000350	DZA215-5	Algeria	CC192	INRA-Montpellier	Processed
+HM165	L000344	DZA231-1	Algeria	CC192	INRA-Montpellier	Processed
+HM166	L000343	DZA236-2	Algeria	CC192	INRA-Montpellier	Processed
+HM167	L000341	DZA242-A	Algeria	CC192	INRA-Montpellier	Processed
+HM168	L000400	DZA323-3	Algeria	CC192	INRA-Montpellier	Processed
+HM169	L000404	ESP039-A	Spain	CC192	INRA-Montpellier	Processed
+HM170	L000407	ESP042-B	Spain	CC192	INRA-Montpellier	Processed
+HM171	L000409	ESP045-A	Spain	CC192	INRA-Montpellier	Processed
+HM172	L000412	ESP048-E	Spain	CC192	INRA-Montpellier	Processed
+HM173	L000411	ESP048-F	Spain	CC192	INRA-Montpellier	Processed
+HM174	L000610	ESP095-9	Spain	CC192	INRA-Montpellier	Processed
+HM175	L000510	ESP098-B	Spain	CC192	INRA-Montpellier	Processed
+HM176	L000421	ESP098-C	Spain	CC192	INRA-Montpellier	Processed
+HM177	L000425	ESP100-G	Spain	CC192	INRA-Montpellier	Processed
+HM178	L000427	ESP103-B	Spain	CC192	INRA-Montpellier	Processed
+HM179	L000438	ESP162-A	Spain	CC192	INRA-Montpellier	Processed
+HM180	L000514	ESP163-C	Spain	CC192	INRA-Montpellier	Processed
+HM181	L000448	ESP175-D	Spain	CC192	INRA-Montpellier	Processed
+HM182	L000451	F11013-A	France	CC192	INRA-Montpellier	Processed
+HM183	L000517	F20015-8	France, Corsica	CC192	INRA-Montpellier	Processed
+HM184	L000463	F20058-B	France, Corsica	CC192	INRA-Montpellier	Processed
+HM185	L000470	F20081-A	France, Corsica	CC192	INRA-Montpellier	Processed
+HM186	L000387	GRC024-H	Greece	CC192	INRA-Montpellier	Processed
+HM187	L000386	GRC033-C	Greece	CC192	INRA-Montpellier	Processed
+HM188	L000383	GRC040-1	Greece	CC192	INRA-Montpellier	Processed
+HM189	L000372	PRT177-C	Portugal	CC192	INRA-Montpellier	Processed
+HM190	L000330	SA02806	Portugal	CC192	INRA-Montpellier	Processed
+HM191	L000277	SA03653	Portugal	CC192	INRA-Montpellier	Processed
+HM192	L000280	SA07763	Tunisia	CC192	INRA-Montpellier	Processed
+HM193	L000309	SA08638	Morocco	CC192	INRA-Montpellier	Processed
+HM194	L000057	SA09700	Tunisia	CC192	INRA-Montpellier	Processed
+HM195	L000313	SA09728	Tunisia	CC192	INRA-Montpellier	Processed
+HM196	L000207	SA09970	Tunisia	CC192	INRA-Montpellier	Processed
+HM197	L000246	SA12455	Italy	CC192	INRA-Montpellier	Processed
+HM198	L000244	SA18543	Tunisia	CC192	INRA-Montpellier	Processed
+HM199	L000147	SA19983	Cyprus	CC192	INRA-Montpellier	Processed
+HM200	L000134	SA19998	Cyprus	CC192	INRA-Montpellier	Processed
+HM201	L000233	SA24576	Morocco	CC192	INRA-Montpellier	Processed
+HM202	L000226	SA25941	Italy	CC192	INRA-Montpellier	Processed
+HM203	L000167	SA27176	Greece	CC192	INRA-Montpellier	Processed
+HM204	L000172	SA27185	Italy	CC192	INRA-Montpellier	Processed
+HM205	L000212	SA28375	Portugal	CC192	INRA-Montpellier	Processed
+HM206	L000650	Salse57A	France	CC192	INRA-Montpellier	Processed
+HM207		Caliph				Processed
+HM208		Paraggio				Processed
+HM209		Sephi				Processed
+HM210		TN1.1	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM211		TN1.17	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM212		TN1.3	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM213		TN7.11	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM214		TN7.13	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM215		TN7.17	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM216		TN7.18	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM217		TN7.19	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM218		TN7.2	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM219		TN7.20	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM220		TN7.22	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM221		TN7.23	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM222		TN7.4	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM223		TN8.15	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM224		TN8.21	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM225		TN8.22	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM226		TN8.23	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM227		TN8.24	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM228		TN8.25	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM229		TN8.28	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM230		TN8.4	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM231		TN8.5	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM232		TN9.12	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM233		TN9.15	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM234		TN9.17	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM235		TN9.20	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM236		TN9.21	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM237		TN9.24	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM238		TN9.5	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM239		TN1.5	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM240		TN1.13	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM241		TN1.15	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM242		TN1.16	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM243		TN1.18	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM244		TN9.3	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM245		TN9.4	Tunisia	Tunisian lines	Sergey Noujdine, USC	Processed
+HM246		Chateauneu family 1	France		Katy Heath, UIUC	Processed
+HM247		Chateauneu family 4	France		Katy Heath, UIUC	Processed
+HM248		Lanautique family 3	France		Katy Heath, UIUC	Processed
+HM249	Core01	PI660363 SSD	Portugal	M. truncatula	USDA-ARS, Washington	Processed
+HM250	Core02	PI660423 SSD	Spain	M. murex	USDA-ARS, Washington	Processed
+HM251	Core04	PI660386 SSD	Cyprus	M. truncatula	USDA-ARS, Washington	Processed
+HM252	Core05	PI660406 SSD	Germany	M. turbinata	USDA-ARS, Washington	Processed
+HM253	Core06	PI660496 SSD	France	M. truncatula	USDA-ARS, Washington	Processed
+HM254	Core07	PI319051 SSD	Spain	M. truncatula	USDA-ARS, Washington	Processed
+HM255	Core08	PI505437 SSD	Spain	M. murex	USDA-ARS, Washington	Processed
+HM256	Core09	PI442895 SSD	Australia	M. truncatula	USDA-ARS, Washington	Processed
+HM257	Core10	PI464815 SSD	Turkey	M. truncatula	USDA-ARS, Washington	Processed
+HM258	Core11	PI384655 SSD	Morocco	M. littoralis	USDA-ARS, Washington	Processed
+HM259	Core12	PI577599 SSD	Greece	M. truncatula	USDA-ARS, Washington	Processed
+HM260	Core13	PI516934 SSD	Morocco	M. truncatula	USDA-ARS, Washington	Processed
+HM261	Core14	PI535618 SSD	Tunisia	M. truncatula	USDA-ARS, Washington	Processed
+HM262	Core15	PI564941 SSD	Morocco	M. truncatula	USDA-ARS, Washington	Processed
+HM263	Core16	PI566889 SSD	Turkey	M. murex	USDA-ARS, Washington	Failed QA
+HM264	Core17	PI660409 SSD	Italy	M. truncatula	USDA-ARS, Washington	Processed
+HM265	Core18	PI660366 SSD	Italy	M. truncatula	USDA-ARS, Washington	Failed QA
+HM266	Core19	PI660450 SSD	Algeria	M. truncatula	USDA-ARS, Washington	Processed
+HM267	Core20	PI660437 SSD	Algeria	M. truncatula	USDA-ARS, Washington	Processed
+HM268	Core21	PI660438 SSD	Algeria	M. truncatula	USDA-ARS, Washington	Processed
+HM269	Core22	PI660470 SSD		M. truncatula	USDA-ARS, Washington	Processed
+HM270	Core23	PI493297 SSD	Portugal	M. truncatula	USDA-ARS, Washington	Processed
+HM271	Core24	PI384664 SSD	Morocco	M. truncatula	USDA-ARS, Washington	Processed
+HM272	Core25	PI660468 SSD	Algeria	M. murex	USDA-ARS, Washington	Failed QA
+HM273	Core26	PI535614 SSD	Tunisia	M. truncatula	USDA-ARS, Washington	Processed
+HM274	Core27	PI577626 SSD	Algeria	M. murex	USDA-ARS, Washington	Processed
+HM275	Core28	PI516949 SSD	Morocco	M. truncatula	USDA-ARS, Washington	Processed
+HM276	Core29	PI577627 SSD	Algeria	M. truncatula	USDA-ARS, Washington	Processed
+HM277	Core30	PI577621 SSD	Algeria	M. truncatula	USDA-ARS, Washington	Processed
+HM278	Core31	PI577635 SSD	France	M. truncatula	USDA-ARS, Washington	Processed
+HM279	Core32	PI660460 SSD	Morocco	M. truncatula	USDA-ARS, Washington	Processed
+HM280	Damas lines	D1.2.3	France	Damas lines	ENSAT-Toulouse	Processed
+HM281	Damas lines	D2.2.2	France	Damas lines	ENSAT-Toulouse	Failed QA
+HM282	Damas lines	D3.3.3	France	Damas lines	ENSAT-Toulouse	Processed
+HM283	Damas lines	D4.2.1	France	Damas lines	ENSAT-Toulouse	Processed
+HM284	Damas lines	D5.3.1	France	Damas lines	ENSAT-Toulouse	Processed
+HM285	Damas lines	D6.2.1	France	Damas lines	ENSAT-Toulouse	Processed
+HM286	Damas lines	D7.1.3	France	Damas lines	ENSAT-Toulouse	Processed
+HM287	Core34	PI577607 SSD	Lebanon	M. truncatula	USDA-ARS, Washington	Processed
+HM288	Core35	PI577611 SSD	Germany	M. truncatula	USDA-ARS, Washington	Processed
+HM289	Core36	PI577617 SSD	Greece	M. truncatula	USDA-ARS, Washington	Processed
+HM290	Core37	PI577640 SSD	U.S.	M. truncatula	USDA-ARS, Washington	Processed
+HM291	Core38	PI577648 SSD	Morocco	M. truncatula	USDA-ARS, Washington	Processed
+HM292	Core39	PI660360 SSD	France	M. truncatula	USDA-ARS, Washington	Processed
+HM293	Core40	PI660411 SSD	Italy	M. truncatula	USDA-ARS, Washington	Processed
+HM294	Core41	PI660433 SSD	Algeria	M. truncatula	USDA-ARS, Washington	Processed
+HM295	Core42	PI660442 SSD	Algeria	M. truncatula	USDA-ARS, Washington	Processed
+HM296	Core43	PI660444 SSD	Algeria	M. truncatula	USDA-ARS, Washington	Processed
+HM297	Core44	PI660447 SSD	Algeria	M. truncatula	USDA-ARS, Washington	Processed
+HM298	Core45	PI660448 SSD	Algeria	M. truncatula	USDA-ARS, Washington	Processed
+HM299	Core46	PI660456 SSD	Morocco	M. truncatula	USDA-ARS, Washington	Processed
+HM300	Core47	PI660488 SSD	Italy	M. truncatula	USDA-ARS, Washington	Processed
+HM301	Core48	PI660494 SSD	Italy	M. truncatula	USDA-ARS, Washington	Processed
+HM302	Core49	PI283662 SSD	Italy	M. truncatula	USDA-ARS, Washington	Processed
+HM303	Core50	PI384636 SSD	Morocco	M. truncatula	USDA-ARS, Washington	Processed
+HM304	Core51	PI384660 SSD	Morocco	M. truncatula	USDA-ARS, Washington	Processed
+HM305	Core52	PI384662 SSD	Morocco	M. truncatula	USDA-ARS, Washington	Processed
+HM306	Core53	PI493295 SSD	Poland	M. truncatula	USDA-ARS, Washington	Processed
+HM307	Core54	PI516927 SSD	Morocco	M. truncatula	USDA-ARS, Washington	Processed
+HM308	Core55	PI516933 SSD	Morocco	M. truncatula	USDA-ARS, Washington	Processed
+HM309	Core56	PI516939 SSD	Morocco	M. truncatula	USDA-ARS, Washington	Processed
+HM310	Core57	PI535651 SSD	Tunisia	M. truncatula	USDA-ARS, Washington	Processed
+HM311	Core58	PI535752 SSD	Morocco	M. truncatula	USDA-ARS, Washington	Processed
+HM312	Core59	PI577609 SSD	Sweden	M. truncatula	USDA-ARS, Washington	Processed
+HM313	Core60	PI660408 SSD	Canada	M. truncatula	USDA-ARS, Washington	Processed
+HM314	Core61	PI660361 SSD	Greece	M. truncatula	USDA-ARS, Washington	Processed
+HM315	Core62	PI660387 SSD	France	M. truncatula	USDA-ARS, Washington	Processed
+HM316	Core63	PI660421 SSD	Australia	M. truncatula	USDA-ARS, Washington	Processed
+HM317	Core64	PI535615 SSD	Tunisia	M. truncatula	USDA-ARS, Washington	Processed
+HM318		PI495200	France, Corsica	M. arabica	USDA-ARS, Washington	Processed
+HM319		PI504540	Greece, Aegan island	M. arborea	USDA-ARS, Washington	Processed
+HM320		PI440491	Russia, Stavropol	M. cancellata	USDA-ARS, Washington	Processed
+HM321		PI534177	Bulgaria	M. constricta	USDA-ARS, Washington	Processed
+HM322		PI498790	Greece	M. coronata	USDA-ARS, Washington	Processed
+HM323		PI495278	Lebanon	M. doliata	USDA-ARS, Washington	Processed
+HM324		PI385014	Tunisia	M. italica	USDA-ARS, Washington	Processed
+HM325		PI498902	Morocco	M. laciniata	USDA-ARS, Washington	Processed
+HM326		PI251834	Italy	M. lupulina	USDA-ARS, Washington	Processed
+HM327		PI499080	Turkey	M. minima	USDA-ARS, Washington	Processed
+HM328		PI495379	France, Corsica	M. murex	USDA-ARS, Washington	Processed
+HM329		PI495414	Turkey, Icel	M. noeana	USDA-ARS, Washington	Processed
+HM330		PI566877	Italy, Sicily	M. polymorpha	USDA-ARS, Washington	Processed
+HM331		PI495517	Greece	M. rigidula	USDA-ARS, Washington	Processed
+HM332		PI534250	Turkey, Ankara	M. rididuloides	USDA-ARS, Washington	Processed
+HM333		PI495581	Turkey, Icel	M. rotata	USDA-ARS, Washington	Processed
+HM334		PI535555	Tunisia	M. turbinata	USDA-ARS, Washington	Processed
+HM335		PI568100	China, Nei Monggol	M. ruthenica	USDA-ARS, Washington	Processed
+HM336		PI314275	Uzbekistan	M. sativa ssp. caerulea	USDA-ARS, Washington	Processed
+HM337		PI495434	France, Corsica	M. praecox	USDA-ARS, Washington	Processed
+HM338		PI537240	Algeria	M. soleirolii	USDA-ARS, Washington	Processed
+HM339		PI577445	Italy, Abruzzi	M. prostrata	USDA-ARS, Washington	Processed 
