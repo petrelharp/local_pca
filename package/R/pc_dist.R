@@ -8,15 +8,14 @@
 #' \code{values} is replaced by \code{values/sqrt(sum(values^2))}.
 #'
 #' @param x List as output by eigen_windows().
-#' @param normalize Normalize the matrices to have the same norm?
+#' @param normalize Normalize the matrices to have the same norm?  Can be "L1" (default), "L2", or FALSE.
 #' @param mc.cores If this is greater than 1, parallel::mclapply will be used.
 #' @return A symmetric, numeric matrix with number of columns equal to the number of columns in eigen.win$values.
 #' @export
-pc_dist <- function( x, normalize=TRUE, mc.cores=1 ) {
+pc_dist <- function( x, normalize="L1", mc.cores=1 ) {
     this.lapply <- if (mc.cores>1) { function (...) parallel::mclapply(...,mc.cores=mc.cores) } else { lapply }
-    if (normalize) {
-        x$values <- sweep( x$values, 2, sqrt(colSums(x$values^2)), "/" )
-    }
+    if (normalize=="L1") { x$values <- sweep( x$values, 2, abs(colSums(x$values)), "/" ) }
+    if (normalize=="L2") { x$values <- sweep( x$values, 2, sqrt(colSums(x$values^2)), "/" ) }
     n <- ncol(x$values)
     k <- nrow(x$values)
     # should be symmetric, oh well.

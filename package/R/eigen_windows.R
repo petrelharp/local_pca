@@ -35,7 +35,7 @@ eigen_windows <- function (
 
 #' Sets up eigen_windows_winfn to work on a matrix.
 eigen_windows_matrix <- function (
-            data, k, win
+            data, k, win,
             do.windows=NULL,
             mc.cores ) {
     win.fn <- function(n,...){ data[seq( ((n-1)*win+1), (n*win) ),] }

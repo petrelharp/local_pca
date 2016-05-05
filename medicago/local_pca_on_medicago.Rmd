@@ -2,6 +2,8 @@
 
 ```{r setup}
 devtools::load_all("../package")
+library(Matrix)
+library(colorspace)
 ```
 
 # Data
@@ -35,7 +37,7 @@ bcftools query -l chr1-filtered-set-2014Apr15.bcf > samples_in_bcf.txt
 ```
 then compare to the table of information:
 ```{r sample_info}
-samples <- read.table("data/sample_info.tsv", sep="\t", header=TRUE)
+samples <- read.table("data/sample_info.tsv", sep="\t", header=TRUE,stringsAsFactors=FALSE)
 bcf.samples <- scan("data/samples_in_bcf.txt", what='char')
 setdiff( bcf.samples , samples$ID )
 ```
@@ -43,7 +45,8 @@ For some reason, the bcf files refer to `HM020-I` while in the the sample info f
 We'll assume they are the same (but keep an eye on that one!).
 Here's where they're all from:
 ```{r show_sample_info}
-bcf.samples <- gsub("-I","",bcf.samples)
+wierd.names <- grep("-I",bcf.samples,value=TRUE)
+samples$ID[ match(gsub("-I","",wierd.names),wierd.names) ] <- wierd.names
 samples <- droplevels(subset(samples, ID %in% bcf.samples))
 sort( table(samples$Country.of.Origin) )
 ```
@@ -76,7 +79,7 @@ close(bcf.con)
 # now use bcftools to pull out sites we want
 win.fn <- function (n,win.snps=100) {
     sites <- list( chr1=bcf.sites[[1]][seq(1+(n-1)*win.snps,length.out=win.snps)] )
-    regions <- region_string(sites)
+    regions <- enclosing_region(sites)
     query_genotypes( bcf.file, regions, get.indivs )
 }
 win.fn(20,10)  # get the 20th window of 10 SNPs
@@ -88,7 +91,7 @@ Note that this version assumes we have only one chromosome, starting at zero.
 win.fn.bp <- function (n,win.bp=200) {
     win.start <- 1+(n-1)*win.bp
     win.end <- win.start + win.bp-1
-    regions <- paste0( "chr1", ":", win.start, ",", win.end )
+    regions <- data.frame( chrom="chr1", start=win.start, end=win.end )
     query_genotypes( bcf.file, regions, get.indivs )
 }
 win.fn.bp(20,50)
@@ -102,8 +105,7 @@ Now we are set up to use `lostruct::eigen_windows()` to compute and write out th
 Here's how to do that for the first 4 windows of length 100 SNPs, with the simplified version: just four individuals.
 ```{r simple_snp_pcas}
 eigen_windows( 
-        data=bcf.file,
-        win.fn=function(data,n,...){ win.fn(n,...) },
+        data=win.fn,
         do.windows=1:4,
         k=2,
         win.snps=100
@@ -112,8 +114,7 @@ eigen_windows(
 Here's the same thing on windows of length 1000bps:
 ```{r simple_bp_pcas}
 eigen_windows( 
-        data=bcf.file,
-        win.fn=function(data,n,...){ win.fn.bp(n,...) },
+        data=win.fn.bp,
         do.windows=1:4,
         k=2,
         win.bp=1000
@@ -126,8 +127,56 @@ eigen_windows(
 Now let's see how it goes to do this for an entire chromosome.
 On chromosome 1 there are about 5 million SNPs, so we'll do it in windows of 5,000.
 First, windows by SNPs.
-```{r lpca_chr1}
+```{r lpca_chr1_snp, cache=TRUE}
 sites <- vcf_positions(bcf.file)
-win.fn.snp <- vcf_windower(bcf.file, size=5e3, type="snp", sites=sites, samples=get.indivs) 
-snp.pca <- eigen_windows(win.fn.snp,k=2)
+do.indivs <- sample( samples$ID, 50 )
+win.fn.snp <- vcf_windower(bcf.file, size=5e3, type="snp", sites=sites, samples=do.indivs) 
+system.time( snp.pca <- eigen_windows(win.fn.snp,k=2) )
+```
+It takes about 2 minutes to do chromosome 1, for ten individuals, on phoebe.
+Next, we compute the distance between windows with `pc_dist()` and do MDS visualization on the result.
+This is just with ten samples, so we don't expect a real result, but let's check it all works:
+```{r mds_chr1_snp, cache=TRUE, depends="lpca_chr1_snp"}
+system.time( chr1.pcdist <- pc_dist( snp.pca ) )
+chr1.mds <- cmdscale( chr1.pcdist, eig=TRUE, k=4 )
+colnames(chr1.mds$points) <- paste("MDS coordinate", 1:ncol(chr1.mds$points))
+```
+
+## Visualization
+
+Here's the results:
+```{r show_results_snp}
+# the distance matrix itself
+image( Matrix( chr1.pcdist ) )
+# the MDS results
+win.regions <- region(win.fn.snp)()
+win.mids <- (win.regions$start+win.regions$end)/2
+chrom.cols <- rainbow_hcl(128, c=90, end=.9*360)[as.numeric(cut(win.mids,128))]
+pairs( chr1.mds$points, pch=20, col=adjustcolor(chrom.cols,0.75) )
+```
+
+Now let's extract the extreme windows in the MDS plot:
+```{r get_corners}
+mincirc <- enclosing_circle( chr1.mds$points[,1:2] )
+corners <- corners( chr1.mds$points[,1:2], prop=.05 )
+corner.cols <- c("red","blue","purple")
+ccols <- rep("black",nrow(chr1.mds$points))
+for (k in 1:ncol(corners)) {
+    ccols[ corners[,k] ] <- corner.cols[k]
+}
+plot( chr1.mds$points[,1:2], pch=20, col=adjustcolor(ccols,0.75), 
+        xlab="MDS coordinate 1", ylab="MDS coordinate 2", 
+        xlim=mincirc$ctr[1]+c(-1,1)*mincirc$rad,
+        ylim=mincirc$ctr[2]+c(-1,1)*mincirc$rad )
+plot_circle( mincirc, col='red' )
+points( mincirc$three, col='red', cex=2 )
+```
+
+... and look at where these lie along the chromosomes
+```{r show_corners}
+for (k in 1:ncol(chr1.mds$points)) {
+    plot( win.mids/1e6, chr1.mds$points[,k], pch=20, 
+            xlab="Position (Mb)", ylab=paste("MDS coordinate",k),
+            col=adjustcolor(ccols,0.75) )
+}
 ```
