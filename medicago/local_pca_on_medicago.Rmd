@@ -129,4 +129,5 @@ First, windows by SNPs.
 ```{r lpca_chr1}
 sites <- vcf_positions(bcf.file)
 win.fn.snp <- vcf_windower(bcf.file, size=5e3, type="snp", sites=sites, samples=get.indivs) 
+snp.pca <- eigen_windows(win.fn.snp,k=2)
 ```
