@@ -1,5 +1,8 @@
 # Local PCA on *Medicago truncatula* Hapmap
 
+```{r setup}
+devtools::load_all("../package")
+```
 
 # Data
 
@@ -32,8 +35,8 @@ bcftools query -l chr1-filtered-set-2014Apr15.bcf > samples_in_bcf.txt
 ```
 then compare to the table of information:
 ```{r sample_info}
-samples <- read.table("sample_info.tsv", sep="\t", header=TRUE)
-bcf.samples <- scan("samples_in_bcf.txt", what='char')
+samples <- read.table("data/sample_info.tsv", sep="\t", header=TRUE)
+bcf.samples <- scan("data/samples_in_bcf.txt", what='char')
 setdiff( bcf.samples , samples$ID )
 ```
 For some reason, the bcf files refer to `HM020-I` while in the the sample info file there is `HM020`.
@@ -64,33 +67,17 @@ bcftools query -f '%CHROM\t%POS[\t%GT]\n' -r chr1:1-400 chr1-filtered-set-2014Ap
 To get windows out of the VCF file and recode them, we'll just pipe a call to `bcftools`.
 Here's a dummy version that will pull out windows of 100 SNPs for only the first four individuals.
 ```{r win_fn}
-get.indivs <- "'HM001,HM002,HM003,HM004'"
-bcf.file <- "chr1-filtered-set-2014Apr15.bcf"
+get.indivs <- c("HM001","HM002","HM003","HM004")
+bcf.file <- "data/chr1-filtered-set-2014Apr15.bcf"
 # first read in the info about sites
-bcf.con <- pipe(paste("bcftools query -f '%CHROM\\t%POS\\n' -r chr1:1-100000",bcf.file),open="r")
-bcf.sites <- read.table(bcf.con, sep='\t')
-colnames(bcf.sites) <- c("chrom","pos")
+bcf.con <- pipe(paste("bcftools query -f '%POS\\n' -r chr1:1-100000",bcf.file),open="r")
+bcf.sites <- list( chr1=scan(bcf.con) )
 close(bcf.con)
 # now use bcftools to pull out sites we want
-#' This gives a string of the form "chr:start-end,chr:start-end" as required by bcftools
-get_regions <- function (sites) {
-    if (nrow(sites)==0) { return( NULL ) }
-    pos <- as.numeric( sites[,2] )
-    do.call( paste, c( tapply( 1:nrow(sites), sites[,1], function (kk) {
-                            paste0( sites[kk[1],1], ":", min(pos[kk]), "-", max(pos[kk]) )
-                        } ), list(sep=",") ) )
-}
-#' This will pull out bits of the bcf file corresponding to a regions string and convert it to numeric
-get_sites <- function (regions) {
-    gt.text <- data.table::fread( paste( c("bcftools", "query", "-f", "'[ %GT]\\n'", "-r", regions, "-s", get.indivs, bcf.file), collapse=" " ), header=FALSE, sep=' ', data.table=FALSE )
-    gt <- c(0,1,1,2)[match( unlist(gt.text), c("0/0","0/1","1/0","1/1") )]
-    dim(gt) <- dim(gt.text)
-    return(gt)
-}
 win.fn <- function (n,win.snps=100) {
-    sites <- bcf.sites[seq(1+(n-1)*win.snps,length.out=win.snps),]
-    regions <- get_regions(sites)
-    get_sites(regions)
+    sites <- list( chr1=bcf.sites[[1]][seq(1+(n-1)*win.snps,length.out=win.snps)] )
+    regions <- region_string(sites)
+    query_genotypes( bcf.file, regions, get.indivs )
 }
 win.fn(20,10)  # get the 20th window of 10 SNPs
 ```
@@ -101,8 +88,8 @@ Note that this version assumes we have only one chromosome, starting at zero.
 win.fn.bp <- function (n,win.bp=200) {
     win.start <- 1+(n-1)*win.bp
     win.end <- win.start + win.bp-1
-    regions <- get_regions( cbind( chrom="chr1", pos=c(win.start,win.end) ) )
-    get_sites(regions)
+    regions <- paste0( "chr1", ":", win.start, ",", win.end )
+    query_genotypes( bcf.file, regions, get.indivs )
 }
 win.fn.bp(20,50)
 ```
@@ -133,3 +120,13 @@ eigen_windows(
     )
 ```
 
+
+## Doing this for everything
+
+Now let's see how it goes to do this for an entire chromosome.
+On chromosome 1 there are about 5 million SNPs, so we'll do it in windows of 5,000.
+First, windows by SNPs.
+```{r lpca_chr1}
+sites <- vcf_positions(bcf.file)
+win.fn.snp <- vcf_windower(bcf.file, size=5e3, type="snp", sites=sites, samples=get.indivs) 
+```
