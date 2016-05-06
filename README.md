@@ -8,20 +8,55 @@ and then running `library(devtools); load_all("PATH/TO/THIS/DIRECTORY/package")`
 
 The general order to see the code is 
 
-1. recode
-2. cov
-3. PCA
-4. distance
-5. MDS
+1. recode : turn bases into numbers
+2. PCA : find local PCs
+3. distance : compute distance matrix between windows from local PCs
+4. MDS : visualize the result
 
 ## POPRES (human, SNP chip)
 
-Chromosome 1 is the example given .
+Chromosome 1 is the example given.  See also [popres_example.R](popres/popres_example.R) for an example of some steps using the package.
+
+- [POPRES_SNPdata_recode12.R](popres/POPRES_SNPdata_recode12.R) : recodes the TPED as numeric
+- [POPRES_cov.R](popres/POPRES_cov.R) : computes covariance matrix for the entire chromsome 1
+- [POPRES_PCA_win100.R](popres/POPRES_PCA_win100.R) : computes local PCs
+- [POPRES_jackknife_var.R](popres/POPRES_jackknife_var.R) : estimates SE of local PCs
+- [POPRES_distance.R](popres/POPRES_distance.R) : computes distance matrix from local PCs
+- [POPRES_MDS.R](popres/POPRES_MDS.R) : finds and plots MDS visualization of distance matrix
 
 ## DPGP (Drosophila)
 
 Chromosome 3L is the example given .
 
-## Medicago
+- [DPGP_recode_and_cov.R](dpgp/DPGP_recode_and_cov.R) : recodes data as numeric and computes whole-chromosome covariance matrix
+- [DPGP_PCA_plot.R](dpgp/DPGP_PCA_plot.R) : plots PCs for entire 3L
+- [DPGP_PCA_win103.R](dpgp/DPGP_PCA_win103.R) : computes local PCs along 3L in windows of 1000 SNPs
+- [DPGP_var_between_win.R](dpgp/DPGP_var_between_win.R) : computes variance of PCs between windows
+- [DPGP_jackknife_var.R](dpgp/DPGP_jackknife_var.R) : does jackknife estimate of SE for PCs on windows of 1000 SNPs
+- [DPGP_distance.R](dpgp/DPGP_distance.R) : computes distance matrix from local PCs
+- [DPGP_MDS_1d.R](dpgp/DPGP_MDS_1d.R) : computes and plots MDS plots from distance matrix
+- [DPGP_get_extreme_points.R](dpgp/DPGP_get_extreme_points.R) : identifies extreme points (with interaction)
+- [DPGP_combine_extremes_and_get_cov.R](dpgp/DPGP_combine_extremes_and_get_cov.R) : combines each of three sets of extreme windows and computes covariances for each
+
+### [Medicago](medicago/) (*Medicago truncatula* hapmap)
 
 For Medicago, it calculates the pairwise distance for all 8 chromosome together and then apply MDS and use subset of the whole MDS result for each chromosome. 
+
+- [Medicago_VCF_recode.py](medicago/Medicago_VCF_recode.py) : recodes VCF file as numeric
+- [Medicago_recode_and_cov.R](medicago/Medicago_recode_and_cov.R) : computes covariance matrix for (entire) chromosome 1
+- [Medicago_PCA_win104.R](medicago/Medicago_PCA_win104.R) : computes local PCs for chromosome 1
+- [Medicago_distance_all_chr.R](medicago/Medicago_distance_all_chr.R) : computes a distance matrix from PC information
+- [Medicago_MDS.R](medicago/Medicago_MDS.R) : computes and plots MDS plots from the distance matrix
+
+# Using the R package
+
+The example scripts in the directories above mostly work *without* the R package.
+To start using the code on your own data, have a look at these files:
+
+* [A quick example](popres/popres_example.R) : in four lines of code, reads in chromosome 22 from a TPED, and does local PCA.
+
+* [Setting up the medicago data](medicago/medicago_data_setup.html) : after documenting where the data are from,
+    does local PCA on a small subset of the whole dataset, to establish how the functions work.
+
+* [Script for medicago analysis](medicago/run_on_medicago.R) : an Rscript to run the same analysis on medicago data,
+    varying various parameters by command-line options: run `Rscript run_on_medicago.R --help` for a list.

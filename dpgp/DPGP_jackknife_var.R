@@ -6,8 +6,7 @@
 #PBS -l nodes=1:ppn=1
 #PBS -l mem=100gb,pmem=100gb,vmem=100gb
 win <- 1000
-coded <- read.table("/home/cmb-11/plr/hli465/Dpgp/all_samples_Chr3L/coded_data_for_all_samples_seqs_both_low_NAs_Chr3L_with_S
-NP_Pos.txt",header=TRUE)
+coded <- read.table("/home/cmb-11/plr/hli465/Dpgp/all_samples_Chr3L/coded_data_for_all_samples_seqs_both_low_NAs_Chr3L_with_SNP_Pos.txt",header=TRUE)
 k <- 1:(floor(nrow(coded)/win))
 
 get.eigenvector <- function(x, d) {
