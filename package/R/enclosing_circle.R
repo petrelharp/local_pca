@@ -11,7 +11,13 @@
 #' @return A named list with entries \code{ctr} (the coordinates of the center), \code{rad} (the radius),
 #' \code{three} (the three points in xy that define the circle),
 #' and \code{index} (the indices of those three points in xy).
-enclosing_circle <- function (xy) { getMinCircle(xy) }
+enclosing_circle <- function (xy) { 
+    # deal with NAs, which chull doesn't like.
+    na.inds <- is.na(xy[,1]) | is.na(xy[,2])
+    out <- getMinCircle(xy[!na.inds,]) 
+    out$index <- match( out$index, cumsum(!na.inds) )
+    return(out)
+}
 
 #' @documentIn enclosing_circle Plots a circle.
 plot_circle <- function (circ,n=200, plot.it=TRUE, ...) {
@@ -125,7 +131,7 @@ getMinCircle <- function(xy) {
     dst2ctr <- dist(rbind(ctr, hPts[-idx, ]))      # distances to center
     if(all(as.matrix(dst2ctr)[-1, 1] <= rad)) {    # if all <= rad, we're done
         tri <- rbind(hPts[idx, ], ctr)
-        return(getCircleFrom3(tri))
+        return( c( getCircleFrom3(tri), list(three=hPts[idx,], index=H[idx]) ) )
     }
 
     ## min circle touches hull in three points - Skyum algorithm
@@ -148,6 +154,6 @@ getMinCircle <- function(xy) {
         if(isBiggerThan90(Smax)) { S <- S[-mIdx] } else { break }
     }
 
-    return( c( getCircleFrom3(Smax), list(three=Smax, index=c(S[c(prev[mIdx],mIdx,post[mIdx])])) ) )
+    return( c( getCircleFrom3(Smax), list(three=Smax, index=S[c(prev[mIdx],mIdx,post[mIdx])]) ) )
 }
 
