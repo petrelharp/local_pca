@@ -11,15 +11,17 @@
 #' @param do.windows Vector of integers that correspond to the windows used.
 #' @param win If \code{data} is a matrix, each contiguous block of \code{win} rows of the matrix \code{data} will be one window.
 #' @param mc.cores If this is greater than 1, parallel::mclapply will be used.
+#' @param return.mat Return a single matrix instead of values and vectors split out?
 #' @param ... Other parameters to be passed to \code{win.fn}.
 #' @return A named list, with components
 #'   $values : A numeric matrix of eigenvalues, one column for each window and k rows.
-#'   $vectors : A numeric matrix, one column for each windows, having the eigenvectors in order (so it has k * ncol(matrix) rows).
+#'   $vectors : A numeric matrix, one column for each window, having the eigenvectors in order (so it has k * ncol(matrix) rows).
 #' @export
-eigen_windows <- function ( 
+eigen_windows <- function (
             data, k,
             do.windows=NULL,
-            win, mc.cores=1, ... ) {
+            win, mc.cores=1, 
+            return.mat=FALSE, ... ) {
     this.lapply <- if (mc.cores>1) { function (...) parallel::mclapply(...,mc.cores=mc.cores) } else { lapply }
     eigen.mat <- if (inherits(data,"function")) {
                 eigen_windows_winfn( win.fn=data, do.windows=do.windows, k=k, mc.cores=mc.cores, ... )
@@ -27,10 +29,15 @@ eigen_windows <- function (
                 if (missing(win)) { stop("Must supply either a function or a matrix and a value for win.") }
                 eigen_windows_matrix( data=data, win=win, do.windows=do.windows, k=k, mc.cores=mc.cores )
             }
-    return( list(
-            values = eigen.mat[1:k,],
-            vectors = eigen.mat[-(1:k),]
-        ) )
+    return( if (return.mat) { 
+               eigen.mat 
+           } else {
+               list(
+                    values = eigen.mat[1:k,],
+                    vectors = eigen.mat[-(1:k),]
+                ) 
+           }
+       )
 }
 
 #' Sets up eigen_windows_winfn to work on a matrix.

@@ -14,14 +14,28 @@ The general order to see the code is
 4. distance
 5. MDS
 
-## POPRES (human, SNP chip)
+There are standalone examples for each of the three datasets studied:
+
+### [POPRES](popres/) (*Homo sapiens*, SNP chip data from a few worldwide populations)
 
 Chromosome 1 is the example given .
 
-## DPGP (Drosophila)
+### [DPGP](dpgp/) (*Drosophila melanogaster* population genome project)
 
 Chromosome 3L is the example given .
 
-## Medicago
+### [Medicago](medicago/) (*Medicago truncatula* hapmap)
 
 For Medicago, it calculates the pairwise distance for all 8 chromosome together and then apply MDS and use subset of the whole MDS result for each chromosome. 
+
+
+# Using the R package
+
+The example scripts in the directories above mostly work *without* the R package.
+To start using the code on your own data, have a look at these files:
+
+* [Setting up the medicago data](medicago/medicago_data_setup.html) : after documenting where the data are from,
+    does local PCA on a small subset of the whole dataset, to establish how the functions work.
+
+* [Script for medicago analysis](medicago/run_on_medicago.R) : an Rscript to run the same analysis on medicago data,
+    varying various parameters by command-line options: run `Rscript run_on_medicago.R --help` for a list.
