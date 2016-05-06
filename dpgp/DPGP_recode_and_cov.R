@@ -29,10 +29,12 @@ rownames(coded)<-rownames(data)
 write.table(coded,"/home/cmb-11/plr/hli465/Dpgp/all_samples_Chr3L/coded_data_all_samples_Chr3L_with_SNP_Pos.txt",sep="\t")
 coded=data.matrix(coded)
 b=apply(coded,2,function(x) sum(is.na(x))/length(x))
-kk=b<0.08
+# remove individuals with more than this much missing data
+kk=(b<0.08)
 coded=coded[,kk]
 a=apply(coded,1,function(x) sum(is.na(x))/length(x))
-k=a<0.2
+# remove sites with more than this much missing data
+k=(a<0.2)
 coded=coded[k,]
 write.table(coded,"/home/cmb-11/plr/hli465/Dpgp/all_samples_Chr3L/coded_data_for_all_samples_seqs_both_low_NAs_Chr3L_with_SNP_Pos.txt",sep="\t")
 data2=as.matrix(coded)

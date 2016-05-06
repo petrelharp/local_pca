@@ -28,7 +28,7 @@ Chromosome 1 is the example given.  See also [popres_example.R](popres/popres_ex
 
 Chromosome 3L is the example given .
 
-- [DPGP_recode_and_cov.R](dpgp/DPGP_recode_and_cov.R) : recodes data as numeric and computes whole-chromosome covariance matrix
+- [DPGP_recode_and_cov.R](dpgp/DPGP_recode_and_cov.R) : recodes data as numeric, removes individuals with more than 8% missing data, sites with more than 20% missing data, and computes whole-chromosome covariance matrix
 - [DPGP_PCA_plot.R](dpgp/DPGP_PCA_plot.R) : plots PCs for entire 3L
 - [DPGP_PCA_win103.R](dpgp/DPGP_PCA_win103.R) : computes local PCs along 3L in windows of 1000 SNPs
 - [DPGP_var_between_win.R](dpgp/DPGP_var_between_win.R) : computes variance of PCs between windows
