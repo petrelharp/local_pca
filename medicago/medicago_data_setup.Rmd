@@ -51,6 +51,30 @@ samples <- droplevels(subset(samples, ID %in% bcf.samples))
 sort( table(samples$Country.of.Origin) )
 ```
 
+## Statistics by chromosome
+
+We should know what the density of SNPs looks like, for choosing window sizes.
+Chromosome lengths are from the VCF files.
+```{r snp_density, cache=TRUE}
+chrom.lens <- c( chr1=52991155, chr2=45729672, chr3=55515152, chr4=56582383, chr5=43630510, chr6=35275713, chr7=49172423, chr8=45569985, chl_Mt=124033 )
+chrom.stats <- sapply( paste0("chr",1:8), function (chrom) {
+            bcf.file <- file.path("data",sprintf("%s-filtered-set-2014Apr15.bcf",chrom))
+            sites <- vcf_positions(bcf.file)
+            spacings <- diff(sites[[chrom]])
+            out <- c( nsnps = length(sites[[chrom]]),
+                    nbp = chrom.lens[chrom],
+                    spacing.mean = mean(spacings),
+                    spacing = quantile(spacings,.05),
+                    spacing = quantile(spacings,.25),
+                    spacing = quantile(spacings,.50),
+                    spacing = quantile(spacings,.75),
+                    spacing = quantile(spacings,.95),
+                    spacing.max = max(spacings,.95) )
+            return(out)
+        } )
+floor(chrom.stats)
+```
+
 ## Recoding
 
 Recall that VCF files have the following columns:
@@ -205,3 +229,4 @@ for (k in 1:ncol(corner.pcs$vectors)) {
 }
 legend('topright', col=country.cols, pch=country.pch, legend=country.names)
 ```
+
