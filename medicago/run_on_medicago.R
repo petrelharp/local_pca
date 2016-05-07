@@ -30,8 +30,9 @@ opt <- parse_args(OptionParser(option_list=option_list,description=usage))
 if (is.null(opt$outdir)) { opt$outdir <- file.path("lostruct", sprintf( "results_type_%s_size_%d_jobid_%s", opt$type, opt$size, opt$jobid ) ) }
 if (is.null(opt$type) || is.null(opt$size)) { stop(usage) }
 
+opt$start.time <- Sys.time()
 print(opt) # this will go in the logfile
-Sys.time()
+cat( jsonlite::toJSON( opt, pretty=TRUE ), file=file.path( opt$outdir, "config.json" ) )
 
 dir.create( opt$outdir, showWarnings=FALSE, recursive=TRUE )
 

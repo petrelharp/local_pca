@@ -4,6 +4,7 @@
 devtools::load_all("../package")
 library(Matrix)
 library(colorspace)
+options(width=100)
 ```
 
 # Data
@@ -74,6 +75,20 @@ chrom.stats <- sapply( paste0("chr",1:8), function (chrom) {
         } )
 floor(chrom.stats)
 ```
+
+So, thats a SNP every 10bp.
+Since we have `r length(bcf.samples)` samples,
+each local PC will take `r 1+length(bcf.samples)` doubles to record;
+a double is 8 bytes;
+so in, say 1Gb we can fit one local PC for `r floor(1e9 / (8*(1+length(bcf.samples))))` windows.
+With a total of `r sum(chrom.stats['nsnps',])` SNPs,
+that'd be `r floor(sum(chrom.stats['nsnps',])/floor(1e9 / (8*(1+length(bcf.samples)))))` SNPs per window.
+A bigger concern is the distance matrix we compute between windows
+(we don't have to save this to disk, though).
+With this many windows, that would be `r floor(1e9 / (8*(1+length(bcf.samples))))^2` floats,
+or `r floor(1e9 / (8*(1+length(bcf.samples))))^2 / 8e9` Gb.
+That's still possible, but barely.
+
 
 ## Recoding
 

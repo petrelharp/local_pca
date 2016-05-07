@@ -1,0 +1,22 @@
+---
+title: "Local PCA results"
+date: "`r date()`"
+---
+
+```{r setup, include=FALSE}
+library(lostruct)
+library(colorspace)
+library(jsonlite)
+opt <- fromJSON("config.json")
+
+    pca.file <- file.path( opt$outdir, sprintf(gsub(".bcf",".pca.csv",basename(bcf.file))) )
+    if (file.exists(pca.file)) { stop(paste("File",pca.file,"already exists! Not overwriting.")) }
+    cat("Finding PCs for", bcf.file, "and writing out to", pca.file, "\n")
+    win.fn <- vcf_windower(bcf.file, size=opt$size, type=tolower(opt$type) )
+
+win.regions <- region(win.fn.snp)()
+win.mids <- (win.regions$start+win.regions$end)/2
+chrom.cols <- rainbow_hcl(128, c=90, end=.9*360)[as.numeric(cut(win.mids,128))]
+pairs( mds.coords, pch=20, col=adjustcolor(chrom.cols,0.75) )
+
+```
