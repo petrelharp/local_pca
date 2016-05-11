@@ -11,12 +11,8 @@ y.eig <- eigen(y)
 
 elist <- function (k) {
     # transform to the format pc_dist wants
-    list(
-         values = cbind(x.eig$values[1:k],y.eig$values[1:k]),
-         vectors = cbind(
-                    as.vector( x.eig$vectors[,1:k] ),
-                    as.vector( y.eig$vectors[,1:k] )
-                 ) )
+    rbind( c(x.eig$values[1:k], as.vector( x.eig$vectors[,1:k] ) ),
+           c(y.eig$values[1:k], as.vector( y.eig$vectors[,1:k] ) ) )
 }
 
 f <- function (k,eig) {
@@ -36,9 +32,9 @@ for (k in kk) {
     # non-normalized
     ff <- sum( (f(k,x.eig) - f(k,y.eig))^2 )
     fm <- matrix(c(0,ff,ff,0),nrow=2)
-    expect_equal( fm, pc_dist(elist(k),normalize=FALSE) )
+    expect_equal( fm, pc_dist(elist(k),npc=k,normalize=FALSE) )
     # normalized
     gg <- sum( (g(k,x.eig) - g(k,y.eig))^2 )
     gm <- matrix(c(0,gg,gg,0),nrow=2)
-    expect_equal( gm, pc_dist(elist(k),normalize=TRUE) )
+    expect_equal( gm, pc_dist(elist(k),npc=k,normalize=TRUE) )
 }

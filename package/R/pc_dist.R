@@ -1,28 +1,30 @@
 #' Find Matrix of Distances Between Matrices from Eigenvector/values
 #'
-#' Given a list of sets of eigenvalues/vectors for a set of n symmetric matrices as output by eigen_windows(),
+#' Given a matrix of sets of eigenvalues/vectors for a set of n symmetric matrices as output by eigen_windows(),
 #' return the (n x n) matrix whose [i,j]th element is the Frobenius norm of the difference between the i-th and the j-th matrices,
 #' as approximated by the given eigenvalues/vectors. The approximation is in pseudocode
 #'      M = values[1] * outer(vectors[1],vectors[1]) + values[2] * outer(vectors[2],vectors[2]) + ...
 #' If \code{normalize} is TRUE, then the the matrices are normalized to have norm 1, so that in the definition of M,
 #' \code{values} is replaced by \code{values/sqrt(sum(values^2))}.
 #'
-#' @param x List as output by eigen_windows().
+#' @param x Matrix as output by eigen_windows().
+#' @param npc Number of pcas computed.
 #' @param normalize Normalize the matrices to have the same norm?  Can be "L1" (default), "L2", or FALSE.
 #' @param mc.cores If this is greater than 1, parallel::mclapply will be used.
 #' @return A symmetric, numeric matrix with number of columns equal to the number of columns in eigen.win$values.
 #' @export
-pc_dist <- function( x, normalize="L1", mc.cores=1 ) {
+pc_dist <- function( x, npc, normalize="L1", mc.cores=1 ) {
     this.lapply <- if (mc.cores>1) { function (...) parallel::mclapply(...,mc.cores=mc.cores) } else { lapply }
-    if (normalize=="L1") { x$values <- sweep( x$values, 2, abs(colSums(x$values)), "/" ) }
-    if (normalize=="L2") { x$values <- sweep( x$values, 2, sqrt(colSums(x$values^2)), "/" ) }
-    n <- ncol(x$values)
-    k <- nrow(x$values)
-    # should be symmetric, oh well.
-    emat <- function (u) { matrix(u,ncol=k) }
+    values <- x[,1:npc,drop=FALSE]
+    vectors <- x[,-(1:npc)]
+    if (normalize=="L1") { values <- sweep( values, 1, abs(rowSums(values)), "/" ) }
+    if (normalize=="L2") { values <- sweep( values, 1, sqrt(rowSums(values^2)), "/" ) }
+    n <- nrow(values)
+    # could speed this up by a factor of two taking advantage of symmetry
+    emat <- function (u) { matrix(u,ncol=npc) }
     out <- do.call( rbind, this.lapply( 1:n, function (i) {
                 sapply( 1:n, function (j) {
-                    dist_from_pcs( x$values[,i], emat(x$vectors[,i]), x$values[,j], emat(x$vectors[,j]) )
+                    dist_from_pcs( values[i,], emat(vectors[i,]), values[j,], emat(vectors[j,]) )
                 } )
             } ) )
     # symmetrize
@@ -41,7 +43,7 @@ pc_dist <- function( x, normalize="L1", mc.cores=1 ) {
 #' By the cyclic invariance of trace, if X = U^T V then
 #'    tr( A^T B ) = tr( U diag(a) U^T V diag(b) V^T ) = tr( diag(a) X diag(b) X^T )
 #'
-#' The code assumes that the vectors are orthonormal.
+#' The code assumes that vectors1 and vectors2 are each orthonormal.
 dist_from_pcs <- function (values1,vectors1,values2,vectors2) {
     # this is diag(sqrt(b)) X^T
     bXt <- sqrt(values2) * crossprod(vectors2,vectors1)

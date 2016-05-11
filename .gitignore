@@ -4,4 +4,5 @@
 *.blg
 *.log
 *.out
-
+*_cache/
+*_files/

@@ -11,17 +11,15 @@
 #' @param do.windows Vector of integers that correspond to the windows used.
 #' @param win If \code{data} is a matrix, each contiguous block of \code{win} rows of the matrix \code{data} will be one window.
 #' @param mc.cores If this is greater than 1, parallel::mclapply will be used.
-#' @param return.mat Return a single matrix instead of values and vectors split out?
 #' @param ... Other parameters to be passed to \code{win.fn}.
-#' @return A named list, with components
-#'   $values : A numeric matrix of eigenvalues, one column for each window and k rows.
-#'   $vectors : A numeric matrix, one column for each window, having the eigenvectors in order (so it has k * ncol(matrix) rows).
+#' @return A numeric matrix with one row for each window; the first k columns giving eigenvalues and each subsequent group of ncol(data) columns giving the corresponding eigenvector.
+#' The result has an attribute, "npc", which is equal to the number of eigenvalues computed (k).
 #' @export
 eigen_windows <- function (
             data, k,
             do.windows=NULL,
             win, mc.cores=1, 
-            return.mat=FALSE, ... ) {
+            ... ) {
     this.lapply <- if (mc.cores>1) { function (...) parallel::mclapply(...,mc.cores=mc.cores) } else { lapply }
     eigen.mat <- if (inherits(data,"function")) {
                 eigen_windows_winfn( win.fn=data, do.windows=do.windows, k=k, mc.cores=mc.cores, ... )
@@ -29,15 +27,16 @@ eigen_windows <- function (
                 if (missing(win)) { stop("Must supply either a function or a matrix and a value for win.") }
                 eigen_windows_matrix( data=data, win=win, do.windows=do.windows, k=k, mc.cores=mc.cores )
             }
-    return( if (return.mat) { 
-               eigen.mat 
-           } else {
-               list(
-                    values = eigen.mat[1:k,],
-                    vectors = eigen.mat[-(1:k),]
-                ) 
-           }
-       )
+    return( eigen.mat )
+}
+
+#' Sets up a winfun-like accessor to a matrix.
+winfun_matrix <- function (data,win) {
+    win.fn <- function(n,...){ data[seq( ((n-1)*win+1), (n*win) ),] }
+    attr(win.fn,"max.n") <- floor( nrow(data)/win )
+    attr(win.fn,"samples") <- if (is.null(colnames(data))) { 1:ncol(data) } else { colnames(data) }
+    attr(win.fn,"region") <- function (n) { data.frame( chrom="matrix", start=((n-1)*win+1), end=n*win ) }
+    return( win.fn )
 }
 
 #' Sets up eigen_windows_winfn to work on a matrix.
@@ -45,14 +44,12 @@ eigen_windows_matrix <- function (
             data, k, win,
             do.windows=NULL,
             mc.cores ) {
-    win.fn <- function(n,...){ data[seq( ((n-1)*win+1), (n*win) ),] }
-    attr(win.fn,"max.n") <- floor( nrow(data)/win )
-    return( eigen_windows_winfn( win.fn, do.windows=do.windows, k=k, mc.cores=mc.cores ) )
+    return( eigen_windows_winfn( winfun_matrix(data,win=win), do.windows=do.windows, k=k, mc.cores=mc.cores ) )
 }
 
 #' Does the work of eigen_windows.
 eigen_windows_winfn <- function ( 
-            win.fn=function(data,n,...){ data[seq( ((n-1)*win+1), (n*win) ),] }, 
+            win.fn,
             do.windows=NULL,
             k, mc.cores=1, ... ) {
     this.lapply <- if (mc.cores>1) { function (...) parallel::mclapply(...,mc.cores=mc.cores) } else { lapply }
@@ -66,6 +63,8 @@ eigen_windows_winfn <- function (
         # returns in order (values, vectors)
         return( c( PCA$values[1:k], PCA$vectors[,1:k] ) )
     }
-    eigen.mat <- do.call( cbind, this.lapply( do.windows, .local ) )
+    eigen.mat <- do.call( rbind, this.lapply( do.windows, .local ) )
+    colnames(eigen.mat) <- c( paste0("lam_",1:k), as.vector( paste0("PC_", t(outer( 1:k, samples(win.fn), paste, sep="_" )) ) ) )
+    attr(eigen.mat,"npc") <- k
     return( eigen.mat )
 }

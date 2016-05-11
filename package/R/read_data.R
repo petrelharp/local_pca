@@ -10,14 +10,14 @@
 #' @param x Character matrix of alleles.
 #' @param ploidy Number of columns per individual.
 #' @param triallelic Include triallelic sites? Defaults to TRUE; otherwise sets these to NA.
+#' @param alleles A character vector of valid alleles.
 #' @return An integer matrix with one row per site and one column per individual.
 #' @export
-recode_numeric <- function (x, ploidy=2, triallelic=TRUE) {
-    bases <- c("A","C","G","T")
-    geno <- match(as.matrix(x),bases)
+recode_numeric <- function (x, ploidy=2, triallelic=TRUE, alleles=c("A","C","G","T")) {
+    geno <- match(as.matrix(x),alleles)
     dim(geno) <- c( nrow(x), ncol(x) )
     # totals[j,2] gives the total number of C's at the j-th site
-    totals <- sapply( seq_along(bases), function (k) { rowSums( geno==k, na.rm=TRUE ) } )
+    totals <- sapply( seq_along(alleles), function (k) { rowSums( geno==k, na.rm=TRUE ) } )
     if (!triallelic) {
         # remove triallelic sites
         which.triallelic <- ( rowSums(totals>0) > 2 )
@@ -25,7 +25,7 @@ recode_numeric <- function (x, ploidy=2, triallelic=TRUE) {
     }
     maxcounts <- do.call( pmax, lapply(1:ncol(totals),function(k)totals[,k]) )
     major <- rep(NA,nrow(geno))
-    for (k in seq_along(bases)) { major[ totals[,k] == maxcounts ] <- k }
+    for (k in seq_along(alleles)) { major[ totals[,k] == maxcounts ] <- k }
 
     # code the genotype matrix
     coded <- matrix( NA, nrow=nrow(geno), ncol(geno) )
@@ -76,8 +76,6 @@ read_tped <- function (file, chrom="[^ \t]*", triallelic=TRUE, phased=FALSE) {
 #' where "major" is the most common allele at that site, and all others are lumped as "minor".
 #' Assumes that anything not in "ACGT" is NA (case-sensitive).
 #'
-#' The work is done by \code{vcfR::extract.gt( )}; see there for details.
-#'
 #' @param file Input .vcf file, possibly gzip'ped.
 #' @param phased Are the data phased? (i.e., should return one column per individual or two?)
 #' @param triallelic Include triallelic sites? Defaults to TRUE.
@@ -90,8 +88,11 @@ read_vcf <- function (file, phased=FALSE, triallelic=TRUE, ...) {
     # thecat <- if (grepl(".gz$",file)) { "zcat" } else { "cat" }
     # chr <- data.table::fread(paste0(thecat, " ", file, " | grep -v '^#' | cut -f 9- | sed -e 's_0[|/]0_0_g' -e 's_0[|/][1-9]_1_g' -e 's_[1-9][|/]0_1_g' -e 's_[1-9][|/][1-9]_2_g' "), sep='\t', stringsAsFactors=FALSE, ...)
     ## etcetera
-    thevcf <- vcfR::read.vcfR(file, verbose=FALSE, ...)
-    haps <- vcfR::extract.haps(thevcf)
-    return( recode_numeric( haps, ploidy=2-phased, triallelic=triallelic ) )
+    dips <- vcf_query( file, recode=FALSE )
+    haps <- unlist(strsplit(unlist(dips),"[/|]"))
+    dim(haps) <- c(2,dim(dips))
+    haps <- aperm( haps, c(2,1,3) )
+    dim(haps) <- dim(dips)*c(1,2)
+    return( recode_numeric( haps, ploidy=2-phased, triallelic=triallelic, alleles=as.character(0:3) ) )
 }
 

@@ -5,6 +5,11 @@ devtools::load_all("../package")
 library(Matrix)
 library(colorspace)
 options(width=100)
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,fig.height=fig.dim,fig.align='center')
+```
+
+
 ```
 
 # Data
@@ -119,7 +124,7 @@ close(bcf.con)
 win.fn <- function (n,win.snps=100) {
     sites <- list( chr1=bcf.sites[[1]][seq(1+(n-1)*win.snps,length.out=win.snps)] )
     regions <- enclosing_region(sites)
-    query_genotypes( bcf.file, regions, get.indivs )
+    vcf_query( bcf.file, regions, get.indivs )
 }
 win.fn(20,10)  # get the 20th window of 10 SNPs
 ```
@@ -131,7 +136,7 @@ win.fn.bp <- function (n,win.bp=200) {
     win.start <- 1+(n-1)*win.bp
     win.end <- win.start + win.bp-1
     regions <- data.frame( chrom="chr1", start=win.start, end=win.end )
-    query_genotypes( bcf.file, regions, get.indivs )
+    vcf_query( bcf.file, regions, get.indivs )
 }
 win.fn.bp(20,50)
 ```
@@ -199,7 +204,7 @@ pairs( mds.coords, pch=20, col=adjustcolor(chrom.cols,0.75) )
 
 Now let's extract the extreme windows in the MDS plot:
 ```{r get_corners}
-mincirc <- enclosing_circle( mds.coords[,1:2] )
+mincirc <- lostruct:::enclosing_circle( mds.coords[,1:2] )
 mds.corners <- corners( mds.coords[,1:2], prop=.05 )
 corner.cols <- c("red","blue","purple")
 ccols <- rep("black",nrow(mds.coords))

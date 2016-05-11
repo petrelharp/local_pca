@@ -12,6 +12,7 @@
 #' @return A three column integer matrix giving the indices of the corresponding points.
 #' @export
 corners <- function (xy, prop, k=3) {
+    xy <- as.matrix(xy)
     mincirc <- enclosing_circle( xy )
     cidx <- mincirc$index
     dpt <- function (uv) { sqrt( (xy[,1]-uv[1])^2 + (xy[,2]-uv[2])^2 ) }

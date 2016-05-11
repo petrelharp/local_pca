@@ -8,7 +8,7 @@ chr22 <- read_tped("POPRES_Genotypes_QC2_v2_TXT.tped.gz", chrom=22)
 eigenstuff <- eigen_windows(chr22, win=100, k=2)
 
 # as in POPRES_distance.R
-windist <- pc_dist( eigenstuff )
+windist <- pc_dist( eigenstuff, npc=2 )
 
 # as in POPRES_MDS.R
 fit2d <- cmdscale( windist, eig=TRUE, k=2 )

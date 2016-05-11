@@ -7,16 +7,57 @@ date: "`r date()`"
 library(lostruct)
 library(colorspace)
 library(jsonlite)
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,fig.height=fig.dim,fig.align='center')
+```
+
+```{r data_setup, include=FALSE}
 opt <- fromJSON("config.json")
 
-    pca.file <- file.path( opt$outdir, sprintf(gsub(".bcf",".pca.csv",basename(bcf.file))) )
-    if (file.exists(pca.file)) { stop(paste("File",pca.file,"already exists! Not overwriting.")) }
-    cat("Finding PCs for", bcf.file, "and writing out to", pca.file, "\n")
-    win.fn <- vcf_windower(bcf.file, size=opt$size, type=tolower(opt$type) )
+# data files, precomputed
+pca.files <- list.files(".",".*.pca.csv")
+mds.file <- "mds_coords.csv"
+regions.file <- gsub("[.]pca[.]csv$",".regions.csv",pca.files)
 
-win.regions <- region(win.fn.snp)()
-win.mids <- (win.regions$start+win.regions$end)/2
-chrom.cols <- rainbow_hcl(128, c=90, end=.9*360)[as.numeric(cut(win.mids,128))]
-pairs( mds.coords, pch=20, col=adjustcolor(chrom.cols,0.75) )
+# read in mds
+mds.coords <- read.csv(mds.file,header=TRUE)
+mds.cols <- (1:ncol(mds.coords))[-(1:2)]
 
+# position information
+regions <- do.call( rbind, lapply( regions.file, read.csv, header=TRUE ) )
+regions$mid <- (regions$start+regions$end)/2
+chrom.cols <- rainbow_hcl(128, c=90, end=.9*360)[as.numeric(cut(regions$mid,128))]
 ```
+
+This run had these parameters:
+
+- *window type* : `r opt$type`
+- *window size* : `r opt$size`
+- *number of pcs* : `r opt$npc`
+- *number of MDS coordinates* : `r opt$nmds`
+
+Here are the computed MDS coordinates, colored by chromosome:
+```{r mds_pairplot}
+pairs( mds.coords[,mds.cols], pch=20, col=adjustcolor(chrom.cols,0.75) )
+```
+
+Here are the extreme windows in the MDS plot:
+```{r get_corners}
+mds.corners <- corners( mds.coords[,mds.cols[1:2]], prop=.05 )
+corner.cols <- c("red","blue","purple")
+ccols <- rep("black",nrow(mds.coords))
+for (k in 1:ncol(mds.corners)) {
+    ccols[ mds.corners[,k] ] <- corner.cols[k]
+}
+
+plot( mds.coords[,mds.cols[1:2]], pch=20, col=adjustcolor(ccols,0.75), 
+        xlab="MDS coordinate 1", ylab="MDS coordinate 2" )
+
+for (k in mds.cols) {
+    plot( regions$mid/1e6, mds.coords[,k], pch=20, 
+            xlab="Position (Mb)", ylab=paste("MDS coordinate",k),
+            col=adjustcolor(ccols,0.75) )
+}
+```
+
+

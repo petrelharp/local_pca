@@ -33,21 +33,24 @@ region_string <- function (regions) {
 #'
 #' Uses bcftools to query vcf or bcf files for genotypes in a collection of regions,
 #' returning the genotypes in numeric format.
-#' Assumes the data are diploid.
+#' Assumes the data are diploid and that every site is diallelic.
 #'
 #' @param file The name of the indexed vcf file.
 #' @param regions A data frame containing chrom, start, and end of the regions to be extracted.
 #' @param samples A character vector of sample names to be extracted.
 #' @param verbose Whether to output with \code{cat()} the bcftools calls.
+#' @param recode Whether to recode genotypes as numeric (assuming diallelic sites only).
 #' @return An integer matrix, giving the number of alternate alleles for each sample.
 #' @export
-query_genotypes <- function (file,regions,samples, verbose=FALSE) {
-	bcf.args <- c("bcftools", "query", "-f", "'[ %GT]\\n'", "-r", region_string(regions))
+vcf_query <- function (file, regions, samples, verbose=FALSE, recode=TRUE) {
+	bcf.args <- c("bcftools", "query", "-f", "'[ %GT]\\n'")
+	if (!missing(regions) && length(regions)>0) { bcf.args <- c( bcf.args, "-r", region_string(regions) ) }
 	if (!missing(samples) && length(samples)>0) { bcf.args <- c( bcf.args, "-s", paste(samples,collapse=',') ) }
 	bcf.args <- c( bcf.args, file )
     bcf.call <- paste(bcf.args, collapse=" ")
     if (verbose) cat(bcf.call, "\n")
     gt.text <- data.table::fread( bcf.call, header=FALSE, sep=' ', data.table=FALSE )
+    if (!recode) { return(gt.text) }
     gt <- c(0L,1L,1L,2L)[match( unlist(gt.text), c("0/0","0/1","1/0","1/1") )]
     dim(gt) <- dim(gt.text)
     return(gt)
@@ -70,6 +73,18 @@ vcf_positions <- function (file) {
 	return( tapply( bcf.sites$pos, bcf.sites$chrom, identity) )
 }
 
+#' Find Sample IDs from a VCF File
+#'
+#' Returns the character vector of samples (by calling \code{bcftools query -l}).
+#'
+#' @param file The name of the indexed vcf file.
+#' @return A character vector of sample IDs.
+#' @export
+vcf_samples <- function (file) {
+    return( system2( "bcftools", c("query","-l",file), stdout=TRUE ) )
+}
+
+
 #' Construct a Window Extractor for a VCF File
 #'
 #' Returns a function that, given an integer \code{n}, returns a numeric matrix of genotypes from the the \code{n}th window of the VCF file.
@@ -81,7 +96,8 @@ vcf_positions <- function (file) {
 #' @param samples A character vector of sample names to be extracted.
 #' @param f A window extractor function.
 #' @return A class "winfun" function that returns an integer matrix, giving the number of alternate alleles for each sample.
-#' Such functions also have two attributes: \code{max.n}, giving the index of the largest window,
+#' Such functions also have three attributes: \code{max.n}, giving the index of the largest window,
+#' \code{samples}, the sample IDs that are extracted (corresponding to the columns of the matrix that is returned),
 #' and \code{region}, which is a function that takes an integer vector and returns a data frame giving chromosome, start, and end of the corresponding windows.
 #' @export
 vcf_windower <- function (
@@ -89,7 +105,7 @@ vcf_windower <- function (
 			size, 
 			type, 
 			sites=vcf_positions(file),
-			samples=NULL) {
+			samples=vcf_samples(file)) {
 	if (type=="bp") {
 		vcf_windower_bp( file=file, sites=sites, size=size, samples=samples )
 	} else if (type=="snp") {
@@ -97,7 +113,7 @@ vcf_windower <- function (
 	}
 }
 
-vcf_windower_bp <- function (file, sites, size, samples=NULL) {
+vcf_windower_bp <- function (file, sites, size, samples=vcf_samples(file)) {
 	chroms <- names(sites)
 	chrom.lens <- sapply( sites, max )
 	chrom.wins <- floor(chrom.lens / size)
@@ -115,15 +131,16 @@ vcf_windower_bp <- function (file, sites, size, samples=NULL) {
 	win.fn <- function (n) {
 		if (n<1 || n>max(chrom.breaks)) { stop("No such window.") }
         regions <- pos.fn(n)
-		query_genotypes( file=file, regions=regions, samples=samples )
+		vcf_query( file=file, regions=regions, samples=samples )
 	}
 	attr(win.fn,"max.n") <- max(chrom.breaks)
 	attr(win.fn,"region") <- pos.fn
+    attr(win.fn,"samples") <- samples
     class(win.fn) <- c("winfun", "function")
 	return(win.fn)
 }
 
-vcf_windower_snp <- function (file, sites, size, samples=NULL) {
+vcf_windower_snp <- function (file, sites, size, samples=vcf_samples(file)) {
 	chroms <- names(sites)
 	chrom.lens <- sapply( sites, length )
 	chrom.wins <- floor(chrom.lens / size)
@@ -145,15 +162,20 @@ vcf_windower_snp <- function (file, sites, size, samples=NULL) {
 	win.fn <- function (n) {
 		if (n<1 || n>max(chrom.breaks)) { stop("No such window.") }
 		regions <- pos.fn(n)
-		query_genotypes( file=file, regions=regions, samples=samples )
+		vcf_query( file=file, regions=regions, samples=samples )
 	}
 	attr(win.fn,"max.n") <- max(chrom.breaks)
 	attr(win.fn,"region") <- pos.fn
+    attr(win.fn,"samples") <- samples
     class(win.fn) <- c("winfun", "function")
 	return(win.fn)
 }
 
 #' @describeIn vcf_windower Returns the \code{region} function of a window extractor function.
-region <- function (f) {
-    function (n=seq_len(attr(f,"max.n"))) { attr(f,"region")(n) }
-}
+region <- function (f) { function (n=seq_len(attr(f,"max.n"))) { attr(f,"region")(n) } }
+
+#' @describeIn vcf_windower Gives the number of samples of matrices returned by a window extractor function (access with ncol( )).
+dim.winfun <- function (f) { c(NA,length(attr(f,"samples"))) }
+
+#' @describeIn vcf_windower Gives the sample IDs returned by a window extractor function.
+samples <- function (f) { attr(f,"samples") }

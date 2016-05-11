@@ -19,7 +19,7 @@ enclosing_circle <- function (xy) {
     return(out)
 }
 
-#' @documentIn enclosing_circle Plots a circle.
+#' @describeIn enclosing_circle Plots a circle.
 plot_circle <- function (circ,n=200, plot.it=TRUE, ...) {
     angles <- seq(0, 2*pi, length.out=n)
     circ.lines <- cbind(circ$ctr[1] + circ$rad*cos(angles),
