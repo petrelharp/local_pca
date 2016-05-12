@@ -163,43 +163,86 @@ local pca(?);
 \section{Methods}
 
 \plr{How about: first describe the method; then afterwards, present the three datasets.}
+\begin{figure}
+    \begin{center}
+       \includegraphics[width=0.9\textwidth]{the-method-diagram}
+    \end{center}
+    \caption{
+         The diagram of our method.
+         \label{fig:diagram}
+    }
+\end{figure}
+
+
 
 \subsection{Recode the DNA sequence to a matrix consisting of 0,1,2 (and NA).}
 
-\plr{Separate paragraphs for each dataset. Say how many sites, what kind of data, etcetera.}
-
-For human, we use SNP chip data from POPRES \citet{nelson2008population}. There are 3965 samples in total, (346 African-Americas; 73 Asians; 3187 Europeans; 359 Indian Asians), and the 22 autosomes together have 447267 SNPs in this dataset. 
+For human, we use SNP chip data from POPRES \citep{nelson2008population}. There are 3,965 samples in total, (346 African-Americas; 73 Asians; 3,187 Europeans; 359 Indian Asians), and the 22 autosomes together have 447,267 SNPs in this dataset. 
 We use the allele that has highest frequency in the samples as the reference allele for each position. 
-If an allele is same with the reference allele, we recode it as 0; if an allele is different from the reference allele, we recode it as 1; for positions that have missing data, we recode them as NA. 
-Since human genome is diploid, we add the value for the two alleles and then one chromosome will eventually be recode to a sequence consisting of 0,1,2 (and NA).
-Then the genome data for human is recoded to a matrix that has 3965 columns, each column for an individual's genotype. 
-We process the data separately for the 22 autosomes in human.
+The first step is to recode genetic data as a numeric matrix; 
+which we take to have one row per variant and one column per sample. (omitting monomorphic variants)
+In our applications, for each variant we picked a reference allele, 
+and recoded genotypes as the number of non-reference alleles carried by the individual;
+obtaining 0,1, or 2 for autosomal variants in diploids, or NA for missing data.
+A normalization step (see below) ensures the result does not depend on the choice of reference allele.
 
-For \textit{Drosophila}, we use the sequencing data from DPGP and John pool's lab \citet{lack2015drosophila}, which together has 380 samples from 16 countries.
-We first process the sequencing data (from DPGP and John pool's lab) to SNP data by eliminating the positions that have all the same alleles. 
-Each chromosome arms we investigated (Chr2L, Chr2R, Chr3L, Chr3R, ChrX) has 2-3 million SNPs.
-Due to high density of missing data for some parts in the genome, we then delete the samples with more than 8\% NAs and positions with more than 20\%. 
+For \textit{Drosophila melanogaster}, we use the sequencing data from Drosophila Population Genomics Project (DPGP) and John Pool's lab \citep{lack2015drosophila}, 
+which together has 380 samples from 16 countries across Africa and Europe.
+Each chromosome arm we investigated (Chr2L, Chr2R, Chr3L, Chr3R) has 2-3 million SNPs.
+Due to high density of missing data for some parts in the genome, we then delete the samples with more than 8\% missing genotypes and then deleting positions with more than 20\% missing data. 
 The cutoff points 8\% and 20\% are determined from the corresponding distributions of NAs in samples and at positions. 
-After we got the SNP data for \textit{Drosophila}, we recode it \textit{Drosophila}to matrices with 0,1,2 (and NA) for each chromosome arms (Chr2L, Chr2R, Chr3L, Chr3R, ChrX) similar to the process for human genome. 
-Since the \textit{Drosophila} samples here are all homogenous, the matrices are indeed consisting of 0,1 (and NA). 
+Since the \textit{Drosophila} samples are from inbred lines with little heterozygosity, we treat the samples as haploid when recoding.
 
-For \textit{Medicago truncatula}, we use the SNP data from Medicago Hapmap. It has 263 samples from 24 countries. 
-We recode it to matrices with 0,1,2 (and NA) for each of the 8 chromosomes. Each chromosome has 3-5 million SNPs
+For \textit{Medicago truncatula}, we use the SNP data from whole genome sequencing from \textit{Medicago truncatula} Hapmap Project \citep{tang2014improved}. 
+It has 263 samples from 24 countries. 
+Each of the 8 chromosomes has 3-5 million SNPs.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{p{0.8in}p{1in}p{1in}p{1in}p{1.2in}}
+  \hline
+ & species number of SNPs per window & mean length in bp per window & mean number of windows per chromosome & mean ratio of variance explained by top 2 PCs \\ 
+  \hline
+\textit{Drosophila melanogaster} & 1000 & 9019 & 2674 & 0.53 \\ 
+  Human & 100 & 636494 & 203 & 0.55 \\ 
+  \textit{Medicago truncatula} & 10000 & 102580 & 467 & 0.50 \\ 
+   \hline
+\end{tabular}
+\caption {some statistic for each species' genome}
+\end{table}
+
 
 \subsection{PCA in genomic windows}
 
-\plr{this describes PCA, not cutting into windows? and, the next section?}
-We cut each recoded matrix into sub matrixes by that have the same columns but fewer rows than the original matrix. Then apply Principal Component Analysis (PCA) on each window. Here's a brief summary about how is PCA carried out on genomic data \citep{mcvean2009genealogical}. Starting with the recoded genotype matrix Z, where Z is a L*N matrix ( L is SNP number ; N is sample size), then zero-center the matrix Z to X to make the data rows have equal mean. ($X_{si}=Z_{si}-\frac{1}{n}\sum_{j=1}^{n}Z_{sj}$) Get the covariance matrix of X (denote as matrix C) and compute the eigenvectors and eigenvalues of the covariance matrix C. ($C=\frac{1}{n-1}XX^{T}$ ) The \textit{i}th principal component is the \textit{i}th eigenvector of C.
-\plr{(put equations into the text in the right place)}
+After recoding, we divided the recoded matrix into contigous matrixes that have the same columns but fewer rows than the original matrix, 
+and applied Principal Component Analysis (PCA) separately on each window, 
+following the procedure in \citet{mcvean2009genealogical} as follows. Starting with the recoded genotype matrix $Z$, 
+where $Z$ is a $L\times N$ matrix ( $L$ is SNP number ; $N$ is sample size), 
+first compute the mean-centered matrix $X$, $X_{si}=Z_{si}-\overline{Z_{s}}$, 
+where $\overline{Z_{s}}$ is the mean of non-missing entries, $\overline{Z_{s}}=\frac{1}{n}\sum_{j=1}^{n}Z_{sj}$.
+The mean-centering step makes the result not depend on the choice of reference allele.
+Then find the covariance matrix of $X$, denoted $C=\frac{1}{n-1}XX^{T}$. 
+We compute the covariance matrix using the R function cov() , with use=``pairwise",
+which computes the covariance between each pair of individuals using all complete pairs of SNPs on those individuals.
+The principal components are eigenvector of C, ordered by magnitude of the eigenvalues.
 
-PCA on each window is getting the eigenvectors of covariance matrix of the cut recoded matrix. PCA plots generally use PC2 against PC1.
-PC1 and PC2 refer to the first and second principal component respectively. 
-PCA plots can show population structure, which describes how different samples are related. 
-We want to investigate the variation of population structure along the genome. 
-So we apply PCA on each window to check the population structure along the genome.
-\subsubsection{Choose window length}
-The window length should neither be too long or too short. The longer the windows, the more accurate is the estimate of population structure in that window. However, for better resolution, we need to find a length that is reasonably short. If we use the first principal component as a measure of population structure, then to choose a proper length for a
-window, we need to find a balance between variance of the first principal components inside a window and that between windows. The variance between windows is estimated as mean variance of the first principal component for each window. The variance inside a window is estimated using the jackknife block when cutting the window into 10 equal size smaller windows \cite{efron1982jackknife}. Table \ref{tab:window_sizes} shows the comparison of variance within a window and that between windows for chromosome arms in \textit{Drosophila}. Finally, we choose 100 SNPs, 1000 SNPs and 10000 SNPs as window length for human, \textit{Drosophila}, and \textit{Medicago} separately.
+The top few principal components generally display population structure; we usually use the first two (referred to as PC1 and PC2).
+
+\subsubsection{Choosing window length}
+The window length should neither be too long or too short. 
+In general, longer windows have more SNPs, 
+the noise (the mean standard error within a window) will be smaller
+and so population structure in that window will be more accurately estimated.
+However, to better resolve features along the genome, we need reasonably short windows 
+to have stronger signal (the mean standard variation between windows).
+If we use the first principal component as a measure of population structure, 
+then to choose a proper length for a window, 
+we need to find a balance between variance of the first principal components inside a window and that between windows. 
+The variance between windows is estimated by the mean variance of the first principal component for each window. 
+$Var_{between}= \frac{1}{N}\sum_{j=1}^{N}\left ( \frac{1}{K}\sum_{i=1}^{K}\left ( PC1_{i,j} -\overline{PC1_{,j}} \right )^{2} \right )$ ($K$ is the number of windows on the genome)
+The variance inside a window is estimated using the block jackknife cutting the window into 10 equal size smaller windows \citep{efron1982jackknife}. 
+$Var_{inside}= \frac{1}{N}\sum_{j=1}^{N}\left ( \frac{9}{10}\sum_{i=1}^{10}\left ( PC1_{i,j} -\overline{PC1_{,j}} \right )^{2} \right )$
+Table \ref{tab:window_sizes} shows the comparison of variance within a window and that between windows for chromosome arms in \textit{Drosophila}. Finally, we choose 100 SNPs, 1000 SNPs and 10000 SNPs as window length for human, \textit{Drosophila}, and \textit{Medicago} respectively.
 
 
 
@@ -207,18 +250,18 @@ window, we need to find a balance between variance of the first principal compon
 \centering
 \begin{tabular}{rllrrrrr}
   \hline
- & chr\_name & win\_length(in SNPs) & 100 & 500 & 10\verb|^|3 & 10\verb|^|4 & 10\verb|^|5 \\ 
+ &   & window length(in SNPs) & 100 & 500 & 10\verb|^|3 & 10\verb|^|4 & 10\verb|^|5 \\ 
   \hline
-1 & Chr2L & SE\verb|^|2(within) & 2.05e-03 & 1.64e-03 & 1.18e-03 & 1.68e-04 & 4.02e-05 \\ 
-  2 & Chr2L & Var(between) & 2.76e-03 & 2.69e-03 & 2.23e-03 & 6.74e-04 & 3.12e-04 \\ 
-  3 & Chr2R & SE\verb|^|2(within) & 2.18e-03 & 1.92e-03 & 1.63e-03 & 5.76e-04 & 1.35e-04 \\ 
-  4 & Chr2R & Var(between) & 2.78e-03 & 2.70e-03 & 2.65e-03 & 2.31e-03 & 1.82e-03 \\ 
-  5 & Chr3L & SE\verb|^|2(within) & 2.08e-03 & 2.00e-03 & 1.64e-03 & 7.32e-04 & 2.45e-04 \\ 
-  6 & Chr3L & Var(between) & 2.60e-03 & 2.52e-03 & 2.40e-03 & 1.68e-03 & 1.89e-03 \\ 
-  7 & Chr3R & SE\verb|^|2(within) & 1.95e-03 & 1.76e-03 & 1.44e-03 & 5.87e-04 & 2.03e-04 \\ 
-  8 & Chr3R & Var(between) & 2.58e-03 & 2.51e-03 & 2.44e-03 & 1.96e-03 & 1.40e-03 \\ 
-  9 & ChrX & SE\verb|^|2(within) & 2.48e-03 & 2.04e-03 & 1.54e-03 & 1.62e-03 & 1.68e-04 \\ 
-  10 & ChrX & Var(between) & 2.61e-03 & 2.43e-03 & 2.30e-03 & 3.24e-04 & 1.14e-03 \\ 
+ & Chr2L & SE\verb|^|2(within) & 2.05e-03 & 1.64e-03 & 1.18e-03 & 1.68e-04 & 4.02e-05 \\ 
+  & 	 & Var(between) & 2.76e-03 & 2.69e-03 & 2.23e-03 & 6.74e-04 & 3.12e-04 \\ 
+  & Chr2R & SE\verb|^|2(within) & 2.18e-03 & 1.92e-03 & 1.63e-03 & 5.76e-04 & 1.35e-04 \\ 
+  & 	 & Var(between) & 2.78e-03 & 2.70e-03 & 2.65e-03 & 2.31e-03 & 1.82e-03 \\ 
+  & Chr3L & SE\verb|^|2(within) & 2.08e-03 & 2.00e-03 & 1.64e-03 & 7.32e-04 & 2.45e-04 \\ 
+  & 	 & Var(between) & 2.60e-03 & 2.52e-03 & 2.40e-03 & 1.68e-03 & 1.89e-03 \\ 
+  & Chr3R & SE\verb|^|2(within) & 1.95e-03 & 1.76e-03 & 1.44e-03 & 5.87e-04 & 2.03e-04 \\ 
+  & 	 & Var(between) & 2.58e-03 & 2.51e-03 & 2.44e-03 & 1.96e-03 & 1.40e-03 \\ 
+  & ChrX & SE\verb|^|2(within) & 2.48e-03 & 2.04e-03 & 1.54e-03 & 1.62e-03 & 1.68e-04 \\ 
+  & 	 & Var(between) & 2.61e-03 & 2.43e-03 & 2.30e-03 & 3.24e-04 & 1.14e-03 \\ 
    \hline
 \end{tabular}
 \caption{
@@ -227,9 +270,14 @@ Comparison of variance within a window and that between windows for chromosome a
 \end{table}
 
 \subsubsection{Similarity of population structure between windows}
-We use the first two principal components (PCs) and the corresponding eigenvalues from PCA, and construct a new matrix with the two PCs for each window to stand for the population structure information. 
+We compared population structure in different genomic windows 
+using the first two principal components (PCs) and the corresponding eigenvalues from PCA.
+We do this, rather than using the entire covariance matrix for computational efficiency 
+and because the top PCs summarize important population structure, 
+using only these should reduce the effect of noise.
 For example, the constructed matrixes for ith and jth window are as following. 
-($\lambda _{1i}$ and $\lambda _{2i}$ are the eigenvalues for the first two PCs for \textit{i}th window; $\lambda _{1j}$ and $\lambda _{2j}$ are the eigenvalues for the first two PCs for \textit{j}th window.) $M_i$ and $M_j$ are the constructed new matrix for \textit{i}th window and \textit{j}th window.
+($\lambda _{1i}$ and $\lambda _{2i}$ are the eigenvalues for the first two PCs for \textit{i}th window; 
+$M_i$ is the constructed new matrix for \textit{i}th window and \textit{j}th window.
 \plr{
 Say what $M_i$ and $M_j$ are in the text.  
 Also, how about we write $V$ instead of $PC$?  I like to use only one letter for variables, so it's clear it's just one thing, not the product of $P$ and $C$.
@@ -237,41 +285,45 @@ And, isn't it $\sqrt{\lambda_{1j}^2+\lambda_{2j}^2}$ on the bottom? Check in the
 }
 
 \begin{align}
-    M_{i} &= \frac{\lambda_{1i}PC1_{i}PC1_{i}^{T}+\lambda_{2i}PC2_{i}PC2_{i}^{T}}{\lambda_{1i}+\lambda_{2i}} \\
-    M_{j} &= \frac{\lambda_{1j}PC1_{j}PC1_{j}^{T}+\lambda_{2j}PC2_{j}PC2_{j}^{T}}{\lambda_{1j}+\lambda_{2j}}
+    M_{i} &= \frac{\lambda_{1i}PC1_{i}PC1_{i}^{T}+\lambda_{2i}PC2_{i}PC2_{i}^{T}}{\lambda_{1i}+\lambda_{2i}} 
 \end{align}
 
-The Euclidean distance $D_{ij}$ between the constructed matrices $M_i$ and $M_j$ stands for the similarity of population structure for the \textit{i}th window and \textit{j}th window. 
-Due to the property of eigenvectors,we could use the following method to calculate the pairwise distance greatly saving time and space.
+The Euclidean distance $D_{ij}$ between the matrices $M_i$ and $M_j$ stands for the similarity of population structure for the \textit{i}th window and \textit{j}th window. 
+Due to the orthogonality of eigenvectors,we could use the following method to calculate the pairwise distance greatly saving time and space.
 
 \plr{Define $D$.}
 
 \begin{equation}
     \begin{aligned}
-        V_{1}&=\sqrt{\frac{\lambda _{1i}}{\lambda _{1i}+\lambda _{2i}}}PC1_{i} \qquad
-        V_{2}&=\sqrt{\frac{\lambda _{2i}}{\lambda _{1i}+\lambda _{2i}}}PC2_{i} \\
-        U_{1}&=\sqrt{\frac{\lambda _{1j}}{\lambda _{1j}+\lambda _{2j}}}PC1_{j} \qquad
-        U_{2}&=\sqrt{\frac{\lambda _{2j}}{\lambda _{1j}+\lambda _{2j}}}PC2_{j}
+        V_{i1}&=\sqrt{\frac{\lambda _{1i}}{\lambda _{1i}+\lambda _{2i}}}PC1_{i} \qquad
+        V_{i2}&=\sqrt{\frac{\lambda _{2i}}{\lambda _{1i}+\lambda _{2i}}}PC2_{i} \\
+        V_{j1}&=\sqrt{\frac{\lambda _{1j}}{\lambda _{1j}+\lambda _{2j}}}PC1_{j} \qquad
+        V_{j2}&=\sqrt{\frac{\lambda _{2j}}{\lambda _{1j}+\lambda _{2j}}}PC2_{j}
     \end{aligned}
 \end{equation}
+
+\begin{align}
+    M_{i} &= V_{i1}V_{i1}^{T}+V_{i2}V_{i2}^{T}
+\end{align}
+
 
 \begin{align}
     \begin{split}
     D_{ij} &= 
         \left \{
                 \left ( 
-                    V_{1}\cdot V_{1}^{} 
+                    V_{i1}\cdot V_{i1}^{} 
                 \right )^{2}
-                + \left ( V_{2}\cdot V_{2}^{} \right )^{2}
-                + \left ( U_{1}\cdot U_{1}^{} \right )^{2} 
-                +\left ( U_{2}\cdot U_{2}^{} \right )^{2} 
+                + \left ( V_{i2}\cdot V_{i2}^{} \right )^{2}
+                + \left ( V_{j1}\cdot V_{j1}^{} \right )^{2} 
+                +\left ( V_{j2}\cdot V_{j2}^{} \right )^{2} 
         \right. \\ 
         & \left. \qquad {}  
             -2\left [ 
-                \left ( V_{1}\cdot U_{1}^{} \right )^{2}
-                + \left ( V_{1}\cdot U_{2}^{} \right )^{2}
-                + \left ( V_{2}\cdot U_{1}^{} \right )^{2} 
-                + \left ( V_{2}\cdot U_{2}^{} \right )^{2}
+                \left ( V_{i1}\cdot V_{j1}^{} \right )^{2}
+                + \left ( V_{i1}\cdot V_{j2}^{} \right )^{2}
+                + \left ( V_{i2}\cdot V_{j1}^{} \right )^{2} 
+                + \left ( V_{i2}\cdot V_{j2}^{} \right )^{2}
             \right ]
         \right \}^{1/2}
     \end{split}
@@ -282,101 +334,110 @@ we get the pairwise distance matrix that says how similar population structure i
 in each pair of genomic windows.
 
 \subsubsection{Visualize the pairwise distance matrix}
-To do this, I use Multidimensional scaling (MDS), 
-which is a visualization method commonly applied to distance matrixes. 
-It can reduce the dimensionality of a distance matrix while preserve the distance information between objects as well as possible. The aimed dimension `` M'' can be set based on your need. We used M=1 and M=2 in our study. This allowed us to visualize the information in the distance matrix in one or two dimensional relation between windows' population structure.
+We use Multidimensional scaling (MDS) method to visualize the distance matrices. 
+It can reduce the dimensionality of a distance matrix while preserve the distance information between objects as well as possible. 
+The result is a set of coordinates for each sample with the property that 
+the first M coordinates give the arrangement in M-dimensional space that best recapitulates the original distance matrix.
+We use M=2 to produce one or two dimensional visualization of relationships between windows' population structure.
 
 \section{Results}
-\textbf{In all these 3 species, PCA plots vary along the genome.}
+In all these 3 species, PCA plots vary along the genome in a systematic way, showing strong chromosome-scale correlations.
+This implies that variation is truly due to population structure, 
+since fluctuations due to demographic noise are not expected to show long distance correlations. 
+Below, we display the results and investigate likely underlying causes.
 
-Since PCA plots can show population structure, this shows that the population structure varies along the genome. Each PC plot comes from the covariance matrix of a different section of the genome, which may result from different tree for each position, chromosome inversions, linked selection and so on. We investigate the pattern in each species here separately, combining MDS method and genome features.
-Here are the MDS results for each species.
-
-\subsection{\textit{Drosophila}}
-We checked the results for chromosome arms Chr2L, Chr2R, Chr3L, Chr3R and ChrX separately. When setting the dimension parameter M=2 in MDS method, that is, plotting the first 2 coordinates reduced from the distance matrix, each plot looks like triangle.
-(Figure \ref{fig:mds_chr2L}a) Since the relative position for each window in the plot shows the relative similarity between windows, it tells us there are 3 extreme types of population structure shown in the 3 peaks of the ``triangle'', and other windows are between them, which means other window's population structure might be a mixture of those extremes. We then want to investigate more information at the extremes.
+\subsection{\textit{Drosophila melanogaster}}
+We ran the above method on chromosome arms 2L, 2R, 3L, 3R and X separately. 
+For each, the two-dimensional MDS visualization resembles a triangle. (eg. Figure \ref{fig:mds_chr2L}a) 
+Since the relative position of each window in this plot shows the similarity between windows, this suggests that there are 3 extreme types of population structure shown in the 3 peaks of the ``triangle'', and that other window's population structure might be a mixture of those extremes. 
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=0.9\textwidth]{Fig1_Together_MDS_plot_Chr2L_final_abline}
+       \includegraphics[width=0.9\textwidth]{Fig1_temp}
     \end{center}
     \caption{
-         Variation in structure for windows on chromosome arm Chr2L. 
-         Each represents a window: (a) shows the MDS visualization of relationships between windows. 
-         (b) and (c) show the position (midpoint) of each window against the first and second MDS coordinates, respectively. 
-         Colors are consistent for (a) (b) and (c).
-         Vertical black lines show the breakpoints of known polymorphic inversions In(2L)t.
+         Variation in structure for windows on chromosome arms 2L, 2R, and 3R. 
+         Each represents a window: the first column shows the MDS visualization of relationships between windows. 
+         The second and third columns show the position (midpoint) of each window against the first and second MDS coordinates, respectively. 
+         Rows show results from different chromosome arms, from top to bottom: Chr2L, Chr2R, Chr3L. 
+         Colors are consistent for plots in each row. 
+         Vertical black lines show the breakpoints of known polymorphic inversions (from top to bottom: In(2L)t, In(2R)NS, In(3L)OK).
          \label{fig:mds_chr2L}
     }
 \end{figure}
 
 
-We pick a window for each extreme, and take out 5\% windows that are closest to it in the MDS 2D plot , then combine those windows for each extreme and apply PCA on them. (Figure \ref{fig:pca_chr2L}) We can see the obvious difference between their PCA plots. This difference stands for variation of population structure along the genome in \textit{Drosophila} Chr2L.
+To investigate these extremes, we pick a window for each extreme, 
+and take out the 5\% of windows that are closest to it in the MDS coordinates, 
+then combine those windows for each extreme and apply PCA on the corresponding sections of genome. 
+We can see in Figure \ref{fig:pca_chr2L} the obvious difference between their PCA plots. 
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=0.9\textwidth]{Fig2_all_pca_plots_for_Chr2L_3peaks_byMDS}
+       \includegraphics[width=0.9\textwidth]{Fig2_temp}
     \end{center}
-    \caption{
-        PCA plots for each peak in Figure \ref{fig:mds_chr2L}a. 
+    \caption{      
+        PCA plots for the three sets of genomic windows colored in Figure \ref{fig:mds_chr2L}. 
         Each point represents a sample. 
         The plots are plotting the second principal components against the first principal components. 
-        (a) shows the windows colored green in Figure 1; 
-        (b) shows orange windows; and (c) shows purple windows.
+        The first column shows the windows colored green in Figure 1; the second column shows orange windows; and third shows purple windows.
          \label{fig:pca_chr2L}
     }
 \end{figure}
 
 
-There's a known inversion in Chr2L in \textit{Drosophila}, In(2L)t, with breakpoints at 2225744bp and 13154180bp. \citep{corbett2012population} We recolored the PCA plots in Figure \ref{fig:pca_chr2L} a,b,c by the direction of the inversion for each sample using data from John Pool's lab \citep{lack2015drosophila}. Figure \ref{fig:color_inver}
-\plr{(citation?)}
-The results show that PCA plots, and thus population structure, varies significantly along the genome, with most variation closely related to inversions. 
-Extremes of structure occurred around inversion breakpoints or in the centers of inversions (green and orange parts in Chr2L).
+There's a large inversion on Chr2L in that is polymorphic in these samples, In(2L)t \citep{corbett2012population}. We recolored the PCA plots in Figure \ref{fig:pca_chr2L} by the orientation of the inversion for each sample. Figure \ref{fig:color_inver}
+Two regions of similar, extreme population structure (green in Figure \ref{fig:mds_chr2L}) are found around inversion breakpoints, 
+and the other two extremes occur in the center of the inversion and between the inversion and centromere.
 The corresponding PCA plots show that locally, population structure is mostly determined by which orientation of the inversion each sample has.
-Similar results are found in other chromosome arms that have known polymorphic inversions (Chr2R, Chr3L, Chr3R) in \textit{Drosophila}. (See supplementary for more details)
-These facts show that the variation of population structure along the Drosophila genome is mainly due to inversions.
+Similar results are found in other chromosome arms that have known polymorphic inversions (Chr2R, Chr3L, Chr3R) in \textit{Drosophila}. 
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=0.9\textwidth]{Fig3_all_pca_plots_for_Chr2L_3peaks_color_by_In2Lt_byMDS}
+       \includegraphics[width=0.9\textwidth]{Fig3_temp}
     \end{center}
     \caption{
-         As in Figure 2, except that samples are colored by orientation of the corresponding polymorphic inversion, In(2L)t.
+         As in Figure 2, except that samples are colored by orientation of the corresponding polymorphic inversion, In(2L)t, In(2R)NS, In(3L)OK. (Data from\citet{lack2015drosophila}.
         \label{fig:color_inver}
     }
 \end{figure}
 
 \subsection{Human}
-We ran our method separately on all 22 autosomes. 
-We found that the windows that are outliers in the first MDS coordinate (Figure \ref{fig:mds_human}b) coincide with the position of known polymorphic inversions on 8p23. 
-Similar results are found in other chromosomes that have known polymorphic inversions (Chromosome 15, Chromosome 17) in Human. (See supplementary for more details)
-Similar to Drosophila, the biggest source of variability in population structure along each human chromosome seems to be polymorphic inversions. Other chromosomes showed similar results around predicted inversions: PCA might provide an additional way to identify inversions \citep{ma2012investigation}.
-When we run the process for all 22 autosomes together, the outlying signal of chromosome 8 is still impressing. (See supplementary for all 22 autosomes' MDS results for human)
+We ran our method separately on all 22 human autosomes. 
+For instance, the eleven windows that are outliers in the first MDS coordinate of chromosome 8 (Figure \ref{fig:mds_human}b) coincide with the position of known polymorphic inversions on 8p23. 
+Similar results are found in other chromosomes that have known inversions (eg. Chromosome 15, Chromosome 17).
+We found that the primary axis of variation in population structure differentiated only one or a few windows on each chromosome, 
+unlike the countinous variation in population structure we see in Drosophila.
+Other chromosomes showed similar results around predicted inversions: PCA might provide an additional way to identify inversions \citep{ma2012investigation}.
 
-\plr{Readers will wonder if the "triangle" looks the same in humans and Medicago as in Drosophila. Should we add them, or just put these in the supplement?}
-
-\plr{Do we know what happens when we run all 22 autosomes together?}
+When we run the method on all 22 autosomes together, the outlying signal of chromosome 8 is still visible. (See supplementary for all 22 autosomes)
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=0.7\textwidth]{Fig4_POPRES_Together_MDS_plot_chr8_final_abline}
+       \includegraphics[width=0.9\textwidth]{Fig4_temp}
     \end{center}
     \caption{
-         Variation in structure between windows on human chromosome 8. Each point in the plot represents a window. 
-         (a) shows the MDS visualization of relationships between windows; 
-         (b) and third (c) show the two MDS coordinates of each window against its position (midpoint) along the chromosome. 
-         The vertical red lines show the breakpoints of the known inversion on 8p23. \citep{antonacci2009characterization}
+         Variation in structure between windows on human chromosomes 8, 15, and 17. 
+         Each point in the plot represents a window.
+         The first column shows the MDS visualization of relationships between windows;
+         the second and third columns show the two MDS coordinates of each window against its position (midpoint) along the chromosome. 
+         Rows, from top to bottom show chromosomes 8, 15, and 17. 
+         The vertical red lines show the breakpoints of the known inversions \citep{antonacci2009characterization}.
         \label{fig:mds_human}
     }
 \end{figure}
 
 
 \subsection{\textit{Medicago truncatula}}
-We checked the MDS results for all 8 chromosomes. 
+We ran our method on all 8 chromosomes of \textit{Medicago truncatula} seperately. 
+We also ran all chromosomes together.
 \plr{The results looked different than the other two species, with much less pronounced peaks...}
-We found the position of the peak for each MDS plot has a coincidence with the position of heterochromatic regions. This means the population structure in the windows located in heterochromatin tends to have higher similarity, since those windows are closer in MDS plots. (Figure \ref{fig:mds_medicago}) Biologically,
-heterochromatic regions have lower gene density and may be less subject to selection \citep{kulikova2001integration,paape2013selection}. Then we checked the MDS results against gene density along the genome for each chromosome using gene models in Mt4.0 JBrowse. Numerically, the first MDS coordinate value is negatively correlated to the gene count for each window, which shows the correlation between MDS result and gene density. (Figure \ref{fig:mds_gene_count}) 
-This fact shows that in \textit{Medicago truncatula}, variation in population structure, as measured by the first MDS coordinate, is negatively correlated to gene density. 
+We found the position of the peak for each MDS plot has a coincidence with the position of heterochromatic regions. (Figure \ref{fig:mds_medicago})
+This means that population structure in the windows located in heterochromatin tends to have higher similarity, since those windows are closer in MDS plots.  Biologically, heterochromatic regions have lower gene density and may be less subject to selection \citep{kulikova2001integration,paape2013selection}. 
+To investigate this, we computed gene density near each window using gene models in Mt4.0 JBrowse \citep{tang2014improved}. 
+Indeed, the first MDS coordinate value is negatively correlated to the gene count for each window (Figure \ref{fig:mds_gene_count}).
+Besides, we found the PCA plots are quite consistent for the peaks that more clustering away from the heterochromatic regions, 
+while the PCA plots are barely consistent for the peaks that more clustering around heterochromatic regions for the 8 chromosomes.
 Unlike in the human and Drosophila genomes, in \textit{Medicago truncatula}, major variation in population structure is likely due to linked selection. 
 
 \begin{figure}
@@ -390,6 +451,27 @@ Unlike in the human and Drosophila genomes, in \textit{Medicago truncatula}, maj
     }
 \end{figure}
 
+\begin{figure}
+    \begin{center}
+       \includegraphics[width=0.9\textwidth]{medicago_mds}
+    \end{center}
+    \caption{
+     MDS visualization for Medicago chromosome 3. Each point in the plot stands for a window (length 1000 SNPs).
+       \label{fig:mds12_medicago}
+    }
+\end{figure}
+
+\begin{figure}
+    \begin{center}
+       \includegraphics[width=0.9\textwidth]{medicago_peaks_pca}
+    \end{center}
+    \caption{
+        PCA plots for the three sets of genomic windows colored separately in Figure \ref{fig:mds12_medicago}. 
+        From left to right, the windows colored green, orange, and purple. Each point corresponds to a sample, colored by origin.
+        \label{fig:pca_medicago}
+    }
+\end{figure}
+
 
 \begin{figure}
     \begin{center}
@@ -399,7 +481,7 @@ Unlike in the human and Drosophila genomes, in \textit{Medicago truncatula}, maj
         First MDS coordinate against gene density for chromosome 3. 
         (A) First MDS coordinate against the position (midpoint) of each window. 
         (B) Gene count for each window against the position of each window; 
-        (C) The first MDS coordinate is significantly correlated with gene count (r=XXX, p=XXX). 
+        (C) The first MDS coordinate is significantly correlated with gene count (r=0.20, p=$2.2\times 10^{-16}$). 
         (See supplementary for other chromosomes' MDS results against gene count for \textit{Medicago})
         \label{fig:mds_gene_count}
     }
@@ -408,12 +490,15 @@ Unlike in the human and Drosophila genomes, in \textit{Medicago truncatula}, maj
 %%%%%%% %%%%%%%%%
 \section{Discussion}
 
+We aim to investigate the population structure variation along the genome, so we look into it for each genomic window locally. 
+The choice of window length depends on the genomic data's features, such as data size and noise.
+
 We've shown that local summaries of tree shape, i.e., kinship, vary significantly on a large scale along the genome,
 and that exploratory visualization of this variation can be useful.
 
 There are many ways to visualize population structure; perhaps others would show different things.
+For example, SMARTPCA removes effects of linked blocks, while our method don't.
 
-Come back to some points in the Introduction.
 
 \subsection{Future work}
 1. For human and Drosophila, we want to eliminate the regions under known inversions and check the variation of population structure for the remaining part by removing those sections. We try to check whether they will give similar results as in \textit{Medicago truncatula}, that is whether the variation is closely related to heterochromatin or gene density.
