@@ -7,6 +7,7 @@ date: "`r date()`"
 library(lostruct)
 library(colorspace)
 library(jsonlite)
+library(RColorBrewer)
 fig.dim <- 4
 knitr::opts_chunk$set(fig.width=2*fig.dim,fig.height=fig.dim,fig.align='center')
 ```
@@ -17,16 +18,42 @@ opt <- fromJSON("config.json")
 # data files, precomputed
 pca.files <- list.files(".",".*.pca.csv")
 mds.file <- "mds_coords.csv"
-regions.file <- gsub("[.]pca[.]csv$",".regions.csv",pca.files)
+regions.files <- list.files(".",".*.regions.csv")
 
 # read in mds
 mds.coords <- read.csv(mds.file,header=TRUE)
 mds.cols <- (1:ncol(mds.coords))[-(1:2)]
 
 # position information
-regions <- do.call( rbind, lapply( regions.file, read.csv, header=TRUE ) )
-regions$mid <- (regions$start+regions$end)/2
-chrom.cols <- rainbow_hcl(128, c=90, end=.9*360)[as.numeric(cut(regions$mid,128))]
+regions <- do.call( rbind, lapply( regions.files, read.csv, header=TRUE ) )
+# figure out where to plot things at
+chroms <- unique(regions$chrom)
+chrom.starts <- tapply( regions$start, regions$chrom, min, na.rm=TRUE )
+chrom.ends <- tapply( regions$end, regions$chrom, max, na.rm=TRUE )
+chrom.spacing <- floor(.05*mean(chrom.ends))
+chrom.offsets <- c(0,cumsum(chrom.spacing+chrom.ends))
+names(chrom.offsets) <- c(chroms,"end")
+chrom.dividers <- c(0,chrom.offsets[-1])-chrom.spacing/2
+chrom.mids <- chrom.dividers[-1] - diff(chrom.dividers)/2
+
+# this is where to plot windows at when plotting with all chromosomes
+regions$pos <- chrom.offsets[regions$chrom]+(regions$start+regions$end)/2
+
+chrom.cols <- rainbow_hcl(length(chroms), c=90, end=.9*360)[as.numeric(regions$chrom)]
+
+# set up to plot all chromosomes together
+chrom.plot <- function (y,ylab='',main='',...) {
+    plot(0, type='n', xlim=range(chrom.offsets/1e6), ylim=range(y,finite=TRUE), 
+         xlab='', xaxt='n', ylab=ylab, main=main)
+    for (k in 1:floor(length(chroms)/2)) {
+        rect( xleft=chrom.dividers[2*k-1]/1e6, xright=chrom.dividers[2*k]/1e6, 
+             ybottom=par("usr")[3], ytop=par("usr")[4], 
+             border=NA, col=adjustcolor("grey",0.25) )
+    }
+    abline( v=chrom.dividers/1e6, lty=3, col=adjustcolor("grey",0.5), lwd=2 )
+    axis( 1, at=chrom.mids/1e6, labels=chroms, las=0, tick=FALSE )
+    points( regions$pos/1e6, y, ...)
+}
 ```
 
 This run had these parameters:
@@ -36,26 +63,34 @@ This run had these parameters:
 - *number of pcs* : `r opt$npc`
 - *number of MDS coordinates* : `r opt$nmds`
 
-Here are the computed MDS coordinates, colored by chromosome:
+Here are the number of windows per chromsome,
+and the computed MDS coordinates, colored by chromosome:
 ```{r mds_pairplot}
+table(regions$chrom)
 pairs( mds.coords[,mds.cols], pch=20, col=adjustcolor(chrom.cols,0.75) )
 ```
 
 Here are the extreme windows in the MDS plot:
 ```{r get_corners}
 mds.corners <- corners( mds.coords[,mds.cols[1:2]], prop=.05 )
-corner.cols <- c("red","blue","purple")
+# set up colors and pchs for corners
+corner.cols <- brewer.pal(3,"Dark2")
+corner.pch <- c(15,17,19)
 ccols <- rep("black",nrow(mds.coords))
+cpch <- rep(20,nrow(mds.coords))
 for (k in 1:ncol(mds.corners)) {
     ccols[ mds.corners[,k] ] <- corner.cols[k]
+    cpch[ mds.corners[,k] ] <- corner.pch[k]
 }
-
-plot( mds.coords[,mds.cols[1:2]], pch=20, col=adjustcolor(ccols,0.75), 
-        xlab="MDS coordinate 1", ylab="MDS coordinate 2" )
-
+# plot corners and MDS along the chromosome
+layout(matrix(c(1,1,2,3),nrow=2),widths=c(1,2))
+plot( mds.coords[,mds.cols[1:2]], pch=cpch, 
+     col=adjustcolor(ccols,0.75), 
+     xlab="MDS coordinate 1", ylab="MDS coordinate 2" )
 for (k in mds.cols) {
-    plot( regions$mid/1e6, mds.coords[,k], pch=20, 
-            xlab="Position (Mb)", ylab=paste("MDS coordinate",k),
+    chrom.plot( mds.coords[,k], pch=20, 
+            xlab="Position (Mb)", main=paste("MDS coordinate",match(k,mds.cols)),
+            ylab=colnames(mds.coords)[k],
             col=adjustcolor(ccols,0.75) )
 }
 ```
