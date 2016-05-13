@@ -2,9 +2,12 @@
 % Please edit documentation in R/enclosing_circle.R
 \name{enclosing_circle}
 \alias{enclosing_circle}
+\alias{plot_circle}
 \title{Minimum Enclosing Circle}
 \usage{
 enclosing_circle(xy)
+
+plot_circle(circ, n = 200, plot.it = TRUE, ...)
 }
 \arguments{
 \item{xy}{The 2D coordinates.}
@@ -25,4 +28,8 @@ Finds the minimum enclosing circle to a set of points,
 "Skyum algorithm based on the convex hull", as implemented at 
    http://www.uni-kiel.de/psychologie/rexrepos/posts/diagBounding.html#minimum-enclosing-circle
 }
+\section{Functions}{
+\itemize{
+\item \code{plot_circle}: Plots a circle.
+}}
 

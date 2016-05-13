@@ -4,8 +4,7 @@
 \alias{eigen_windows}
 \title{Find Eigenvectors and Eigenvalues for Covariance Matrices in Windows}
 \usage{
-eigen_windows(data, k, do.windows = NULL, win, mc.cores = 1,
-  return.mat = FALSE, ...)
+eigen_windows(data, k, do.windows = NULL, win, mc.cores = 1, ...)
 }
 \arguments{
 \item{data}{Either a numeric matrix or a window extractor function, that takes a positive integer \code{n} and returns the numeric matrix that correspond to the \code{n}th window.}
@@ -18,14 +17,11 @@ eigen_windows(data, k, do.windows = NULL, win, mc.cores = 1,
 
 \item{mc.cores}{If this is greater than 1, parallel::mclapply will be used.}
 
-\item{return.mat}{Return a single matrix instead of values and vectors split out?}
-
 \item{...}{Other parameters to be passed to \code{win.fn}.}
 }
 \value{
-A named list, with components
-  $values : A numeric matrix of eigenvalues, one column for each window and k rows.
-  $vectors : A numeric matrix, one column for each window, having the eigenvectors in order (so it has k * ncol(matrix) rows).
+A numeric matrix with one row for each window; the first k columns giving eigenvalues and each subsequent group of ncol(data) columns giving the corresponding eigenvector.
+The result has an attribute, "npc", which is equal to the number of eigenvalues computed (k).
 }
 \description{
 Subtracts row means from the input matrix, then

@@ -4,8 +4,7 @@
 \alias{eigen_windows_winfn}
 \title{Does the work of eigen_windows.}
 \usage{
-eigen_windows_winfn(win.fn = function(data, n, ...) {     data[seq(((n - 1) *
-  win + 1), (n * win)), ] }, do.windows = NULL, k, mc.cores = 1, ...)
+eigen_windows_winfn(win.fn, do.windows = NULL, k, mc.cores = 1, ...)
 }
 \description{
 Does the work of eigen_windows.

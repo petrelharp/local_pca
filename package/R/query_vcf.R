@@ -18,6 +18,7 @@ region_string <- function (regions) {
 #' Uses bcftools to query vcf or bcf files for genotypes in a collection of regions,
 #' returning the genotypes in numeric format.
 #' Assumes the data are diploid and that every site is diallelic.
+#' Data are returned in the order encountered in the VCF file even if the regions are not in this order.
 #'
 #' @param file The name of the indexed vcf file.
 #' @param regions A data frame containing chrom, start, and end of the regions to be extracted.
@@ -38,6 +39,26 @@ vcf_query <- function (file, regions, samples, verbose=FALSE, recode=TRUE) {
     gt <- c(0L,1L,1L,2L)[match( unlist(gt.text), c("0/0","0/1","1/0","1/1") )]
     dim(gt) <- dim(gt.text)
     return(gt)
+}
+
+#' Query Multiple VCF Files
+#'
+#' Applies \code{vcf_query} to multiple VCF files: must specify which chromosomes are in which file with \code{chrom.list}.
+#'
+#' @param chrom.list A list of character vectors of chromosome names, the \code{n}th saying which chromosomes are available in the \code{n}th vcf file.
+#' @param file The name(s) of the indexed vcf file(s).
+#' @param regions A data frame containing chrom, start, and end of the regions to be extracted.
+#' @param ... Other arguments passed to \code{vcf_query}.
+#' @return The results of the separate \code{vcf_query} calls, \code{rbind}'ed together
+#' (this will *not* necessarily be in the same order as \code{regions}!).
+#' @export
+vcf_multi_query <- function (chrom.list, file=names(chrom.list), regions, ... ) {
+    chroms <- unlist(chrom.list)
+    files <- file[ rep(seq_along(chrom.list),sapply(chrom.list,length)) ]
+    do.call( rbind, lapply( seq_along(file), function (kf) {
+                this.regions <- regions[ files[match(regions$chrom,chroms)]==file[k], ]
+                vcf_query( file[k], this.regions, ... )
+        } ) )
 }
 
 #' Read Position From a VCF File
@@ -155,11 +176,28 @@ vcf_windower_snp <- function (file, sites, size, samples=vcf_samples(file)) {
 	return(win.fn)
 }
 
-#' @describeIn vcf_windower Returns the \code{region} function of a window extractor function.
+#' Window Extractor Functions
+#'
+#' A window extractor function ("winfun") takes an integer vector and returns an integer matrix, 
+#' giving the number of alternate alleles for each sample for the corresponding windows.
+#' Such functions also have three attributes: \code{max.n}, giving the index of the largest window,
+#' \code{samples}, the sample IDs that are extracted (corresponding to the columns of the matrix that is returned),
+#' and \code{region}, which is a function that takes an integer vector and returns a data frame giving chromosome, start, and end of the corresponding windows.
+#'
+#' @param f A window extractor function (class \code{winfun}).
+#' @name winfuns
+NULL
+
+#' @describeIn winfuns Returns the \code{region} function of a window extractor function.
+#' @export
 region <- function (f) { function (n=seq_len(attr(f,"max.n"))) { attr(f,"region")(n) } }
 
-#' @describeIn vcf_windower Gives the number of samples of matrices returned by a window extractor function (access with ncol( )).
-dim.winfun <- function (f) { c(NA,length(attr(f,"samples"))) }
-
-#' @describeIn vcf_windower Gives the sample IDs returned by a window extractor function.
+#' @describeIn winfuns Gives the sample IDs returned by a window extractor function.
+#' @export
 samples <- function (f) { attr(f,"samples") }
+
+
+#' @describeIn winfuns Gives the number of samples of matrices returned by a window extractor function (access with ncol( )).
+#' @export 
+#' @method dim winfun
+dim.winfun <- function (f) { c(NA,length(attr(f,"samples"))) }

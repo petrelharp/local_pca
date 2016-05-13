@@ -4,7 +4,8 @@
 \alias{recode_numeric}
 \title{Convert Matrix of Alleles to Numeric}
 \usage{
-recode_numeric(x, ploidy = 2, triallelic = TRUE)
+recode_numeric(x, ploidy = 2, triallelic = TRUE, alleles = c("A", "C",
+  "G", "T"))
 }
 \arguments{
 \item{x}{Character matrix of alleles.}
@@ -12,6 +13,8 @@ recode_numeric(x, ploidy = 2, triallelic = TRUE)
 \item{ploidy}{Number of columns per individual.}
 
 \item{triallelic}{Include triallelic sites? Defaults to TRUE; otherwise sets these to NA.}
+
+\item{alleles}{A character vector of valid alleles.}
 }
 \value{
 An integer matrix with one row per site and one column per individual.

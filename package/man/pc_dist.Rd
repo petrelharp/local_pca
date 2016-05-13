@@ -4,10 +4,12 @@
 \alias{pc_dist}
 \title{Find Matrix of Distances Between Matrices from Eigenvector/values}
 \usage{
-pc_dist(x, normalize = "L1", mc.cores = 1)
+pc_dist(x, npc, normalize = "L1", mc.cores = 1)
 }
 \arguments{
-\item{x}{List as output by eigen_windows().}
+\item{x}{Matrix as output by eigen_windows().}
+
+\item{npc}{Number of pcas computed.}
 
 \item{normalize}{Normalize the matrices to have the same norm?  Can be "L1" (default), "L2", or FALSE.}
 
@@ -17,11 +19,11 @@ pc_dist(x, normalize = "L1", mc.cores = 1)
 A symmetric, numeric matrix with number of columns equal to the number of columns in eigen.win$values.
 }
 \description{
-Given a list of sets of eigenvalues/vectors for a set of n symmetric matrices as output by eigen_windows(),
+Given a matrix of sets of eigenvalues/vectors for a set of n symmetric matrices as output by eigen_windows(),
 return the (n x n) matrix whose [i,j]th element is the Frobenius norm of the difference between the i-th and the j-th matrices,
 as approximated by the given eigenvalues/vectors. The approximation is in pseudocode
      M = values[1] * outer(vectors[1],vectors[1]) + values[2] * outer(vectors[2],vectors[2]) + ...
-If \code{normalize} is TRUE, then the the matrices are normalized to have norm 1, so that in the definition of M,
-\code{values} is replaced by \code{values/sqrt(sum(values^2))}.
+If \code{normalize} is set, then the the matrices are normalized to have norm 1, so that in the definition of M,
+\code{values} is replaced by \code{values/sqrt(sum(values))}.
 }
 

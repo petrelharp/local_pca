@@ -16,6 +16,6 @@ cov_pca <- function (x,k) {
     if(any(is.na(covmat))) {return(rep(NA,2*(nrow(covmat)+1)))}
     PCA <- eigen(covmat)
     # returns in order (values, vectors)
-    return( c( PCA$values[1:k], PCA$vectors[,1:k] ) )
+    return( c( sum(covmat^2), PCA$values[1:k], PCA$vectors[,1:k] ) )
 }
 

@@ -16,6 +16,6 @@ By the cyclic invariance of trace, if X = U^T V then
 dist_from_pcs(values1, vectors1, values2, vectors2)
 }
 \description{
-The code assumes that the vectors are orthonormal.
+The code assumes that vectors1 and vectors2 are each orthonormal.
 }
 
