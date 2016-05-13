@@ -4,8 +4,8 @@
 #' return the (n x n) matrix whose [i,j]th element is the Frobenius norm of the difference between the i-th and the j-th matrices,
 #' as approximated by the given eigenvalues/vectors. The approximation is in pseudocode
 #'      M = values[1] * outer(vectors[1],vectors[1]) + values[2] * outer(vectors[2],vectors[2]) + ...
-#' If \code{normalize} is TRUE, then the the matrices are normalized to have norm 1, so that in the definition of M,
-#' \code{values} is replaced by \code{values/sqrt(sum(values^2))}.
+#' If \code{normalize} is set, then the the matrices are normalized to have norm 1, so that in the definition of M,
+#' \code{values} is replaced by \code{values/sqrt(sum(values))}.
 #'
 #' @param x Matrix as output by eigen_windows().
 #' @param npc Number of pcas computed.
@@ -15,8 +15,8 @@
 #' @export
 pc_dist <- function( x, npc, normalize="L1", mc.cores=1 ) {
     this.lapply <- if (mc.cores>1) { function (...) parallel::mclapply(...,mc.cores=mc.cores) } else { lapply }
-    values <- x[,1:npc,drop=FALSE]
-    vectors <- x[,-(1:npc)]
+    values <- x[,1+(1:npc),drop=FALSE]
+    vectors <- x[,-(1:(1+npc))]
     if (normalize=="L1") { values <- sweep( values, 1, abs(rowSums(values)), "/" ) }
     if (normalize=="L2") { values <- sweep( values, 1, sqrt(rowSums(values^2)), "/" ) }
     n <- nrow(values)

@@ -10,8 +10,6 @@ knitr::opts_chunk$set(fig.width=2*fig.dim,fig.height=fig.dim,fig.align='center')
 ```
 
 
-```
-
 # Data
 
 Filtered SNP calls from Mt4.0 were downloaded from [medicagohapmap.org](http://medicagohapmap.org/) on 5/4/2016:
@@ -122,8 +120,7 @@ bcf.sites <- list( chr1=scan(bcf.con) )
 close(bcf.con)
 # now use bcftools to pull out sites we want
 win.fn <- function (n,win.snps=100) {
-    sites <- list( chr1=bcf.sites[[1]][seq(1+(n-1)*win.snps,length.out=win.snps)] )
-    regions <- enclosing_region(sites)
+    regions <- data.frame( chrom="chr1", start=1+(n-1)*win.snps, end=n*win.snps )
     vcf_query( bcf.file, regions, get.indivs )
 }
 win.fn(20,10)  # get the 20th window of 10 SNPs
@@ -183,7 +180,7 @@ This is just with ten samples, so we don't expect a real result, but let's check
 ```{r mds_chr1_snp, cache=TRUE, depends="lpca_chr1_snp"}
 system.time( chr1.pcdist <- pc_dist( snp.pca ) )
 # there may be windows with missing data
-na.inds <- is.na( snp.pca$values[1,] )
+na.inds <- is.na( snp.pca[1,] )
 chr1.mds <- cmdscale( chr1.pcdist[!na.inds,!na.inds], eig=TRUE, k=4 )
 mds.coords <- chr1.mds$points[ ifelse( na.inds, NA, cumsum(!na.inds) ), ]
 colnames(mds.coords) <- paste("MDS coordinate", 1:ncol(mds.coords))
@@ -241,8 +238,8 @@ countries <- samples$Country.of.Origin[match(do.indivs,samples$ID)]
 country.names <- unique(countries)
 country.cols <- rainbow_hcl( length(country.names), c=90 )
 country.pch <- rep(1:6,length.out=length(country.names))
-for (k in 1:ncol(corner.pcs$vectors)) {
-    xy <- matrix( corner.pcs$vectors[,k], nrow=nrow(corner.pcs$vectors)/nrow(corner.pcs$values) )
+for (k in 1:nrow(corner.pcs)) {
+    xy <- matrix( corner.pcs[k,-(1:3)], ncol=2 )
     plot(xy, xlab="PC 1", ylab="PC 2", main=paste("corner",k), 
             col=country.cols[match(countries,country.names)], 
             pch=country.pch[match(countries,country.names)]  )

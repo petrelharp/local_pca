@@ -55,16 +55,11 @@ eigen_windows_winfn <- function (
     this.lapply <- if (mc.cores>1) { function (...) parallel::mclapply(...,mc.cores=mc.cores) } else { lapply }
     if (is.null(do.windows)) { do.windows <- seq_len(attr(win.fn,"max.n")) }
     .local <- function(x) {
-        chunk <- win.fn(n=x,...)
-        chunk <- sweep( chunk, 1, rowMeans(chunk,na.rm=TRUE) )
-        cov <- cov(chunk,use="pairwise")
-        if(any(is.na(cov))) {return(rep(NA,2*(nrow(cov)+1)))}
-        PCA <- eigen(cov)
-        # returns in order (values, vectors)
-        return( c( PCA$values[1:k], PCA$vectors[,1:k] ) )
+        # returns in order (total, values, vectors)
+        cov_pca( win.fn(n=x,...), k=k )
     }
     eigen.mat <- do.call( rbind, this.lapply( do.windows, .local ) )
-    colnames(eigen.mat) <- c( paste0("lam_",1:k), as.vector( paste0("PC_", t(outer( 1:k, samples(win.fn), paste, sep="_" )) ) ) )
+    colnames(eigen.mat) <- c( "total", paste0("lam_",1:k), as.vector( paste0("PC_", t(outer( 1:k, samples(win.fn), paste, sep="_" )) ) ) )
     attr(eigen.mat,"npc") <- k
     return( eigen.mat )
 }

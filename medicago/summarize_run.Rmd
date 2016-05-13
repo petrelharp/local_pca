@@ -82,6 +82,8 @@ for (k in 1:ncol(mds.corners)) {
     ccols[ mds.corners[,k] ] <- corner.cols[k]
     cpch[ mds.corners[,k] ] <- corner.pch[k]
 }
+```
+```{r plot_corners}
 # plot corners and MDS along the chromosome
 layout(matrix(c(1,1,2,3),nrow=2),widths=c(1,2))
 plot( mds.coords[,mds.cols[1:2]], pch=cpch, 

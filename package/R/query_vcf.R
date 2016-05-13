@@ -1,19 +1,3 @@
-#' Find Minimal Enclosing Regions
-#'
-#' Given a named list of positions, whose names correspond to chromosomes,
-#' return the data frame of regions with names chrom,start,end that encloses them.
-#'
-#' @param sites Named list of positions, as output by \code{vcf_positions()}.
-#' @return A data frame with variables chrom, start, and end.
-#' @export
-enclosing_region <- function (sites) {
-    if (length(sites)==0 || max(sapply(sites,length))==0) { return( NULL ) }
-    return( data.frame(
-            chrom=names(sites),
-            start=sapply(sites,min,na.rm=TRUE),
-            end=sapply(sites,max,na.rm=TRUE)
-        ) )
-}
 
 #' Make Regions String from Data Frame of Regions
 #'
