@@ -104,16 +104,24 @@ for (k in mds.cols) {
 
 
 Now, we'll look at PCA plots from the extracted corners.
+(warning: takes awhile and a lot of RAM)
 ```{r corner_pca, cache=TRUE}
+corner.npc <- 4
 corner.regions <- lapply( 1:ncol(mds.corners), function (k) {
-                regions[ mds.corners[,k], ]
+            regions[ mds.corners[,k], ]
     } )
 corner.pca <- lapply( corner.regions, function (reg) {
-            geno <- do.call( rbind, tapply( 1:nrow(reg), reg$chrom, function (k) {
-                        chrom <- reg$chrom[k[1]]
-                        vcf_query( bcf.files[chrom], reg[k,] )
-                }, simplify=FALSE ) )
-            cov_pca(geno,k=4)
+            geno <- vcf_multi_query( chrom.list=chroms, file=bcf.files, regions=reg )
+            cov_pca(geno,k=corner.npc)
     } )
+```
+
+First, here are the first `r corner.npc` PCs for each corner, together:
+```{r plot_corner_pca, fig.width=3*fig.dim}
+for (k in seq_along(mds.corners)) {
+    vectors <- matrix( corner.pca[[k]][-(1:(1+corner.npc))], ncol=corner.npc )
+    colnames(vectors) <- paste("PC", 1:corner.npc)
+    pairs(vectors)
+}
 ```
 
