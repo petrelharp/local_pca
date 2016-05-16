@@ -26,7 +26,34 @@
 %\subsection{}
 \doublespacing
 
-\plr{Note: your intro focuses on PCA more than mine, which is trying to be about population structure generally.}
+
+\section*{Abstract}
+
+Dimension reduction techniques,
+such as principal components,
+are often used to discover and display large-scale structure in genomic datasets
+found in the patterns of kinship
+between the genotyped individuals,
+and to control for the confounding effects of population structure in genome-wide association studies.
+The genome-wide mean kinship this uses
+is an average of the relationships across all locus-specific genealogical trees.
+However, many biological factors,
+including linked selection,
+can systematically skew patterns of kinship over intermediate genomic scales.
+We show how to use principal components analysis (PCA) to describe this meso-scale variation in kinship,
+and apply the method to genomic data from three species.
+In each species we find substantial variation on the scale of megabases to tens of megabases.
+In a global human dataset, small, discontinuous variation is likely explained by polymorphic chromosomal inversions.
+In a dataset of African \textit{Drosophila melanogaster}, large, continuous variation across each chromosome arm
+is explained by known chromosomal inversions thought to be under recent selection.
+In a range-wide dataset of \textit{Medicago truncatula},
+common axes of variation in population structure are shared between chromosomes,
+correlates with local gene density,
+and may be caused by background selection or local adaptation.
+
+\plr{Add percent of variance explained by first two MDS coordinates, after subtracting the genome-wide mean covariance matrix.}
+
+\plr{Add whole-genome PCA plots for comparison (unless they look just like one of the three corners; in which case say so.}
 
 \section{Introduction}
 
@@ -487,18 +514,95 @@ Unlike in the human and Drosophila genomes, in \textit{Medicago truncatula}, maj
     }
 \end{figure}
 
+
 %%%%%%% %%%%%%%%%
 \section{Discussion}
 
-We aim to investigate the population structure variation along the genome, so we look into it for each genomic window locally. 
-The choice of window length depends on the genomic data's features, such as data size and noise.
+The phrase ``population structure'' refers to reduced gene flow between subpopulations, often because of geographical isolation.
+This leads to systematic patterns in genome-wide mean kinship,
+and so visualizations of kinship are said to depict population structure,
+rather than depicting the \emph{effects} of population structure (which would be more accurate).
+However, it is widely recognized that because of selection the effects of gene flow are not equal everywhere on the genome \citep{introgression_review},
+and patterns of polymorphism and divergence vary significantly depending on factors including local gene density \citep{linked_selection,sattath}.
+This implies that the population structure of a species depends on which part of the genome is being examined.
 
-We've shown that local summaries of tree shape, i.e., kinship, vary significantly on a large scale along the genome,
-and that exploratory visualization of this variation can be useful.
+With growing appreciation of the heterogeneous effects of selection across the genome,
+especially the importance of adaptive introgression, hybrid speciation \citep{tomato,mosquito,introgression_review},
+local adaptation \citep{local_adapt_review},
+and inversion polymorphisms \citep{mosquito,kirkpatrick_inversions},
+local PCA may prove to be a useful exploratory tool to discover important genomic features.
+It is unclear whether the technique will be useful on reduced representation genotyping datasets 
+due to marker density and issues with missing data --
+our investigations with one such dataset were inconclusive --
+but even low coverage, whole-genome sequence is very promising.
 
-There are many ways to visualize population structure; perhaps others would show different things.
-For example, SMARTPCA removes effects of linked blocks, while our method don't.
 
+\paragraph{Confounding in GWAS}
+So-called cryptic relatedness between samples
+has been one of the major sources of confounding in genome-wide association studies (GWAS)
+and so methods must account for it by modeling population structure or kinship \citep{gwas_confounding_review,mixed_models}.
+Since population structure is not constant along the genome,
+this could in principle lead to an inflation of false positives parts of the genome
+with stronger population structure than the genome-wide average.
+Fortunately, in our human dataset this does not seem likely to have a strong effect:
+most variation is due to small, independent regions, possibly primarily inversions,
+and so may not have a major effect on GWAS.
+In the other species we examined, particularly \textit{Drosophila melanogaster},
+treating population structure as a single quantity could be severely misleading.
+
+
+\paragraph{Parameter choices}
+There are several choices in the method that may affect the results.
+As with whole-genome PCA,
+the choice of samples is important,
+as variation not strongly represented in the sample will not be discovered.
+The effects of strongly imbalanced sampling schemes are often corrected by dropping samples in overrepresented groups;
+but downweighting may be a better option that does not discard data.
+Next, the choice of window size may be important,
+although in our applications results were not sensitive to this,
+indicating that the limit of resolution was smaller than the scale on which patterns of kinship varies along the genome.
+Finally, which collections of genomic regions are compared to each other (steps 3 and 4 in figure \ref{fig:diagram}),
+along with the method used to discover common structure,
+will affect results.
+We used MDS, applied to either each chromosome separately or to the entire genome;
+for instance, human inversions are clearly visible as outliers when compared to the rest of their chromosome,
+but genome-wide, their signal is obscured by the numerous other signals of comparable strength.
+
+Besides window length, there is also the question of how to choose windows.
+In these applications we have used nonoverlapping windows with equal numbers of polymorphic sites.
+Alternatively, windows could be chosen to have equal length in genetic distance,
+so that each would have roughly the same amount of phylogenetic information.
+However, given the insensitivity of our results to window length,
+this seems unlikely to give different results.
+\plr{If we check: We did not have this choice to have a substantial effect on results.}
+
+More generally, there are many possible methods to discover common structure in different parts of the genome.
+The methods we chose discovered strong biological signal of different types in three datasets;
+but it is possible that other methods for measuring dissimilarity between windows' covariance matrices
+or for summarizing the matrix of pairwise distances between windows
+would lead to different insights.
+Minor points we have not explored include how to decide how many PCs to use in approximating structure of each window
+(equations XX),
+how many MDS coordinates to use when describing the distance matrix between windows,
+or how to choose interesting regions of the genome when the MDS plot is not triangular.
+These are all part of more general techniques in dimension reduction and high-dimensional data visualization;
+we encourage the user to experiment.
+
+
+\paragraph{Chromosomal inversions}
+A major driver of variation in population structure in two datasets we examined are inversions.
+This may be common,
+but the example of \textit{Medicago truncatula} shows that polymorphic inversions are not ubiquitous.
+PCA has been proposed as a method for discovering inversions \citep{ma_identify_inversions};
+However, the signal left by inversions likely cannot be distinguished from long haplotypes under balancing selection 
+or simply regions of reduced recombination.
+However, in many applications, inversions are a nuisance.
+For instance, SMARTPCA \citep{smartpca} reduces their effect on PCA plots
+by regressing out the effect of linked SNPs on each other.
+It would be interesting to see if smoehow removing the effects of inversions in the \textit{Drosophila melanogaster} or human datasets
+would produce a pattern similar to that seen in \textit{Medicago truncatula}.
+
+\plr{Check if I've missed anything, then remove these?}
 
 \subsection{Future work}
 1. For human and Drosophila, we want to eliminate the regions under known inversions and check the variation of population structure for the remaining part by removing those sections. We try to check whether they will give similar results as in \textit{Medicago truncatula}, that is whether the variation is closely related to heterochromatin or gene density.
