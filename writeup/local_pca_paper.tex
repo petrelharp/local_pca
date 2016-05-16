@@ -297,8 +297,6 @@ Due to the orthogonality of eigenvectors,we could use the following method to ca
     \begin{aligned}
         V_{i1}&=\sqrt{\frac{\lambda _{1i}}{\lambda _{1i}+\lambda _{2i}}}PC1_{i} \qquad
         V_{i2}&=\sqrt{\frac{\lambda _{2i}}{\lambda _{1i}+\lambda _{2i}}}PC2_{i} \\
-        V_{j1}&=\sqrt{\frac{\lambda _{1j}}{\lambda _{1j}+\lambda _{2j}}}PC1_{j} \qquad
-        V_{j2}&=\sqrt{\frac{\lambda _{2j}}{\lambda _{1j}+\lambda _{2j}}}PC2_{j}
     \end{aligned}
 \end{equation}
 
@@ -353,15 +351,15 @@ Since the relative position of each window in this plot shows the similarity bet
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=0.9\textwidth]{Fig1_temp}
+       \includegraphics[width=0.9\textwidth]{Fig1}
     \end{center}
     \caption{
-         Variation in structure for windows on chromosome arms 2L, 2R, and 3R. 
+         Variation in structure for windows on chromosome arms 2L, 2R, 3L, 3R and X. 
          Each represents a window: the first column shows the MDS visualization of relationships between windows. 
          The second and third columns show the position (midpoint) of each window against the first and second MDS coordinates, respectively. 
-         Rows show results from different chromosome arms, from top to bottom: Chr2L, Chr2R, Chr3L. 
+         Rows show results from different chromosome arms, from top to bottom: Chr2L, Chr2R, Chr3L, Chr3R, ChrX. 
          Colors are consistent for plots in each row. 
-         Vertical black lines show the breakpoints of known polymorphic inversions (from top to bottom: In(2L)t, In(2R)NS, In(3L)OK).
+         Vertical black lines show the breakpoints of known polymorphic inversions for Chr2L, Chr2R, Chr3L, Chr3R (from top to down: In(2L)t, In(2R)NS, In(3L)OK, In(3R)K).
          \label{fig:mds_chr2L}
     }
 \end{figure}
@@ -374,7 +372,7 @@ We can see in Figure \ref{fig:pca_chr2L} the obvious difference between their PC
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=0.9\textwidth]{Fig2_temp}
+       \includegraphics[width=0.9\textwidth]{Fig2}
     \end{center}
     \caption{      
         PCA plots for the three sets of genomic windows colored in Figure \ref{fig:mds_chr2L}. 
@@ -391,13 +389,18 @@ Two regions of similar, extreme population structure (green in Figure \ref{fig:m
 and the other two extremes occur in the center of the inversion and between the inversion and centromere.
 The corresponding PCA plots show that locally, population structure is mostly determined by which orientation of the inversion each sample has.
 Similar results are found in other chromosome arms that have known polymorphic inversions (Chr2R, Chr3L, Chr3R) in \textit{Drosophila}. 
+Other known polymorphic inversions are like In(3L)P on Chr3L, In(3R)Mo and  In(3R)P on Chr3R. 
+In(3L)P and In(3R)Mo are just a few in our samples, thus we don't see the significant influence of population structure of them. 
+The situation of Chr3R is a little complicated. The coexisting inversions make the MDS visualiazation of it more difficult to pick the extremes.
+For the extremes we picked in Figure \ref{fig:mds_chr2L}, In(3R)K could best explain the PCA clustering result, 
+while picking other windows as extremes might show that In(3R)P explain the PCA clustering result.
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=0.9\textwidth]{Fig3_temp}
+       \includegraphics[width=0.9\textwidth]{Fig3}
     \end{center}
     \caption{
-         As in Figure 2, except that samples are colored by orientation of the corresponding polymorphic inversion, In(2L)t, In(2R)NS, In(3L)OK. (Data from\citet{lack2015drosophila}.
+         As in Figure 2, except that samples are colored by orientation of the corresponding polymorphic inversion, In(2L)t, In(2R)NS, In(3L)OK and In(3R)K. (Data from \citet{lack2015drosophila}.
         \label{fig:color_inver}
     }
 \end{figure}
@@ -429,13 +432,17 @@ When we run the method on all 22 autosomes together, the outlying signal of chro
 
 
 \subsection{\textit{Medicago truncatula}}
-We ran our method on all 8 chromosomes of \textit{Medicago truncatula} seperately. 
-We also ran all chromosomes together.
-\plr{The results looked different than the other two species, with much less pronounced peaks...}
-We found the position of the peak for each MDS plot has a coincidence with the position of heterochromatic regions. (Figure \ref{fig:mds_medicago})
-This means that population structure in the windows located in heterochromatin tends to have higher similarity, since those windows are closer in MDS plots.  Biologically, heterochromatic regions have lower gene density and may be less subject to selection \citep{kulikova2001integration,paape2013selection}. 
-To investigate this, we computed gene density near each window using gene models in Mt4.0 JBrowse \citep{tang2014improved}. 
-Indeed, the first MDS coordinate value is negatively correlated to the gene count for each window (Figure \ref{fig:mds_gene_count}).
+We ran our method on all 8 chromosomes of \textit{Medicago truncatula} seperately 
+and found the correlation between each MDS plot and gene density along the genome in all 8 chromosomes. 
+This consistency implies that the factor driving the population structure for each chromosome might be the same, for example, background selection.
+So we ran all chromosomes together, that is, calculating the pairwise distance for all the windows along 8 chromosomes,
+and then get the MDS coordinates for each chromosome by locating the whole MDS coordinates.
+\plr{The results looked different than the other two species, with much less pronounced peaks...}  
+We computed gene density near each window using gene models in Mt4.0 JBrowse \citep{tang2014improved}. 
+The first MDS coordinate value is negatively correlated to the gene count for each window (Figure \ref{fig:mds_gene_count}).
+We found the position of the peak for each MDS plot has a coincidence with the position of heterochromatic regions. 
+This means that population structure in the windows located in heterochromatin tends to have higher similarity, since those windows are closer in MDS plots.
+Biologically, heterochromatic regions have lower gene density and may be less subject to selection \citep{kulikova2001integration,paape2013selection}. 
 Besides, we found the PCA plots are quite consistent for the peaks that more clustering away from the heterochromatic regions, 
 while the PCA plots are barely consistent for the peaks that more clustering around heterochromatic regions for the 8 chromosomes.
 Unlike in the human and Drosophila genomes, in \textit{Medicago truncatula}, major variation in population structure is likely due to linked selection. 
@@ -445,9 +452,10 @@ Unlike in the human and Drosophila genomes, in \textit{Medicago truncatula}, maj
        \includegraphics[width=0.7\textwidth]{fig5}
     \end{center}
     \caption{
-         MDS results for the \textit{Medicago} genome (chr1-8), using first coordinate of MDS against the middle position of each window along each chromosome. 
-         The bars under MDS plots are diagrams for each chromosome showing the relative position of heterochromatin (the deep purple part on each bar) \citep{kulikova2004satellite, kulikova2001integration}.
-        \label{fig:mds_medicago}
+         MDS results and gene density for the \textit{Medicago} genome (chromosome 1-8). 
+         For each chromosome, the red plot above is first coordinate of MDS against the middle position of each window along each chromosome. 
+         The black plot below is gene count for each window against the position of each window.
+         \label{fig:mds_medicago}
     }
 \end{figure}
 
@@ -475,14 +483,12 @@ Unlike in the human and Drosophila genomes, in \textit{Medicago truncatula}, maj
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=0.9\textwidth]{Fig6_MDS_1D_and_gene_count_and_lm_chr3_based_all_chr_win104}
+       \includegraphics[width=0.9\textwidth]{Fig6_MDS_1D_against_gene_count_all_chr_win104_with_lm}
     \end{center}
     \caption{
-        First MDS coordinate against gene density for chromosome 3. 
-        (A) First MDS coordinate against the position (midpoint) of each window. 
-        (B) Gene count for each window against the position of each window; 
-        (C) The first MDS coordinate is significantly correlated with gene count (r=0.20, p=$2.2\times 10^{-16}$). 
-        (See supplementary for other chromosomes' MDS results against gene count for \textit{Medicago})
+        First MDS coordinate against gene density for all 8 chromosomes. 
+        The first MDS coordinate is significantly correlated with gene count (r=0.146, p=$2.2\times 10^{-16}$). 
+        (See supplementary for each single chromosome's MDS result against gene count for \textit{Medicago})
         \label{fig:mds_gene_count}
     }
 \end{figure}
