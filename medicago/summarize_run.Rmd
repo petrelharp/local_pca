@@ -51,7 +51,8 @@ regions$pos <- chrom.offsets[regions$chrom]+(regions$start+regions$end)/2
 
 chrom.cols <- rainbow_hcl(length(chroms), c=90, end=.9*360)[as.numeric(regions$chrom)]
 
-# set up to plot all chromosomes together
+#' Set up to plot all chromosomes together
+#' will plot the vector of values 'y' along all the chromosomes.
 chrom.plot <- function (y,ylab='',main='',...) {
     plot(0, type='n', xlim=range(chrom.offsets/1e6), ylim=range(y,finite=TRUE), 
          xlab='', xaxt='n', ylab=ylab, main=main)
