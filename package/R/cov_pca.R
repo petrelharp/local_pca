@@ -14,8 +14,10 @@ cov_pca <- function (x,k) {
     x <- sweep( x, 1, rowMeans(x,na.rm=TRUE) )
     covmat <- cov(x,use="pairwise")
     if(any(is.na(covmat))) {return(rep(NA,2*(nrow(covmat)+1)))}
-    PCA <- eigen(covmat)
-    # returns in order (values, vectors)
-    return( c( sum(covmat^2), PCA$values[1:k], PCA$vectors[,1:k] ) )
+    # PCA <- eigen(covmat)
+    # return( c( sum(covmat^2), PCA$values[1:k], PCA$vectors[,1:k] ) )
+    PCA <- Rspectra::eigs_sym(covmat,k=k)
+    # returns in order (total sumsq, values, vectors)
+    return( c( sum(covmat^2), PCA$values, PCA$vectors ) )
 }
 
