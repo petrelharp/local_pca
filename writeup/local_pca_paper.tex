@@ -684,7 +684,7 @@ and a $k \times k$ diagonal matrix $\Lambda$ with diagonal entries $\Lambda_{ii}
 The columns of $U$, known as the principal components, are the eigenvectors of $C$,
 the eigenvalues of $C$ are $\lambda$, and the proportion of variance explained by the $m^\text{th}$ component is
 \begin{align*}
-    \frac{ \lambda_m }{ \sum_\ell \lambda_\ell^2 } = \frac{ \sum_{ij} ( \lambda_m U_{im} U_{jm} )^2 }{ \sum_{ij} C_{ij}^2 } .
+    \frac{ \lambda_m^2 }{ \sum_\ell \lambda_\ell^2 } = \frac{ \sum_{ij} ( \lambda_m U_{im} U_{jm} )^2 }{ \sum_{ij} C_{ij}^2 } .
 \end{align*}
 
 Thinking about the problem as a least-squares approximation problem
@@ -725,9 +725,9 @@ and
 \end{align*}
 is the low-dimensional approximation to $C$.
 The proportion of variance explained is calculated exactly as before,
-but the variance is computed in $\ell_2(w)$:
+but the variance is computed in $\ell_2(\sqrt{w})$:
 \begin{align*}
-    \frac{ \lambda_m }{ \sum_\ell \lambda_\ell^2 } = \frac{ \sum_{ij} ( \lambda_m w_i w_j U_{im} U_{jm} )^2 }{ \sum_{ij} w_i w_j C_{ij}^2 } .
+    \frac{ \lambda_m^2 }{ \sum_\ell \lambda_\ell^2 } = \frac{ \sum_{ij} ( \lambda_m \sqrt{w_i w_j} U_{im} U_{jm} )^2 }{ \sum_{ij} \sqrt{w_i w_j} C_{ij}^2 } .
 \end{align*}
 
 Note finally that since we only need find the top $k$ eigenvectors;
