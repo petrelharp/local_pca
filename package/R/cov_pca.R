@@ -26,7 +26,7 @@ cov_pca <- function (x,k,w) {
     # PCA <- eigen(covmat)
     # return( c( sum(covmat^2), PCA$values[1:k], PCA$vectors[,1:k] ) )
     PCA <- Rspectra::eigs_sym(covmat,k=k)
-    PCA$vectors <- sweep( PCA$vectors, 1 sqrt.w, "/" )
+    PCA$vectors <- sweep( PCA$vectors, 1, sqrt.w, "/" )
     # returns in order (total sumsq, values, vectors)
     return( c( sum(covmat^2), PCA$values, PCA$vectors ) )
 }
