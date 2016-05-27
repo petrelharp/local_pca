@@ -21,13 +21,19 @@ option_list <- list(
     # input/output
         make_option( c("-t","--type"),   type="character",             help="Window by SNP or by bp?"),
         make_option( c("-s","--size"),   type="integer",               help="Size of the window, in units of type."),
-        make_option( c("-k","--npc"),   type="integer",   default=2L, help="Number of principal components to compute for each window. [default: %default]"),
+        make_option( c("-k","--npc"),   type="integer",   default=2L,  help="Number of principal components to compute for each window. [default: %default]"),
+        make_option( c("-w","--weights"), type="character",            help="File name containing weights to apply to PCA."),
         make_option( c("-m","--nmds"),   type="integer",   default=2L, help="Number of principal coordinates (MDS variables) to compute. [default: %default]"),
         make_option( c("-o","--outdir"), type="character",             help="Directory to save results to.  [default: lostruct/results_type_%type_size_%size_jobid_%jobid/]"),
         make_option( c("-j","--jobid"),  type="character", default=formatC(1e6*runif(1),width=6,format="d",flag="0"),   help="Unique job id. [default random]")
     )
 opt <- parse_args(OptionParser(option_list=option_list,description=usage))
-if (is.null(opt$outdir)) { opt$outdir <- file.path("lostruct", sprintf( "results_type_%s_size_%d_jobid_%s", opt$type, opt$size, opt$jobid ) ) }
+if (is.null(opt$outdir)) { opt$outdir <- file.path("lostruct", 
+                                   sprintf( "results_type_%s_size_%d_weights_%s_jobid_%s", 
+                                           opt$type, 
+                                           opt$size, 
+                                           if (is.null(opt$weights)) { "none" } else { gsub("[.].*","",basename(opt$weights)) }, 
+                                           opt$jobid ) ) }
 if (is.null(opt$type) || is.null(opt$size)) { stop(usage) }
 
 opt$start.time <- Sys.time()
@@ -39,6 +45,13 @@ cat( jsonlite::toJSON( opt, pretty=TRUE ), file=file.path( opt$outdir, "config.j
 
 # setup
 devtools::load_all("../package")
+
+# weights
+if (is.null(opt$weights)) {
+    weights <- 1
+} else {
+    weights <- scan(opt$weights,what="numeric")
+}
 
 # VCF files
 chroms <- paste0("chr",1:8)
@@ -61,7 +74,7 @@ for (bcf.file in bcf.files) {
         cat("Finding PCs for", bcf.file, "and writing out to", pca.file, "and", regions.file, "\n")
         win.fn <- vcf_windower(bcf.file, size=opt$size, type=tolower(opt$type) )
         these.regions <- region(win.fn)()
-        system.time( pca.stuff <- eigen_windows( win.fn, k=opt$npc ) )
+        system.time( pca.stuff <- eigen_windows( win.fn, k=opt$npc, w=weights ) )
         write.csv( pca.stuff, file=pca.file, row.names=FALSE )
         write.csv( these.regions, file=regions.file, row.names=FALSE )
     }

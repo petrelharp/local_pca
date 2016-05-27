@@ -4,7 +4,7 @@
 \alias{eigen_windows_matrix}
 \title{Sets up eigen_windows_winfn to work on a matrix.}
 \usage{
-eigen_windows_matrix(data, k, win, do.windows = NULL, mc.cores)
+eigen_windows_matrix(data, k, win, w, do.windows = NULL, mc.cores)
 }
 \description{
 Sets up eigen_windows_winfn to work on a matrix.

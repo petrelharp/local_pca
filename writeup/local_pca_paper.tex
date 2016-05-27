@@ -421,7 +421,7 @@ Since the relative position of each window in this plot shows the similarity bet
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=0.9\textwidth]{Fig1}
+       \includegraphics[width=1\textwidth]{Fig1_Together_MDS_plot}
     \end{center}
     \caption{
          Variation in structure for windows on chromosome arms 2L, 2R, 3L, 3R and X. 
@@ -442,7 +442,7 @@ We can see in Figure \ref{fig:pca_chr2L} the obvious difference between their PC
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=0.9\textwidth]{Fig2}
+       \includegraphics[width=0.9\textwidth]{Fig2_all_pca_plots}
     \end{center}
     \caption{      
         PCA plots for the three sets of genomic windows colored in Figure \ref{fig:mds_chr2L}. 
@@ -519,7 +519,7 @@ Unlike in the human and Drosophila genomes, in \textit{Medicago truncatula}, maj
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=0.7\textwidth]{fig5}
+       \includegraphics[width=0.7\textwidth]{Medicago_MDS_1D_and_gene_count}
     \end{center}
     \caption{
          MDS results and gene density for the \textit{Medicago} genome (chromosome 1-8). 
@@ -638,11 +638,11 @@ we encourage the user to experiment.
 A major driver of variation in population structure in two datasets we examined are inversions.
 This may be common,
 but the example of \textit{Medicago truncatula} shows that polymorphic inversions are not ubiquitous.
-PCA has been proposed as a method for discovering inversions \citep{ma_identify_inversions};
+PCA has been proposed as a method for discovering inversions \citep{ma2012investigation};
 However, the signal left by inversions likely cannot be distinguished from long haplotypes under balancing selection 
 or simply regions of reduced recombination.
 However, in many applications, inversions are a nuisance.
-For instance, SMARTPCA \citep{smartpca} reduces their effect on PCA plots
+For instance, SMARTPCA \citep{patterson2006population} reduces their effect on PCA plots
 by regressing out the effect of linked SNPs on each other.
 It would be interesting to see if smoehow removing the effects of inversions in the \textit{Drosophila melanogaster} or human datasets
 would produce a pattern similar to that seen in \textit{Medicago truncatula}.

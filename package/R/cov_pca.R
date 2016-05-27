@@ -17,15 +17,15 @@
 #' and the sum-of-squares (equal to the sum of the eigenvalues squared) is
 #'       sum_{ij}  ( w[i] w[j] )^(1/2) C[i,j]^2 .
 #' @export
-cov_pca <- function (x,k,w) {
+cov_pca <- function (x,k,w=1) {
     x <- sweep( x, 1, rowMeans(x,na.rm=TRUE) )
-    sqrt.w <- sqrt(w)
+    sqrt.w <- rep_len(sqrt(w),ncol(x))
     covmat <- cov(x,use="pairwise")
     covmat <- sweep( sweep( covmat, 1, sqrt.w, "*" ), 2, sqrt.w, "*" )
     if(any(is.na(covmat))) {return(rep(NA,2*(nrow(covmat)+1)))}
     # PCA <- eigen(covmat)
     # return( c( sum(covmat^2), PCA$values[1:k], PCA$vectors[,1:k] ) )
-    PCA <- Rspectra::eigs_sym(covmat,k=k)
+    PCA <- if (k==ncol(x)) { eigen(covmat) } else { RSpectra::eigs_sym(covmat,k=k) }
     PCA$vectors <- sweep( PCA$vectors, 1, sqrt.w, "/" )
     # returns in order (total sumsq, values, vectors)
     return( c( sum(covmat^2), PCA$values, PCA$vectors ) )

@@ -184,20 +184,28 @@ vcf_windower_snp <- function (file, sites, size, samples=vcf_samples(file)) {
 #' \code{samples}, the sample IDs that are extracted (corresponding to the columns of the matrix that is returned),
 #' and \code{region}, which is a function that takes an integer vector and returns a data frame giving chromosome, start, and end of the corresponding windows.
 #'
-#' @param f A window extractor function (class \code{winfun}).
+#' @param f A function (for as.winfun), or a window extractor function (class \code{winfun}).
+#' @param max.n Index of the largest window.
+#' @param samples Character vector of sample IDs corresponding to columns of extracted data.
+#' @param region A function taking an integer vector returning the chromosome, start, and end of the corresponding windows.
 #' @name winfuns
-NULL
+as.winfun <- function (f,max.n,samples,region) {
+    attr(f,"max.n") <- max.n
+    attr(f,"samples") <- samples
+    attr(f,"region") <- region
+    return(f)
+}
 
-#' @describeIn winfuns Returns the \code{region} function of a window extractor function.
+#' @describeIn as.winfun Returns the \code{region} function of a window extractor function.
 #' @export
 region <- function (f) { function (n=seq_len(attr(f,"max.n"))) { attr(f,"region")(n) } }
 
-#' @describeIn winfuns Gives the sample IDs returned by a window extractor function.
+#' @describeIn as.winfun Gives the sample IDs returned by a window extractor function.
 #' @export
 samples <- function (f) { attr(f,"samples") }
 
 
-#' @describeIn winfuns Gives the number of samples of matrices returned by a window extractor function (access with ncol( )).
+#' Gives the number of samples of matrices returned by a window extractor function (access with ncol( )).
 #' @export 
 #' @method dim winfun
 dim.winfun <- function (f) { c(NA,length(attr(f,"samples"))) }

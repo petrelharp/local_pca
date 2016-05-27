@@ -4,7 +4,7 @@
 \alias{eigen_windows}
 \title{Find Eigenvectors and Eigenvalues for Covariance Matrices in Windows}
 \usage{
-eigen_windows(data, k, do.windows = NULL, win, mc.cores = 1, ...)
+eigen_windows(data, k, do.windows = NULL, win, w = 1, mc.cores = 1, ...)
 }
 \arguments{
 \item{data}{Either a numeric matrix or a window extractor function, that takes a positive integer \code{n} and returns the numeric matrix that correspond to the \code{n}th window.}
@@ -15,13 +15,18 @@ eigen_windows(data, k, do.windows = NULL, win, mc.cores = 1, ...)
 
 \item{win}{If \code{data} is a matrix, each contiguous block of \code{win} rows of the matrix \code{data} will be one window.}
 
+\item{w}{A vector of weights: results will be eigenvalues/vectors and sum of squared values in l_2(w) (defaults to unweighted).}
+
 \item{mc.cores}{If this is greater than 1, parallel::mclapply will be used.}
 
 \item{...}{Other parameters to be passed to \code{win.fn}.}
 }
 \value{
-A numeric matrix with one row for each window; the first k columns giving eigenvalues and each subsequent group of ncol(data) columns giving the corresponding eigenvector.
+A numeric matrix with one row for each window; the first column is the sum of squared values of the covariance matrix;
+the next k columns are the eigenvalues, and each subsequent group of ncol(data) columns give the corresponding eigenvector.
 The result has an attribute, "npc", which is equal to the number of eigenvalues computed (k).
+
+The work of finding eigenvalues/vectors is done by \code{cov_pca()}; see there for details.
 }
 \description{
 Subtracts row means from the input matrix, then
