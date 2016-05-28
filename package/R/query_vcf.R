@@ -52,7 +52,7 @@ vcf_query <- function (file, regions, samples, verbose=FALSE, recode=TRUE) {
 #' @return The results of the separate \code{vcf_query} calls, \code{rbind}'ed together
 #' (this will *not* necessarily be in the same order as \code{regions}!).
 #' @export
-vcf_multi_query <- function (chrom.list, file=names(chrom.list), regions, ... ) {
+multi_vcf_query <- function (chrom.list, file=names(chrom.list), regions, ... ) {
     chroms <- unlist(chrom.list)
     files <- file[ rep(seq_along(chrom.list),sapply(chrom.list,length)) ]
     do.call( rbind, lapply( seq_along(file), function (kf) {
@@ -60,6 +60,30 @@ vcf_multi_query <- function (chrom.list, file=names(chrom.list), regions, ... ) 
                 vcf_query( file[k], this.regions, ... )
         } ) )
 }
+
+#' Function to Query Multiple VCF Files
+#'
+#' Returns a function that when called with an integer \code{n} will return the \code{n}th region.
+#'
+#' @param chrom.list A list of character vectors of chromosome names, the \code{n}th saying which chromosomes are available in the \code{n}th vcf file.
+#' @param file The name(s) of the indexed vcf file(s).
+#' @param regions A data frame containing chrom, start, and end of the regions to be extracted.
+#' @param ... Other arguments passed to \code{vcf_query}.
+#' @return A function, say, \code{f}, so that \code{f(n)} is the result of \code{n}th \code{vcf_query} call.
+#' @export
+multi_vcf_query_fn <- function (chrom.list, file=names(chrom.list), regions, ... ) {
+    chroms <- unlist(chrom.list)
+    files <- file[ rep(seq_along(chrom.list),sapply(chrom.list,length)) ]
+    qfun <- function (n) {
+        this.region <- regions[n,]
+        vcf_query( files[match(this.region$chrom,chroms)], this.region, ... )
+    }
+    attr(qfun,"max.n") <- nrow(regions)
+    attr(qfun,"region") <- regions
+    attr(qfun,"samples") <- samples(files[1])
+    return(qfun)
+}
+
 
 #' Read Position From a VCF File
 #'

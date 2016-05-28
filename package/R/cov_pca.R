@@ -17,10 +17,9 @@
 #' and the sum-of-squares (equal to the sum of the eigenvalues squared) is
 #'       sum_{ij}  ( w[i] w[j] )^(1/2) C[i,j]^2 .
 #' @export
-cov_pca <- function (x,k,w=1) {
-    x <- sweep( x, 1, rowMeans(x,na.rm=TRUE) )
+cov_pca <- function (x,k,w=1,
+                     covmat=cov(sweep(x,1,rowMeans(x,na.rm=TRUE),"-"),use='pairwise') ) {
     sqrt.w <- rep_len(sqrt(w),ncol(x))
-    covmat <- cov(x,use="pairwise")
     covmat <- sweep( sweep( covmat, 1, sqrt.w, "*" ), 2, sqrt.w, "*" )
     if(any(is.na(covmat))) {return(rep(NA,2*(nrow(covmat)+1)))}
     # PCA <- eigen(covmat)

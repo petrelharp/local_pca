@@ -126,7 +126,7 @@ corner.regions <- lapply( 1:ncol(mds.corners), function (k) {
             regions[ mds.corners[,k], ]
     } )
 corner.pca <- lapply( corner.regions, function (reg) {
-            geno <- vcf_multi_query( chrom.list=chroms, file=bcf.files, regions=reg )
+            geno <- multi_vcf_query( chrom.list=chroms, file=bcf.files, regions=reg )
             cov_pca(geno,k=corner.npc,w=opt$weights)
     } )
 ```
