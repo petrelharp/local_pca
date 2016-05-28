@@ -19,12 +19,12 @@
 #' @export
 cov_pca <- function (x,k,w=1,
                      covmat=cov(sweep(x,1,rowMeans(x,na.rm=TRUE),"-"),use='pairwise') ) {
-    sqrt.w <- rep_len(sqrt(w),ncol(x))
+    sqrt.w <- rep_len(sqrt(w),ncol(covmat))
     covmat <- sweep( sweep( covmat, 1, sqrt.w, "*" ), 2, sqrt.w, "*" )
     if(any(is.na(covmat))) {return(rep(NA,2*(nrow(covmat)+1)))}
     # PCA <- eigen(covmat)
     # return( c( sum(covmat^2), PCA$values[1:k], PCA$vectors[,1:k] ) )
-    PCA <- if (k==ncol(x)) { eigen(covmat) } else { RSpectra::eigs_sym(covmat,k=k) }
+    PCA <- if (k==ncol(covmat)) { eigen(covmat) } else { RSpectra::eigs_sym(covmat,k=k) }
     PCA$vectors <- sweep( PCA$vectors, 1, sqrt.w, "/" )
     # returns in order (total sumsq, values, vectors)
     return( c( sum(covmat^2), PCA$values, PCA$vectors ) )

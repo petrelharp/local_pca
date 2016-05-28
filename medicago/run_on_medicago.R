@@ -74,7 +74,9 @@ for (bcf.file in bcf.files) {
         cat("Finding PCs for", bcf.file, "and writing out to", pca.file, "and", regions.file, "\n")
         win.fn <- vcf_windower(bcf.file, size=opt$size, type=tolower(opt$type) )
         these.regions <- region(win.fn)()
-        system.time( pca.stuff <- eigen_windows( win.fn, k=opt$npc, w=opt$weights ) )
+        system.time( 
+                    pca.stuff <- eigen_windows( win.fn, k=opt$npc, w=opt$weights ) 
+                )
         write.csv( pca.stuff, file=pca.file, row.names=FALSE )
         write.csv( these.regions, file=regions.file, row.names=FALSE )
     }
