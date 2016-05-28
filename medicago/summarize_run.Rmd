@@ -19,6 +19,7 @@ templater::render_template("summarize_run.Rmd",output="lostruct/results_type_snp
 
 ```{r data_setup, include=FALSE}
 opt <- fromJSON("config.json")
+if (is.null(opt$weights)) { opt$weights <- 1 }
 
 # original data files
 chroms <- paste0("chr",1:8)
@@ -53,7 +54,7 @@ chrom.cols <- rainbow_hcl(length(chroms), c=90, end=.9*360)[as.numeric(regions$c
 
 #' Set up to plot all chromosomes together
 #' will plot the vector of values 'y' along all the chromosomes.
-chrom.plot <- function (y,ylab='',main='',...) {
+chrom.plot <- function (y,ylab='',main='',chrom.labels=TRUE,...) {
     plot(0, type='n', xlim=range(chrom.offsets/1e6), ylim=range(y,finite=TRUE), 
          xlab='', xaxt='n', ylab=ylab, main=main)
     for (k in 1:floor(length(chroms)/2)) {
@@ -62,7 +63,7 @@ chrom.plot <- function (y,ylab='',main='',...) {
              border=NA, col=adjustcolor("grey",0.25) )
     }
     abline( v=chrom.dividers/1e6, lty=3, col=adjustcolor("grey",0.5), lwd=2 )
-    axis( 1, at=chrom.mids/1e6, labels=chroms, las=0, tick=FALSE )
+    if (chrom.labels) axis( 1, at=chrom.mids/1e6, labels=chroms, las=0, tick=FALSE )
     points( regions$pos/1e6, y, ...)
 }
 ```
@@ -76,7 +77,7 @@ This run had these parameters:
 
 Here are the number of windows per chromsome,
 and the computed MDS coordinates, colored by chromosome:
-```{r mds_pairplot}
+```{r mds_pairplot, fig.height=2*fig.dim}
 table(regions$chrom)
 pairs( mds.coords[,mds.cols], pch=20, col=adjustcolor(chrom.cols,0.75) )
 ```
@@ -94,18 +95,26 @@ for (k in 1:ncol(mds.corners)) {
     cpch[ mds.corners[,k] ] <- corner.pch[k]
 }
 ```
-```{r plot_corners, fig.width=3*fig.dim}
+```{r plot_corners, fig.width=3*fig.dim, fig.height=fig.dim*ceiling(length(mds.cols)/2)}
 # plot corners and MDS along the chromosome
-layout(matrix(c(1,1,2,3),nrow=2),widths=c(1,2))
+layout(matrix(c(rep(1,length(mds.cols)),1+seq_along(mds.cols)),ncol=2),
+        widths=c(1,2), heights=c(rep(1,length(mds.cols)-1),1.25))
 plot( mds.coords[,mds.cols[1:2]], pch=cpch, 
-     col=adjustcolor(ccols,0.75), 
+     col=adjustcolor(ccols,0.75),  asp=1,
      xlab="MDS coordinate 1", ylab="MDS coordinate 2" )
+opar <- par(mar=c(par("mar"),1.1)[c(5,2,5,4)])
 for (k in mds.cols) {
+    lastone <- (k==mds.cols[length(mds.cols)])
+    if (lastone) {
+        par(mar=c(opar$mar,0.2)[c(1,2,5,4)])
+    }
     chrom.plot( mds.coords[,k], pch=20, 
-            xlab="Position (Mb)", main=paste("MDS coordinate",match(k,mds.cols)),
+            xlab=if (lastone) { "Position (Mb)"} else { "" }, # main=paste("MDS coordinate",match(k,mds.cols)),
+            chrom.labels=lastone,
             ylab=colnames(mds.coords)[k],
             col=adjustcolor(ccols,0.75) )
 }
+par(opar)
 ```
 
 
@@ -118,7 +127,7 @@ corner.regions <- lapply( 1:ncol(mds.corners), function (k) {
     } )
 corner.pca <- lapply( corner.regions, function (reg) {
             geno <- vcf_multi_query( chrom.list=chroms, file=bcf.files, regions=reg )
-            cov_pca(geno,k=corner.npc)
+            cov_pca(geno,k=corner.npc,w=opt$weights)
     } )
 ```
 

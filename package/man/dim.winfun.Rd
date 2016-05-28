@@ -2,11 +2,11 @@
 % Please edit documentation in R/query_vcf.R
 \name{dim.winfun}
 \alias{dim.winfun}
-\title{Gives the number of samples of matrices returned by a window extractor function (access with ncol( )).}
+\title{Number of Samples Returned by a Window Extractor Function}
 \usage{
 \method{dim}{winfun}(f)
 }
 \description{
-Gives the number of samples of matrices returned by a window extractor function (access with ncol( )).
+Gives the number of samples of matrices returned by a window extractor function (the number of rows is NA).
 }
 

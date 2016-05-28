@@ -188,7 +188,6 @@ vcf_windower_snp <- function (file, sites, size, samples=vcf_samples(file)) {
 #' @param max.n Index of the largest window.
 #' @param samples Character vector of sample IDs corresponding to columns of extracted data.
 #' @param region A function taking an integer vector returning the chromosome, start, and end of the corresponding windows.
-#' @name winfuns
 as.winfun <- function (f,max.n,samples,region) {
     attr(f,"max.n") <- max.n
     attr(f,"samples") <- samples
@@ -205,7 +204,10 @@ region <- function (f) { function (n=seq_len(attr(f,"max.n"))) { attr(f,"region"
 samples <- function (f) { attr(f,"samples") }
 
 
-#' Gives the number of samples of matrices returned by a window extractor function (access with ncol( )).
+#' Number of Samples Returned by a Window Extractor Function
+#' 
+#' Gives the number of samples of matrices returned by a window extractor function (the number of rows is NA).
+#'
 #' @export 
 #' @method dim winfun
 dim.winfun <- function (f) { c(NA,length(attr(f,"samples"))) }
