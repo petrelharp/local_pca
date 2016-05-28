@@ -36,28 +36,33 @@ cov_pca <- function (x,k,w=1) {
 #' This will compute the covariance matrix for a dataset
 #' that is only available in disjoint pieces (because it is too big to keep in memory at once, for instance).
 #'
-#' Suppose the entire data matrix is D, and n is the logical vector indicating when both D[,i] and D[,j] are nonmissing:
-#'    cov(D)[i,j] = sum( D[nij,i]*D[nij,j] )/(sum(nij)-1) - sum(D[nij,i])*sum(D[nij,i])/( sum(nij)*(sum(nij)-1) )
 #' @param f A function such that f(k) returns the k-th chunk of data.
 #' @param n The number of chunks of data, or a vector of indices.
+#' @return A numeric matrix:
+#' If a and b are vectors, then
+#'    mean(a[1:(n+m)]) == (n/(n+m)) * mean(a[1:n]) + (1/(n+m)) * sum(a[(n+1):(n+m)])
+#' and
+#'    cov(a,b) = sum(a*b)/(n-1) - sum(a)*sum(b)/(n*(n-1))
+#' where the sums are over the n shared nonmissings.
 #' @export
 running_cov <- function (f,n) {
     if (is.numeric(n) && length(n)==1) { n <- seq_len(n) }
-    x <- f(1)
+    x <- f(n[1])
+    z <- !is.na(x)
     colm <- colMeans(x,na.rm=TRUE)  # estimate of the column means
     x <- sweep(x,2,colm,"-")
-    nn <- crossprod(!is.na(x))      # matrix of number of shared nonmissings
-    mu <- colMeans(x,na.rm=TRUE)
-    x[is.na(x)] <- 0
-    xp <- crossprod(x)/(nn-1)       # matrix of mean product of shared nonmissings
-    for (k in n) {
+    x[!z] <- 0
+    nn <- crossprod(z)       # matrix of number of shared nonmissings
+    sums <- crossprod(x,z)       # matrix of conditional sums: sums[i,j] = sum( x[,i] * !is.na(x[,j]) )
+    sumsq <- crossprod(x)        # matrix of sum of products of shared nonmissings
+    for (k in n[-1]) {
         x <- sweep( f(k), 2, colm, "-" )
-        new.nn <- crossprod(!is.na(x))
-        nn <- nn + new.nn
-        mu <- ( diag(new.nn)/diag(nn) ) * mu + (1/diag(nn)) * colSums(x,na.rm=TRUE)
-        x[is.na(x)] <- 0
-        xp <- ( new.nn/(nn-1) ) * xp + (1/(nn-1)) * crossprod(x)/(nn-1)
+        z <- !is.na(x)
+        x[!z] <- 0
+        nn <- nn + crossprod(z)
+        sums <- sums + crossprod(x,z)
+        sumsq <- sumsq + crossprod(x)
     }
-    return( xp - (nn/(nn-1))*outer(mu,mu,"*") )
+    return( (1/(nn-1))*sumsq - sums*t(sums)/(nn*(nn-1)) )
 }
 
