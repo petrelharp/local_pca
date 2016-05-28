@@ -4,7 +4,8 @@
 \alias{cov_pca}
 \title{Find the Top k Eigenvalues and Eigenvectors of the Covariance Matrix}
 \usage{
-cov_pca(x, k, w = 1)
+cov_pca(x, k, w = 1, covmat = cov(sweep(x, 1, rowMeans(x, na.rm = TRUE),
+  "-"), use = "pairwise"))
 }
 \arguments{
 \item{x}{A numeric matrix, possibly with missing values.}

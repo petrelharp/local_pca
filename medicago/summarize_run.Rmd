@@ -26,6 +26,11 @@ chroms <- paste0("chr",1:8)
 bcf.files <- file.path( "..", "..", "data", paste0(chroms,"-filtered-set-2014Apr15.bcf") )
 names(bcf.files) <- chroms
 
+sample.ids <- vcf_samples(bcf.files[1])
+samp.file <- file.path( "..", "..", "data", "sample_info.tsv" )
+samps <- read.table(samp.file,sep="\t",header=TRUE)
+samps <- droplevels( samps[match(gsub("-I$","",sample.ids),samps$ID),] )
+
 # data files, precomputed
 pca.files <- list.files(".",".*.pca.csv")
 mds.file <- "mds_coords.csv"
@@ -119,24 +124,49 @@ par(opar)
 
 
 Now, we'll look at PCA plots from the extracted corners.
-(warning: takes awhile and a lot of RAM)
+(this is done without a ton of memory by accumulating the covariance matrix in `running_cov`):
 ```{r corner_pca, cache=TRUE}
 corner.npc <- 4
 corner.regions <- lapply( 1:ncol(mds.corners), function (k) {
-            regions[ mds.corners[,k], ]
+            regions[ mds.corners[,k],]
     } )
-corner.pca <- lapply( corner.regions, function (reg) {
-            geno <- multi_vcf_query( chrom.list=chroms, file=bcf.files, regions=reg )
-            cov_pca(geno,k=corner.npc,w=opt$weights)
+corner.covmats <- lapply( 1:ncol(mds.corners), function (k) {
+            reg <- regions[ mds.corners[,k], ]
+            qfun <- multi_vcf_query_fn( chrom.list=chroms, file=bcf.files, regions=reg )
+            running_cov(qfun,1:nrow(reg))
+        } )
+corner.pca <- lapply( corner.covmats, function (covmat) {
+            cov_pca(covmat=covmat,k=corner.npc,w=opt$weights)
     } )
 ```
 
-First, here are the first `r corner.npc` PCs for each corner, together:
+Here is the color scheme:
+```{r pop_colors, fig.height=2*fig.dim}
+pop.names <- levels(samps$Country.of.Origin)
+pop.cols <- rainbow_hcl(nlevels(samps$Country.of.Origin))
+pop.pch <- seq_len(nlevels(samps$Country.of.Origin))
+plot( rep(1,length(pop.names)), seq_along(pop.names), pch=pop.pch, col=pop.cols, xlim=c(0,length(pop.names)),
+       xlab='', ylab='', xaxt='n', yaxt='n' )
+text( rep(1,length(pop.names)), seq_along(pop.names), labels=pop.names, pos=4 )
+```
+
+
+Here are all pairwise plots of the first `r corner.npc` PCs for each of the three corners:
 ```{r plot_corner_pca, fig.width=3*fig.dim}
-for (k in seq_along(mds.corners)) {
-    vectors <- matrix( corner.pca[[k]][-(1:(1+corner.npc))], ncol=corner.npc )
-    colnames(vectors) <- paste("PC", 1:corner.npc)
-    pairs(vectors)
+layout(t(1:3))
+for (i in 1:(corner.npc-1)) {
+    for (j in (i+1):corner.npc) {
+        for (k in 1:ncol(mds.corners)) {
+            vectors <- matrix( corner.pca[[k]][-(1:(1+corner.npc))], ncol=corner.npc )[,c(i,j)]
+            colnames(vectors) <- paste("PC", c(i,j))
+            plot(vectors, pch=pop.pch[samps$Country.of.Origin], 
+                    col=pop.cols[samps$Country.of.Origin] )
+            if (i==1 && j==2) {
+                mtext(paste("corner",k),side=3,cex=2)
+            }
+        }
+    }
 }
 ```
+
 
