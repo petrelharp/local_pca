@@ -3,14 +3,15 @@
 #' Subtracts row means from the input matrix, then
 #' divides the rows into windows of a given size,
 #' computes the covariance matrix for each,
-#' and returns the given number of eigenvector/eigenvalue pairs.
+#' and returns for each window the total sum of squares
+#' and the given number of eigenvector/eigenvalue pairs.
 #' Omits the last (short) window.
 #'
 #' @param data Either a numeric matrix or a window extractor function, that takes a positive integer \code{n} and returns the numeric matrix that correspond to the \code{n}th window.
 #' @param k Number of eigenvalue/eigenvector pairs to return.
 #' @param do.windows Vector of integers that correspond to the windows used.
 #' @param win If \code{data} is a matrix, each contiguous block of \code{win} rows of the matrix \code{data} will be one window.
-#' @param w A vector of weights: results will be eigenvalues/vectors and sum of squared values in l_2(w) (defaults to unweighted).
+#' @param w A vector of weights corresponding to the columns of the data.
 #' @param mc.cores If this is greater than 1, parallel::mclapply will be used.
 #' @param ... Other parameters to be passed to \code{win.fn}.
 #' @return A numeric matrix with one row for each window; the first column is the sum of squared values of the covariance matrix;

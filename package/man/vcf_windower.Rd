@@ -17,11 +17,9 @@ vcf_windower(file, size, type, sites = vcf_positions(file),
 \item{sites}{The positions in the VCF file, as returned by \code{vcf_positions}.}
 
 \item{samples}{A character vector of sample names to be extracted.}
-
-\item{f}{A window extractor function.}
 }
 \value{
-A class "winfun" function that returns an integer matrix, giving the number of alternate alleles for each sample.
+A class "winfun" window extractor function that returns an integer matrix, giving the number of alternate alleles for each sample.
 Such functions also have three attributes: \code{max.n}, giving the index of the largest window,
 \code{samples}, the sample IDs that are extracted (corresponding to the columns of the matrix that is returned),
 and \code{region}, which is a function that takes an integer vector and returns a data frame giving chromosome, start, and end of the corresponding windows.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/pc_dist.R
 \name{dist_from_pcs}
 \alias{dist_from_pcs}
-\title{Suppose that (u) and (v) are sets of vectors, and that 
+\title{In the unweighted case, suppose that (u) and (v) are sets of vectors, and that 
    A = a_1 * u_1 u_1^T + ... + a_j * u_j u_j^T = U diag(a) U^T
    B = b_1 * v_1 v_1^T + ... + b_j * v_k v_k^T = V diag(b) V^T,
 where U is the matrix whose columns are (u), and likewise for V.
@@ -11,11 +11,15 @@ Then
 and so
    ||A-B||^2 = ||A||^2 + ||B||^2 - 2 tr( A^T B )
 By the cyclic invariance of trace, if X = U^T V then
-   tr( A^T B ) = tr( U diag(a) U^T V diag(b) V^T ) = tr( diag(a) X diag(b) X^T )}
+   tr( A^T B ) = tr( U diag(a) U^T V diag(b) V^T ) = tr( diag(a) X diag(b) X^T ) .}
 \usage{
 dist_from_pcs(values1, vectors1, values2, vectors2)
 }
 \description{
-The code assumes that vectors1 and vectors2 are each orthonormal.
+In the weighted case, we should use W^{1/2} A W^{1/2} instead of A (and likewise for B);
+which means premultiplying U and V by sqrt(w); assume this has been done already.
+}
+\details{
+The code does not check that vectors1 and vectors2 are each orthonormal.
 }
 

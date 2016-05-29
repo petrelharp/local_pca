@@ -5,17 +5,18 @@
 #'
 #' @param x A numeric matrix, possibly with missing values.
 #' @param k Number of eigenvalue/eigenvector pairs to return.
-#' @param w Work in l2(sqrt(w)); see below.
+#' @param w A vector of weights for the columns of \code{x}.
+#' @param covmat The covariance matrix of \code{x}, if pre-computed (say, with \code{running_cov}).
 #' @return A numeric vector: 
 #' the first entry gives the total sum of squared values of the covariance matrix 
 #' (i.e., the sum of the eigenvectors, for computing the proportion of variance explained);
 #' the next k entires give eigenvalues and each subsequent group of ncol(data) columns give the corresponding eigenvector.
 #'
 #' If C is the covariance matrix, the columns of U are the eigenvectors, and W and Lambda are diagonal matrices with w and the eigenvalues on the diagonals respectively,
-#' then the output is the least-squares solution to
-#'       | W^(1/2) ( C - U Lambda U' ) W^(1/2) |,
+#' then the output is the minimizer of
+#'       | W^(1/2) ( C - U Lambda U' ) W^(1/2) |^2 = sum_{ij} w[i] w[j] ( C[i,j] - (U Lambda U')[i,j] )^2 ,
 #' and the sum-of-squares (equal to the sum of the eigenvalues squared) is
-#'       sum_{ij}  ( w[i] w[j] )^(1/2) C[i,j]^2 .
+#'       sum_{ij}  w[i] * w[j] * C[i,j]^2 .
 #' @export
 cov_pca <- function (x,k,w=1,
                      covmat=cov(sweep(x,1,rowMeans(x,na.rm=TRUE),"-"),use='pairwise') ) {

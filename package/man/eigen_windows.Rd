@@ -15,7 +15,7 @@ eigen_windows(data, k, do.windows = NULL, win, w = 1, mc.cores = 1, ...)
 
 \item{win}{If \code{data} is a matrix, each contiguous block of \code{win} rows of the matrix \code{data} will be one window.}
 
-\item{w}{A vector of weights: results will be eigenvalues/vectors and sum of squared values in l_2(w) (defaults to unweighted).}
+\item{w}{A vector of weights corresponding to the columns of the data.}
 
 \item{mc.cores}{If this is greater than 1, parallel::mclapply will be used.}
 
@@ -32,7 +32,8 @@ The work of finding eigenvalues/vectors is done by \code{cov_pca()}; see there f
 Subtracts row means from the input matrix, then
 divides the rows into windows of a given size,
 computes the covariance matrix for each,
-and returns the given number of eigenvector/eigenvalue pairs.
+and returns for each window the total sum of squares
+and the given number of eigenvector/eigenvalue pairs.
 Omits the last (short) window.
 }
 

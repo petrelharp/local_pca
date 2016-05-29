@@ -4,12 +4,14 @@
 \alias{pc_dist}
 \title{Find Matrix of Distances Between Matrices from Eigenvector/values}
 \usage{
-pc_dist(x, npc, normalize = "L1", mc.cores = 1)
+pc_dist(x, npc, w = 1, normalize = "L1", mc.cores = 1)
 }
 \arguments{
-\item{x}{Matrix as output by eigen_windows().}
+\item{x}{Matrix as output by eigen_windows(): one row per window, with entries (sum squares), (eigenvalues), (eigenvectors).}
 
 \item{npc}{Number of pcas computed.}
+
+\item{w}{A vector of weights corresponding to columns of \code{x}.}
 
 \item{normalize}{Normalize the matrices to have the same norm?  Can be "L1" (default), "L2", or FALSE.}
 
@@ -25,5 +27,9 @@ as approximated by the given eigenvalues/vectors. The approximation is in pseudo
      M = values[1] * outer(vectors[1],vectors[1]) + values[2] * outer(vectors[2],vectors[2]) + ...
 If \code{normalize} is set, then the the matrices are normalized to have norm 1, so that in the definition of M,
 \code{values} is replaced by \code{values/sqrt(sum(values))}.
+}
+\details{
+The norm is also weighted by the weights \code{w}:
+  dist(A,B) = sum_{i,j}  w[i] * w[j] * ( A[i,j] - B[i,j] )^2
 }
 

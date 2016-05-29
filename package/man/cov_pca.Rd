@@ -4,14 +4,17 @@
 \alias{cov_pca}
 \title{Find the Top k Eigenvalues and Eigenvectors of the Covariance Matrix}
 \usage{
-cov_pca(x, k, w = 1)
+cov_pca(x, k, w = 1, covmat = cov(sweep(x, 1, rowMeans(x, na.rm = TRUE),
+  "-"), use = "pairwise"))
 }
 \arguments{
 \item{x}{A numeric matrix, possibly with missing values.}
 
 \item{k}{Number of eigenvalue/eigenvector pairs to return.}
 
-\item{w}{Work in l2(sqrt(w)); see below.}
+\item{w}{A vector of weights for the columns of \code{x}.}
+
+\item{covmat}{The covariance matrix of \code{x}, if pre-computed (say, with \code{running_cov}).}
 }
 \value{
 A numeric vector: 
@@ -20,10 +23,10 @@ the first entry gives the total sum of squared values of the covariance matrix
 the next k entires give eigenvalues and each subsequent group of ncol(data) columns give the corresponding eigenvector.
 
 If C is the covariance matrix, the columns of U are the eigenvectors, and W and Lambda are diagonal matrices with w and the eigenvalues on the diagonals respectively,
-then the output is the least-squares solution to
-      | W^(1/2) ( C - U Lambda U' ) W^(1/2) |,
+then the output is the minimizer of
+      | W^(1/2) ( C - U Lambda U' ) W^(1/2) |^2 = sum_{ij} w[i] w[j] ( C[i,j] - (U Lambda U')[i,j] )^2 ,
 and the sum-of-squares (equal to the sum of the eigenvalues squared) is
-      sum_{ij}  ( w[i] w[j] )^(1/2) C[i,j]^2 .
+      sum_{ij}  w[i] * w[j] * C[i,j]^2 .
 }
 \description{
 This takes a numeric matrix, subtracts row means, finds the covariance matrix of the columns (using \code{use="pairwise"}),
