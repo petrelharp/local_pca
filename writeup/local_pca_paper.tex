@@ -700,7 +700,7 @@ Let $w_{i}$ be a weight associated with sample $i$,
 $W$ the diagonal matrix with $w$ along the diagonal,
 and instead seek to minimize
 \begin{align} \label{eqn:weighted_objective}
-    \| W^{1/2} (C - U \Lambda U^T) W^{1/2} \|^2 = \sum_{ij} \sqrt{W_i W_j} \left( G_{ij} - \sum_m \lambda_{m} U_{im} U_{jm} \right)^2 ,
+    \| W^{1/2} (C - U \Lambda U^T) W^{1/2} \|^2 = \sum_{ij} W_i W_j \left( G_{ij} - \sum_m \lambda_{m} U_{im} U_{jm} \right)^2 ,
 \end{align}
 and now for convenince we require $U$ to be orthogonal in $\ell_2(w)$, i.e., that $U^T W U =I$.
 We then would choose $w$ to give roughly equal weight to each \emph{population},
@@ -715,7 +715,7 @@ the number of samples within a certain distance of sample $i$.
 To solve \eqref{eqn:weighted_objective},
 let $\lambda$ and $V$ denote the eigenvalues and eigenvectors of $W^{1/2} C W^{1/2}$,
 so that $V \Lambda V^T$ is the closest in least squares to $W^{1/2} C W^{1/2}$;
-so if we define $U = W^{-1/2} V$ then 
+so if we define $U = W^{-1/2} V$
 then $U^T W U = V^T V = I$,
 and 
 \begin{align*}
@@ -724,10 +724,12 @@ and
     U \Lambda U^T
 \end{align*}
 is the low-dimensional approximation to $C$.
-The proportion of variance explained is calculated exactly as before,
-but the variance is computed in $\ell_2(\sqrt{w})$:
+The proportion of variance explained is calculated from eigenvalues as before,
+but has the interpretation
 \begin{align*}
-    \frac{ \lambda_m^2 }{ \sum_\ell \lambda_\ell^2 } = \frac{ \sum_{ij} ( \lambda_m \sqrt{w_i w_j} U_{im} U_{jm} )^2 }{ \sum_{ij} \sqrt{w_i w_j} C_{ij}^2 } .
+    \frac{ \lambda_m^2 }{ \sum_\ell \lambda_\ell^2 } 
+    = 
+    \frac{ \sum_{ij} w_i w_j ( \lambda_m U_{im} U_{jm} )^2 }{ \sum_{ij} w_i w_j C_{ij}^2 } .
 \end{align*}
 
 Note finally that since we only need find the top $k$ eigenvectors;
