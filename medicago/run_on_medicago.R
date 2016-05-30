@@ -94,7 +94,9 @@ system.time( pc.distmat <- pc_dist( all.pcas, npc=opt$npc, w=opt$weights ) )
 # MDS on the resulting distance matrix
 mds.file <- file.path( opt$outdir, "mds_coords.csv" )
 cat("Done computing distances, running MDS and writing results to", mds.file, "\n")
-na.inds <- is.na( all.pcas[,1] ) # there may be windows with missing data
+# there may be windows with completely missing data, or negative eigenvalues due to missing data; remove these
+na.inds <- ( is.na( all.pcas[,1] ) | ( rowSums( all.pcas[,1+(1:opt$npc)] < 0 ) ) )
+cat("There are", sum(na.inds), "windows with too much missing data; these will have NA distances.\n")
 mds.coords <- cbind( data.frame( 
                         chrom=rep(chroms,all.lengths),
                         window=unlist(lapply(all.lengths,seq_len)) ),
@@ -103,5 +105,12 @@ mds.coords <- cbind( data.frame(
 colnames(mds.coords)[-(1:2)] <- paste0("MDS",seq_len(opt$nmds))
 write.csv( mds.coords, mds.file, row.names=FALSE )
 
-cat("All done!")
+cat("All done with computation!\n")
+Sys.time()
+
+cat("Making summary document: devtools::install_github('petrelharp/templater')\n")
+cat(sprintf("templater::render_template('summarize_run.Rmd',output='%s',change.rootdir=TRUE)",file.path(opt$outdir,"summarize_run.html")))
+templater::render_template('summarize_run.Rmd',output=file.path(opt$outdir,"summarize_run.html"),change.rootdir=TRUE)
+
+cat("All done!\n")
 Sys.time()
