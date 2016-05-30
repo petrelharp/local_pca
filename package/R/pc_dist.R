@@ -52,7 +52,7 @@ pc_dist <- function( x, npc, w=1, normalize="L1", mc.cores=1 ) {
 #'
 #' The code does not check that vectors1 and vectors2 are each orthonormal.
 dist_from_pcs <- function (values1,vectors1,values2,vectors2) {
-    # this is diag(sqrt(b)) X^T
-    bXt <- sqrt(values2) * crossprod(vectors2,vectors1)
-    return( sum(values1^2) + sum(values2^2) - 2 * sum( values1 * colSums(bXt^2) ) )
+    # this is X^T
+    Xt <- crossprod(vectors2,vectors1)
+    return( sum(values1^2) + sum(values2^2) - 2 * sum( values1 * colSums(Xt*(values2*Xt)) ) )
 }

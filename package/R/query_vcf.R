@@ -143,16 +143,17 @@ vcf_windower <- function (
 
 vcf_windower_bp <- function (file, sites, size, samples=vcf_samples(file)) {
 	chroms <- names(sites)
-	chrom.lens <- sapply( sites, max )
-	chrom.wins <- floor(chrom.lens / size)
+	chrom.starts <- sapply( sites, min )
+	chrom.lens <- sapply( sites, max ) - chrom.starts
+	chrom.wins <- floor(chrom.lens / size)  # number of windows
 	warning(paste("Trimming from chromosome ends:",paste(paste(chroms,chrom.lens-size*chrom.wins,sep=": "),collapse=", "),"bp."))
-	chrom.breaks <- c(0,cumsum(chrom.wins))
+	chrom.breaks <- c(0,cumsum(chrom.wins)) # 0, and then indices of *last* windows in each chromosome
     pos.fn <- function (n) {
         # return chromsome, start, and end of these windows
 		this.chrom <- findInterval(n-1,chrom.breaks)
         this.chrom[ n<1 || n>max(chrom.breaks) ] <- NA
 		cn <- n - chrom.breaks[this.chrom]
-		win.start <- 1+(cn-1)*size
+		win.start <- chrom.starts[this.chrom] + (cn-1)*size
 		win.end <- win.start + size-1
         return( data.frame( chrom=chroms[this.chrom], start=win.start, end=win.end ) )
     }
@@ -173,7 +174,7 @@ vcf_windower_snp <- function (file, sites, size, samples=vcf_samples(file)) {
 	chrom.lens <- sapply( sites, length )
 	chrom.wins <- floor(chrom.lens / size)
 	warning(paste("Trimming from chromosome ends:",paste(paste(chroms,chrom.lens-size*chrom.wins,sep=": "),collapse=", "),"SNPs."))
-	chrom.breaks <- c(0,cumsum(chrom.wins))  # these are indices of *last* windows in each chromosome
+	chrom.breaks <- c(0,cumsum(chrom.wins))  # 0, and then indices of *last* windows in each chromosome
     pos.fn <- function (n) {
         # return chromsome, start, and end of these windows
 		this.chrom <- findInterval(n-1,chrom.breaks)

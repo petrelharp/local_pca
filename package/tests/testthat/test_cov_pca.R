@@ -9,7 +9,7 @@ cov.pca <- cov_pca(x,k=2)
 # check unweighted PCA
 expect_equal( cov.pca[1:3],
              c( sum(covmat^2),
-                eigen(covmat)$values[1:2] ) ),
+                eigen(covmat)$values[1:2] ) )
 for (k in 1:2) {
     expect_equal( rep(0,ncol(x)), 
                     pmin( abs(cov.pca[3+(k-1)*ncol(x)+(1:ncol(x))]-eigen(covmat)$vectors[,k]),
