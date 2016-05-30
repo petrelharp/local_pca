@@ -89,7 +89,8 @@ pairs( mds.coords[,mds.cols], pch=20, col=adjustcolor(chrom.cols,0.75) )
 
 Here are the extreme windows in the MDS plot:
 ```{r get_corners}
-mds.corners <- corners( mds.coords[,mds.cols[1:2]], prop=.05 )
+mds.corners <- corners( mds.coords[,mds.cols[1:2],drop=FALSE], prop=.05 )
+corner.coords <- t( apply( mds.corners, 2, function (k) { colMeans( mds.coords[k,mds.cols,drop=FALSE], na.rm=TRUE ) } ) )
 # set up colors and pchs for corners
 corner.cols <- brewer.pal(3,"Dark2")
 corner.pch <- c(15,17,19)
@@ -107,6 +108,7 @@ layout(matrix(c(rep(1,length(mds.cols)),1+seq_along(mds.cols)),ncol=2),
 plot( mds.coords[,mds.cols[1:2]], pch=cpch, 
      col=adjustcolor(ccols,0.75),  asp=1,
      xlab="MDS coordinate 1", ylab="MDS coordinate 2" )
+text( corner.coords, labels=1:3 )
 opar <- par(mar=c(par("mar"),1.1)[c(5,2,5,4)])
 for (k in mds.cols) {
     lastone <- (k==mds.cols[length(mds.cols)])
@@ -160,9 +162,9 @@ for (i in 1:(corner.npc-1)) {
             vectors <- matrix( corner.pca[[k]][-(1:(1+corner.npc))], ncol=corner.npc )[,c(i,j)]
             colnames(vectors) <- paste("PC", c(i,j))
             plot(vectors, pch=pop.pch[samps$Country.of.Origin], 
-                    col=pop.cols[samps$Country.of.Origin] )
+                    col=pop.cols[samps$Country.of.Origin], cex.axis=1.5 )
             if (i==1 && j==2) {
-                mtext(paste("corner",k),side=3,cex=2)
+                mtext(paste("corner",k),side=3,cex=2,col=corner.cols[k])
             }
         }
     }

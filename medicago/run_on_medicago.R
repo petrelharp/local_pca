@@ -89,7 +89,7 @@ rm(pca.stuff)
 
 # distance matrix
 cat("Done finding PCs, computing distances.\n")
-system.time( pc.distmat <- pc_dist( all.pcas, npc=opt$npc ) )
+system.time( pc.distmat <- pc_dist( all.pcas, npc=opt$npc, w=opt$weights ) )
 
 # MDS on the resulting distance matrix
 mds.file <- file.path( opt$outdir, "mds_coords.csv" )
