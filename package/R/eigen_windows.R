@@ -60,12 +60,20 @@ eigen_windows_winfn <- function (
             k, w, mc.cores=1, ... ) {
     this.lapply <- if (mc.cores>1) { function (...) parallel::mclapply(...,mc.cores=mc.cores) } else { lapply }
     if (is.null(do.windows)) { do.windows <- seq_len(attr(win.fn,"max.n")) }
-    .local <- function(x) {
+    samples <- samples(win.fn)
+    out.colnames <- c( "total", paste0("lam_",1:k), as.vector( paste0("PC_", t(outer( 1:k, samples, paste, sep="_" )) ) ) )
+    empty.value <- rep( NA, length(out.colnames) )
+    .local <- function(n) {
         # returns in order (total, values, vectors)
-        cov_pca( win.fn(n=x,...), k=k, w=w )
+        x <- win.fn(n=n,...)
+        if (is.null(x)) {  # if there are no markers in this window
+            empty.value
+        } else {
+            cov_pca( x, k=k, w=w )
+        }
     }
     eigen.mat <- do.call( rbind, this.lapply( do.windows, .local ) )
-    colnames(eigen.mat) <- c( "total", paste0("lam_",1:k), as.vector( paste0("PC_", t(outer( 1:k, samples(win.fn), paste, sep="_" )) ) ) )
+    colnames(eigen.mat) <- out.colnames
     attr(eigen.mat,"npc") <- k
     attr(eigen.mat,"w") <- w
     return( eigen.mat )

@@ -34,7 +34,8 @@ vcf_query <- function (file, regions, samples, verbose=FALSE, recode=TRUE) {
 	bcf.args <- c( bcf.args, file )
     bcf.call <- paste(bcf.args, collapse=" ")
     if (verbose) cat(bcf.call, "\n")
-    gt.text <- data.table::fread( bcf.call, header=FALSE, sep=' ', data.table=FALSE )
+    gt.text <- tryCatch( data.table::fread( bcf.call, header=FALSE, sep=' ', data.table=FALSE ),
+                   error=function (e) { if ( grepl("File is empty", ee$message) ) { NULL } else { stop(e) } } )
     if (!recode) { return(gt.text) }
     gt <- c(0L,1L,1L,2L)[match( unlist(gt.text), c("0/0","0/1","1/0","1/1") )]
     dim(gt) <- dim(gt.text)
