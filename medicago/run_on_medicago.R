@@ -21,9 +21,9 @@ option_list <- list(
     # input/output
         make_option( c("-t","--type"),   type="character",             help="Window by SNP or by bp?"),
         make_option( c("-s","--size"),   type="integer",               help="Size of the window, in units of type."),
-        make_option( c("-k","--npc"),   type="integer",   default=2L,  help="Number of principal components to compute for each window. [default: %default]"),
+        make_option( c("-k","--npc"),   type="integer",   default=4L,  help="Number of principal components to compute for each window. [default: %default]"),
         make_option( c("-w","--weightfile"), type="character",            help="File name containing weights to apply to PCA."),
-        make_option( c("-m","--nmds"),   type="integer",   default=2L, help="Number of principal coordinates (MDS variables) to compute. [default: %default]"),
+        make_option( c("-m","--nmds"),   type="integer",   default=4L, help="Number of principal coordinates (MDS variables) to compute. [default: %default]"),
         make_option( c("-o","--outdir"), type="character",             help="Directory to save results to.  [default: lostruct/results_type_%type_size_%size_jobid_%jobid/]"),
         make_option( c("-j","--jobid"),  type="character", default=formatC(1e6*runif(1),width=6,format="d",flag="0"),   help="Unique job id. [default random]")
     )
