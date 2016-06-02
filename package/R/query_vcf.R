@@ -16,8 +16,8 @@ region_string <- function (regions) {
 #' Query a VCF File For Numeric Genotypes
 #'
 #' Uses bcftools to query vcf or bcf files for genotypes in a collection of regions,
-#' returning the genotypes in numeric format.
-#' Assumes the data are diploid and that every site is diallelic.
+#' returning the genotypes in numeric format, giving the number of nonreference alleles.
+#' Assumes the data are in the format either "0/1", "0|1" (for diploids), or "0" (for haploids).
 #' Data are returned in the order encountered in the VCF file even if the regions are not in this order.
 #'
 #' @param file The name of the indexed vcf file.
@@ -25,7 +25,11 @@ region_string <- function (regions) {
 #' @param samples A character vector of sample names to be extracted.
 #' @param verbose Whether to output with \code{cat()} the bcftools calls.
 #' @param recode Whether to recode genotypes as numeric (assuming diallelic sites only).
-#' @return An integer matrix, giving the number of alternate alleles for each sample.
+#' @return An integer matrix, giving the number of nonreference alleles for each sample.
+#' For instance, "0/0", "0|0", and "0" are coded as 0, while "0/1", "2|0", or "1" are coded as 1,
+#' and "1/1", "1/2" or "1|4" are all coded as 2.
+#'
+#' The format is determiend by looking at the first 100 loci in the first 100 individuals.
 #' @export
 vcf_query <- function (file, regions, samples, verbose=FALSE, recode=TRUE) {
 	bcf.args <- c("bcftools", "query", "-f", "'[ %GT]\\n'")
@@ -34,10 +38,21 @@ vcf_query <- function (file, regions, samples, verbose=FALSE, recode=TRUE) {
 	bcf.args <- c( bcf.args, file )
     bcf.call <- paste(bcf.args, collapse=" ")
     if (verbose) cat(bcf.call, "\n")
-    gt.text <- tryCatch( data.table::fread( bcf.call, header=FALSE, sep=' ', data.table=FALSE ),
-                   error=function (e) { if ( grepl("File is empty", ee$message) ) { NULL } else { stop(e) } } )
-    if (!recode) { return(gt.text) }
-    gt <- c(0L,1L,1L,2L)[match( unlist(gt.text), c("0/0","0/1","1/0","1/1") )]
+    gt.text <- tryCatch( as.matrix(data.table::fread( bcf.call, header=FALSE, sep=' ', data.table=FALSE )),
+                   error=function (e) { if ( grepl("File is empty", e$message) ) { NULL } else { stop(e) } } )
+    if (is.null(gt.text) || !recode) { return(gt.text) }
+    if (length(grepl("[0-9]\\|[0-9]", gt.text[seq_len(min(nrow(gt.text),100)),seq_len(min(ncol(gt.text),100))]))>0) {
+        gt <- c(0L,1L,1L,2L)[match( unlist(gt.text), c("0|0","0|1","1|0","1|1") )]
+        gt[ grep( "([2-9]\\|0)|(0\\|[2-9])", gt.text ) ] <- 1L
+        gt[ grep( "([2-9]\\|1)|(1\\|[2-9])|([2-9]\\|[2-9])", gt.text ) ] <- 2L
+    } else if (length(grepl("[0-9]\\/[0-9]", gt.text[seq_len(min(nrow(gt.text),100)),seq_len(min(ncol(gt.text),100))]))>0) {
+        gt <- c(0L,1L,1L,2L)[match( unlist(gt.text), c("0/0","0/1","1/0","1/1") )]
+        gt[ grep( "([2-9]\\/0)|(0\\/[2-9])", gt.text ) ] <- 1L
+        gt[ grep( "([2-9]\\/1)|(1\\/[2-9])|([2-9]\\/[2-9])", gt.text ) ] <- 2L
+    } else {
+        gt <- c(0L,1L)[match( unlist(gt.text), c("0","1") )]
+        gt[ grep( "[2-9]", gt.text ) ] <- 1L
+    }
     dim(gt) <- dim(gt.text)
     return(gt)
 }
@@ -158,10 +173,10 @@ vcf_windower_bp <- function (file, sites, size, samples=vcf_samples(file)) {
 		win.end <- win.start + size-1
         return( data.frame( chrom=chroms[this.chrom], start=win.start, end=win.end ) )
     }
-	win.fn <- function (n) {
+	win.fn <- function (n,...) {
 		if (n<1 || n>max(chrom.breaks)) { stop("No such window.") }
         regions <- pos.fn(n)
-		vcf_query( file=file, regions=regions, samples=samples )
+		vcf_query( file=file, regions=regions, samples=samples, ... )
 	}
 	attr(win.fn,"max.n") <- max(chrom.breaks)
 	attr(win.fn,"region") <- pos.fn
@@ -189,10 +204,10 @@ vcf_windower_snp <- function (file, sites, size, samples=vcf_samples(file)) {
                     end=win.end
                 ) )
     }
-	win.fn <- function (n) {
+	win.fn <- function (n,...) {
 		if (n<1 || n>max(chrom.breaks)) { stop("No such window.") }
 		regions <- pos.fn(n)
-		vcf_query( file=file, regions=regions, samples=samples )
+		vcf_query( file=file, regions=regions, samples=samples, ... )
 	}
 	attr(win.fn,"max.n") <- max(chrom.breaks)
 	attr(win.fn,"region") <- pos.fn

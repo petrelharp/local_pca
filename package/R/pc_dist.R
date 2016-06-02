@@ -17,7 +17,7 @@
 #' @param mc.cores If this is greater than 1, parallel::mclapply will be used.
 #' @return A symmetric, numeric matrix with number of columns equal to the number of columns in eigen.win$values.
 #' @export
-pc_dist <- function( x, npc, w=1, normalize="L1", mc.cores=1 ) {
+pc_dist <- function( x, npc=attr(x,"npc"), w=1, normalize="L1", mc.cores=1 ) {
     this.lapply <- if (mc.cores>1) { function (...) parallel::mclapply(...,mc.cores=mc.cores) } else { lapply }
     values <- x[,1+(1:npc),drop=FALSE]
     vectors <- sweep( x[,-(1:(1+npc))], 2, rep(sqrt(w),npc), "*" )

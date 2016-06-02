@@ -4,7 +4,7 @@
 \alias{pc_dist}
 \title{Find Matrix of Distances Between Matrices from Eigenvector/values}
 \usage{
-pc_dist(x, npc, w = 1, normalize = "L1", mc.cores = 1)
+pc_dist(x, npc = attr(x, "npc"), w = 1, normalize = "L1", mc.cores = 1)
 }
 \arguments{
 \item{x}{Matrix as output by eigen_windows(): one row per window, with entries (sum squares), (eigenvalues), (eigenvectors).}

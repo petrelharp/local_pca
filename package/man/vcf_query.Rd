@@ -18,12 +18,16 @@ vcf_query(file, regions, samples, verbose = FALSE, recode = TRUE)
 \item{recode}{Whether to recode genotypes as numeric (assuming diallelic sites only).}
 }
 \value{
-An integer matrix, giving the number of alternate alleles for each sample.
+An integer matrix, giving the number of nonreference alleles for each sample.
+For instance, "0/0", "0|0", and "0" are coded as 0, while "0/1", "2|0", or "1" are coded as 1,
+and "1/1", "1/2" or "1|4" are all coded as 2.
+
+The format is determiend by looking at the first 100 loci in the first 100 individuals.
 }
 \description{
 Uses bcftools to query vcf or bcf files for genotypes in a collection of regions,
-returning the genotypes in numeric format.
-Assumes the data are diploid and that every site is diallelic.
+returning the genotypes in numeric format, giving the number of nonreference alleles.
+Assumes the data are in the format either "0/1", "0|1" (for diploids), or "0" (for haploids).
 Data are returned in the order encountered in the VCF file even if the regions are not in this order.
 }
 
