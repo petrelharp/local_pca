@@ -19,6 +19,17 @@
 \usepackage{color}
 \newcommand{\plr}[1]{{\em \color{blue} #1}}
 
+\newcommand{\pcone}{PC1}
+\newcommand{\pctwo}{PC2}
+\newcommand{\given}{\,\vert\,}
+\newcommand{\st}{\,\colon\,}
+\renewcommand{\and}{\,\&\,}
+\newcommand{\E}{\mathbb{E}}
+\renewcommand{\P}{\mathbb{P}}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\var}{Var}
+\DeclareMathOperator{\cov}{Cov}
+
 
 \begin{document}
 \maketitle
@@ -232,7 +243,15 @@ may benefit from other advances in this substantial literature
 
 \section{Methods}
 
-\plr{How about: first describe the method; then afterwards, present the three datasets.}
+The general steps in our method could be carried out in many ways.
+Referring to Figure \ref{fig:diagram}, these are
+(1) divide the genome into windows,
+(2) summarize the patterns of relatedness (population structure) in each window,
+(3) measure dissimilarity in population structure between each pair of windows,
+(4) visualize the resulting dissimilarity matrix,
+and (5) combine similar windows to more accurately estimate local population structure.
+Details of how we carried these out are given below.
+
 \begin{figure}
     \begin{center}
        \includegraphics[width=0.9\textwidth]{the-method-diagram}
@@ -245,101 +264,185 @@ may benefit from other advances in this substantial literature
 
 
 
-\subsection{Recode the DNA sequence to a matrix consisting of 0,1,2 (and NA).}
+\subsection{Datasets}
+% Recode the DNA sequence to a matrix consisting of 0,1,2 (and NA).
 
-For human, we use SNP chip data from POPRES \citep{nelson2008population}. There are 3,965 samples in total, (346 African-Americas; 73 Asians; 3,187 Europeans; 359 Indian Asians), and the 22 autosomes together have 447,267 SNPs in this dataset. 
-We use the allele that has highest frequency in the samples as the reference allele for each position. 
-The first step is to recode genetic data as a numeric matrix; 
-which we take to have one row per variant and one column per sample. (omitting monomorphic variants)
-In our applications, for each variant we picked a reference allele, 
-and recoded genotypes as the number of non-reference alleles carried by the individual;
-obtaining 0,1, or 2 for autosomal variants in diploids, or NA for missing data.
+We used three publically available datasets (summarized in Table \ref{tab:data_stats});
+as usual for genetic data we converted the data to a numeric matrix
+(with one row per polymorphic variant and one column per sample)
+by replacing each genotype with the number of nonreference alleles
+(or NA for missing data).
 A normalization step (see below) ensures the result does not depend on the choice of reference allele.
 
-For \textit{Drosophila melanogaster}, we use the sequencing data from Drosophila Population Genomics Project (DPGP) and John Pool's lab \citep{lack2015drosophila}, 
-which together has 380 samples from 16 countries across Africa and Europe.
-Each chromosome arm we investigated (Chr2L, Chr2R, Chr3L, Chr3R) has 2-3 million SNPs.
-Due to high density of missing data for some parts in the genome, we then delete the samples with more than 8\% missing genotypes and then deleting positions with more than 20\% missing data. 
-The cutoff points 8\% and 20\% are determined from the corresponding distributions of NAs in samples and at positions. 
-Since the \textit{Drosophila} samples are from inbred lines with little heterozygosity, we treat the samples as haploid when recoding.
+\paragraph{Human:}
+We used genomic data from the entire POPRES dataset \citep{nelson2008population},
+which has array-derived genotype information for 447,267 SNPs across the autosomes
+of 3,965 samples in total: 346 African-Americas, 73 Asians, 3,187 Europeans and 359 Indian Asians.
+(We excluded the sex chromosomes and the mitochondria.)
+We use the allele that has highest frequency in the samples as the reference allele for each position. 
 
-For \textit{Medicago truncatula}, we use the SNP data from whole genome sequencing from \textit{Medicago truncatula} Hapmap Project \citep{tang2014improved}. 
-It has 263 samples from 24 countries. 
-Each of the 8 chromosomes has 3-5 million SNPs.
+\paragraph{\textit{Drosophila melanogaster}:}
+We also used whole-genome sequencing data from Drosophila Population Genomics Project (DPGP) and John Pool's lab \citep{lack2015drosophila}, 
+which together has 380 samples from 16 countries across Africa and Europe.
+\plr{Check: are all of our samples described in \citet{lack2015drosophila}? If yes, just say DPGP; if no, add appropriate citation (ask John what this should be). Also, add website?}
+Since the \textit{Drosophila} samples are from inbred lines, we treat the samples as haploid when recoding;
+regions with residual heterozygosity were marked as missing in the original dataset.
+Each chromosome arm we investigated (Chr2L, Chr2R, Chr3L, and Chr3R) has 2--3 million SNPs.
+Due to high density of missing data for some parts in the genome, 
+we first deleted any samples with more than 8\% missing genotypes, 
+and then deleted positions with more than 20\% missing data. 
+(We chose these cutoffs as the tails of the relevant empirical distributions.)
+
+\paragraph{\textit{Medicago truncatula}:}
+Finally, we used whole-genome sequencing data from the \textit{Medicago truncatula} Hapmap Project \citep{tang2014improved},
+which has 263 samples from 24 countries,
+primarily distributed around the Mediterranean basin.
+Each of the 8 chromosomes has 3-5 million SNPs;
+we did not use the mitochondria or chloroplasts.
 
 \begin{table}[ht]
 \centering
-\begin{tabular}{p{0.8in}p{1in}p{1in}p{1in}p{1.2in}}
+\begin{tabular}{p{0.8in}p{.8in}p{1in}p{1.2in}p{1.4in}}
   \hline
- & species number of SNPs per window & mean length in bp per window & mean number of windows per chromosome & mean ratio of variance explained by top 2 PCs \\ 
+    species & \# SNPs per window & mean window length (bp) & mean \# windows per chromosome & mean \% variance explained by top 2 PCs \\ 
   \hline
-\textit{Drosophila melanogaster} & 1000 & 9019 & 2674 & 0.53 \\ 
-  Human & 100 & 636494 & 203 & 0.55 \\ 
-  \textit{Medicago truncatula} & 10000 & 102580 & 467 & 0.50 \\ 
+  Human & 100 & 636,494 & 203 & 0.55 \\ 
+  \textit{Drosophila melanogaster} & 1,000 & 9,019 & 2,674 & 0.53 \\ 
+  \textit{Medicago truncatula} & 10,000 & 102,580 & 467 & 0.50 \\ 
    \hline
 \end{tabular}
-\caption {some statistic for each species' genome}
+\caption{
+    Descriptive statistics for each dataset used,
+    with the chosen window sizes.
+    See text for how window sizes were chosen;
+    in each window we performed PCA,
+    computed the percent varince explained by the top two principal components;
+    the mean across windows is given in the last column.
+    \label{tab:data_stats}
+}
 \end{table}
 
 
 \subsection{PCA in genomic windows}
 
-After recoding, we divided the recoded matrix into contigous matrixes that have the same columns but fewer rows than the original matrix, 
-and applied Principal Component Analysis (PCA) separately on each window, 
-following the procedure in \citet{mcvean2009genealogical} as follows. Starting with the recoded genotype matrix $Z$, 
-where $Z$ is a $L\times N$ matrix ( $L$ is SNP number ; $N$ is sample size), 
-first compute the mean-centered matrix $X$, $X_{si}=Z_{si}-\overline{Z_{s}}$, 
-where $\overline{Z_{s}}$ is the mean of non-missing entries, $\overline{Z_{s}}=\frac{1}{n}\sum_{j=1}^{n}Z_{sj}$.
-The mean-centering step makes the result not depend on the choice of reference allele.
-Then find the covariance matrix of $X$, denoted $C=\frac{1}{n-1}XX^{T}$. 
-We compute the covariance matrix using the R function cov() , with use=``pairwise",
-which computes the covariance between each pair of individuals using all complete pairs of SNPs on those individuals.
-The principal components are eigenvector of C, ordered by magnitude of the eigenvalues.
+After recoding, we divided the genome into contiguous segments (``windows''; see below),
+% recoded matrix into contigous matrices that have the same columns but fewer rows than the original matrix, 
+and applied Principal Component Analysis (PCA) as described in \citet{mcvean2009genealogical}
+separately to the submatrices that corresponded to each window.
+Specifically, we did PCA as follows:
+denote by $Z$ the $L\times N$ recoded genotype matrix ($L$ is the number of SNPs and $N$ is the sample size), 
+and by $\overline{Z_{s}}$ the mean of non-missing entries for allele $s$, 
+so that $\overline{Z_{s}}=\frac{1}{n_s}\sum_j Z_{sj}$, 
+where the sum is over the $n_s$ nonmissing genotypes.
+We first compute the mean-centered matrix $X$, as $X_{si}=Z_{si}-\overline{Z_{s}}$,
+and preserving missingness.
+(This mean-centering makes the result not depend on the choice of reference allele,
+exactly if there is no missing data, and approximately otherwise.)
+Next, we find the covariance matrix of $X$, denoted $C$,
+as $C_{ij} = \frac{1}{m_{ij}-1} \sum_s X_{si} X_{sj} - \frac{1}{m_{ij}(m_{ij}-1)} (\sum_s X_{si})(\sum_s X_{sj})$,
+where all sums are over the $m_{ij}$ sites where both sample $i$ and sample $j$ have nonmissing genotypes.
+\plr{Is that correct? This is not $X^T X/(m-1)$, which is what was here before, 
+     but is what cov(), use='pairwise' does: see \url{package/tests/testthat/test_covariance.R}.}
+% We compute the covariance matrix using the R function cov() , with use=``pairwise",
+% which computes the covariance between each pair of individuals using all complete pairs of SNPs on those individuals.
+The principal components are the eigenvectors of $C$, 
+normalized to have Euclidean length equal to one,
+and ordered by magnitude of the eigenvalues.
 
-The top few principal components generally display population structure; we usually use the first two (referred to as PC1 and PC2).
+The top few principal components generally display population structure; 
+we usually use the first two (referred to as $\pcone$ and $\pctwo$).
+The above procedure can be performed on any subset of the data;
+for future reference, denote by $\pcone_j$ and $\pctwo_j$
+the result after applying to all SNPs in the $j^\text{th}$ window.
 
-\subsubsection{Choosing window length}
-The window length should neither be too long or too short. 
-In general, longer windows have more SNPs, 
-the noise (the mean standard error within a window) will be smaller
-and so population structure in that window will be more accurately estimated.
-However, to better resolve features along the genome, we need reasonably short windows 
-to have stronger signal (the mean standard variation between windows).
-If we use the first principal component as a measure of population structure, 
-then to choose a proper length for a window, 
-we need to find a balance between variance of the first principal components inside a window and that between windows. 
-The variance between windows is estimated by the mean variance of the first principal component for each window. 
-$Var_{between}= \frac{1}{N}\sum_{j=1}^{N}\left ( \frac{1}{K}\sum_{i=1}^{K}\left ( PC1_{i,j} -\overline{PC1_{,j}} \right )^{2} \right )$ ($K$ is the number of windows on the genome)
-The variance inside a window is estimated using the block jackknife cutting the window into 10 equal size smaller windows \citep{efron1982jackknife}. 
-$Var_{inside}= \frac{1}{N}\sum_{j=1}^{N}\left ( \frac{9}{10}\sum_{i=1}^{10}\left ( PC1_{i,j} -\overline{PC1_{,j}} \right )^{2} \right )$
-Table \ref{tab:window_sizes} shows the comparison of variance within a window and that between windows for chromosome arms in \textit{Drosophila}. Finally, we choose 100 SNPs, 1000 SNPs and 10000 SNPs as window length for human, \textit{Drosophila}, and \textit{Medicago} respectively.
+\plr{I'm talking about flipping signs up here, even though in the code we do it when computing variances, since it makes sense conceptually here.}
+Since eigenvectors are still only defined up to sign,
+when comparing between windows we choose the sign to best match each other:
+after choosing $\pcone_1$, for instance, and $u$ is the first eigenvector obtained from the covariance matrix
+for window $j$,
+then $\pcone_j = \pm u$,
+where the sign is chosen according to which of 
+$\sum_i (\pcone_{i1} - u_i)$ or
+$\sum_i (\pcone_{i1} + u_i)$ 
+is smaller.
+
+\subsection{Choosing window length}
+
+The choice of window length entails a balance between several factors.
+In very short windows, genealogies of the samples will only be represented by a few trees,
+so variation between windows represents demographic noise rather than meaningful variation in population structure.
+Longer windows generally have more distinct trees (and SNPs), 
+allowing for less noisy estimation of local population structure.
+However, to better resolve meaningful signal, i.e., differences in population structure along the genome, 
+we would like reasonably short windows.
+Window length choice therefore entails a signal versus noise tradeoff
+in the estimates of population structure.
+% If we use the first principal component as a measure of population structure, 
+% then to choose the best window length,
+% we need to find a balance between the standard error of the first principal components for each window 
+% and the standard deviation between windows. 
+Since we summarize population structure using relative positions in the principal component maps,
+we quantify ``noise'' as the standard error of a sample's position on PC1 in a particular window,
+averaged across windows and samples,
+and ``signal'' as the standard deviation of the sample's position on PC1 over all windows,
+averaged over samples.
+(Recall that the signs for PCs are chosen to match each other.)
+Then, the mean variance across windows is
+\begin{align*}
+    \sigma_\text{signal}^2
+    = 
+    \frac{1}{N} \sum_{j=1}^{N}
+        \frac{1}{L}\sum_{i=1}^{L}\left ( \pcone_{ij} -\overline\pcone_{j} \right )^{2} ,
+\end{align*}
+where $\overline\pcone_j = (1/N) \sum_{j=1}^N \pcone_{ij}$.
+We estimate the standard error for each $\pcone_{ij}$ using the block jackknife \citep{efron1982jackknife}:
+we divide the $j^\text{th}$ block into 10 equal-sized pieces,
+and let $\pcone_{ij,k}$ denote the first principal component of this region found after removing the $k^\text{th}$ piece;
+then
+$\sigma^2_{ij} = \frac{9}{10} \sum_{k=1}^{10} ( \pcone_{ij,k} - \frac{1}{10} \sum_{\ell=1}^{10} \pcone_{ij,\ell} )^2$,
+and we measure noise by averaging over samples and windows:
+\begin{align*}
+    \sigma^2_\text{noise}
+    &=
+    \frac{1}{N} \sum_{j=1}^{N} \frac{1}{L}\sum_{i=1}^{L} \sigma^2_{ij} .
+\end{align*}
+
+These values are shown calculated separately for each chromosome arm in the \textit{Drosophila} dataset in Table \ref{tab:window_sizes}.
+Finally, we choose 100 SNPs, 1000 SNPs and 10000 SNPs as window length for human, \textit{Drosophila}, and \textit{Medicago} respectively.
 
 
 
 \begin{table}[ht]
 \centering
-\begin{tabular}{rllrrrrr}
+    \begin{tabular}{rlp{1.1in}rrrrr}
   \hline
- &   & window length(in SNPs) & 100 & 500 & 10\verb|^|3 & 10\verb|^|4 & 10\verb|^|5 \\ 
+ & chrom.\ arm  & window length (in SNPs) & 100 & 500 & 1,000 & 10,000 & 100,000 \\ 
   \hline
- & Chr2L & SE\verb|^|2(within) & 2.05e-03 & 1.64e-03 & 1.18e-03 & 1.68e-04 & 4.02e-05 \\ 
-  & 	 & Var(between) & 2.76e-03 & 2.69e-03 & 2.23e-03 & 6.74e-04 & 3.12e-04 \\ 
-  & Chr2R & SE\verb|^|2(within) & 2.18e-03 & 1.92e-03 & 1.63e-03 & 5.76e-04 & 1.35e-04 \\ 
-  & 	 & Var(between) & 2.78e-03 & 2.70e-03 & 2.65e-03 & 2.31e-03 & 1.82e-03 \\ 
-  & Chr3L & SE\verb|^|2(within) & 2.08e-03 & 2.00e-03 & 1.64e-03 & 7.32e-04 & 2.45e-04 \\ 
-  & 	 & Var(between) & 2.60e-03 & 2.52e-03 & 2.40e-03 & 1.68e-03 & 1.89e-03 \\ 
-  & Chr3R & SE\verb|^|2(within) & 1.95e-03 & 1.76e-03 & 1.44e-03 & 5.87e-04 & 2.03e-04 \\ 
-  & 	 & Var(between) & 2.58e-03 & 2.51e-03 & 2.44e-03 & 1.96e-03 & 1.40e-03 \\ 
-  & ChrX & SE\verb|^|2(within) & 2.48e-03 & 2.04e-03 & 1.54e-03 & 1.62e-03 & 1.68e-04 \\ 
-  & 	 & Var(between) & 2.61e-03 & 2.43e-03 & 2.30e-03 & 3.24e-04 & 1.14e-03 \\ 
+    & 2L & $\sigma_\text{noise}$  &    4.53 & 4.05 & 3.44 & 1.30 & 0.63 \\ 
+    & 	 & $\sigma_\text{signal}$ &    5.25 & 5.19 & 4.72 & 2.60 & 1.77 \\ 
+    & 2R & $\sigma_\text{noise}$  &    4.67 & 4.38 & 4.04 & 2.40 & 1.16 \\ 
+    & 	 & $\sigma_\text{signal}$ &    5.27 & 5.20 & 5.15 & 4.81 & 4.27 \\ 
+    & 3L & $\sigma_\text{noise}$  &    4.56 & 4.47 & 4.05 & 2.71 & 1.57 \\ 
+    & 	 & $\sigma_\text{signal}$ &    5.10 & 5.02 & 4.90 & 4.10 & 4.35 \\ 
+    & 3R & $\sigma_\text{noise}$  &    4.42 & 4.20 & 3.79 & 2.42 & 1.42 \\ 
+    & 	 & $\sigma_\text{signal}$ &    5.08 & 5.01 & 4.94 & 4.43 & 3.74 \\ 
+    & X  & $\sigma_\text{noise}$  &    4.98 & 4.52 & 3.92 & 4.02 & 1.30 \\ 
+    & 	 & $\sigma_\text{signal}$ &    5.11 & 4.93 & 4.80 & 1.80 & 3.38 \\
    \hline
 \end{tabular}
 \caption{
-Comparison of variance within a window and that between windows for chromosome arms in \textit{Drosophila}.
+    Measures of signal and noise,
+    computed separately for each chromosome arm in the \textit{Drosophila} dataset,
+    at different window sizes.
+    All values are multiplied by $100$
+    (so typical variation is of order of 50\% of the actual values).
+    Starting at windows of 1,000 SNPs, the signal (variation of PC1 between windows)
+    starts to be substantially larger than the noise (standard error of PC1 for each window).
+    \plr{make 'window length' in bigger bar above the values}
 } \label{tab:window_sizes}
 \end{table}
 
-\subsubsection{Similarity of population structure between windows}
+\subsection{Similarity of population structure between windows}
 We compared population structure in different genomic windows 
 using the first two principal components (PCs) and the corresponding eigenvalues from PCA.
 We do this, rather than using the entire covariance matrix for computational efficiency 
