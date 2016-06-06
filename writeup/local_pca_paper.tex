@@ -21,6 +21,7 @@
 
 \newcommand{\pcone}{PC1}
 \newcommand{\pctwo}{PC2}
+\newcommand{\pc}[1]{PC#1}
 \newcommand{\given}{\,\vert\,}
 \newcommand{\st}{\,\colon\,}
 \renewcommand{\and}{\,\&\,}
@@ -29,6 +30,7 @@
 \DeclareMathOperator{\sgn}{sgn}
 \DeclareMathOperator{\var}{Var}
 \DeclareMathOperator{\cov}{Cov}
+\DeclareMathOperator{\tr}{tr}
 
 
 \begin{document}
@@ -62,7 +64,8 @@ common axes of variation in population structure are shared between chromosomes,
 correlate with local gene density,
 and may be caused by background selection or local adaptation.
 The method is a useful addition to the exploratory toolbox
-of population genomics.
+of population genomics,
+and is implemented as an R package.
 
 \plr{Add percent of variance explained by first two MDS coordinates, after subtracting the genome-wide mean covariance matrix.}
 
@@ -257,7 +260,12 @@ Details of how we carried these out are given below.
        \includegraphics[width=0.9\textwidth]{the-method-diagram}
     \end{center}
     \caption{
-         The diagram of our method.
+         An illustration of the method; see text for details.
+         % (1) the genome is divided into windows;
+         % (2) population structure is summarized in each with PCA, and 
+         % (3) dissimilarities for each are computed;
+         % (4) the patterns of dissimilarity are visualized with MDS,
+         % and (5) genomic regions clustering together are aggregated and visualized, again with PCA.
          \label{fig:diagram}
     }
 \end{figure}
@@ -302,9 +310,13 @@ we did not use the mitochondria or chloroplasts.
 
 \begin{table}[ht]
 \centering
-\begin{tabular}{p{0.8in}p{.8in}p{1in}p{1.2in}p{1.4in}}
+    \begin{tabular}{p{0.8in}rrrr}
   \hline
-    species & \# SNPs per window & mean window length (bp) & mean \# windows per chromosome & mean \% variance explained by top 2 PCs \\ 
+    species 
+    & \parbox[t]{.8in}{\# SNPs per \\ window} 
+    & \parbox[t]{1in}{mean window\\ length (bp)}
+    & \parbox[t]{1.2in}{mean \# windows \\ per chromosome} 
+    & \parbox[t]{1.4in}{mean \% variance ex-\\plained by top 2 PCs} \\ 
   \hline
   Human & 100 & 636,494 & 203 & 0.55 \\ 
   \textit{Drosophila melanogaster} & 1,000 & 9,019 & 2,674 & 0.53 \\ 
@@ -355,7 +367,7 @@ The above procedure can be performed on any subset of the data;
 for future reference, denote by $\pcone_j$ and $\pctwo_j$
 the result after applying to all SNPs in the $j^\text{th}$ window.
 
-\plr{I'm talking about flipping signs up here, even though in the code we do it when computing variances, since it makes sense conceptually here.}
+\plr{I'm talking about flipping signs up here, even though in the code we do it when computing variances. Do you think it makes sense here?}
 Since eigenvectors are still only defined up to sign,
 when comparing between windows we choose the sign to best match each other:
 after choosing $\pcone_1$, for instance, and $u$ is the first eigenvector obtained from the covariance matrix
@@ -398,7 +410,7 @@ where $\overline\pcone_j = (1/N) \sum_{j=1}^N \pcone_{ij}$.
 We estimate the standard error for each $\pcone_{ij}$ using the block jackknife \citep{efron1982jackknife}:
 we divide the $j^\text{th}$ block into 10 equal-sized pieces,
 and let $\pcone_{ij,k}$ denote the first principal component of this region found after removing the $k^\text{th}$ piece;
-then
+then the estimate of the squared standard error is
 $\sigma^2_{ij} = \frac{9}{10} \sum_{k=1}^{10} ( \pcone_{ij,k} - \frac{1}{10} \sum_{\ell=1}^{10} \pcone_{ij,\ell} )^2$,
 and we measure noise by averaging over samples and windows:
 \begin{align*}
@@ -407,111 +419,175 @@ and we measure noise by averaging over samples and windows:
     \frac{1}{N} \sum_{j=1}^{N} \frac{1}{L}\sum_{i=1}^{L} \sigma^2_{ij} .
 \end{align*}
 
-These values are shown calculated separately for each chromosome arm in the \textit{Drosophila} dataset in Table \ref{tab:window_sizes}.
-Finally, we choose 100 SNPs, 1000 SNPs and 10000 SNPs as window length for human, \textit{Drosophila}, and \textit{Medicago} respectively.
+We calculated $\sigma^2_\text{signal}$ and $\sigma^2_\text{noise}$
+for a range of window sizes,
+and for our main results
+chose the smallest window for which $\sigma^2_\text{signal}$ was consistently larger than $\sigma^2_\text{noise}$;
+the values for various window sizes across \textit{Drosophila} chromosomes are shown in Table \ref{tab:window_sizes},
+and the choices for all taxa are in Table \ref{tab:data_stats}.
+In practice, even substantially different window sizes result in the same genome-wide patterns.
+We also chose windows to each consist of the same number of neighboring SNPs.
+We compared to the results when windows are each of the same physical length (in bp) but of the same average length,
+and results were nearly identical.
 
-
+% # Variances within and between windows for Drosophila, multiplied by 1000:
+% w <- structure(list(chrom = structure(c(1L, 1L, 2L, 2L, 3L, 3L, 4L, 
+% 4L, 5L, 5L), .Label = c("2L", "2R", "3L", "3R", "X"), class = "factor"), 
+%     type = structure(c(1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L
+%     ), .Label = c("noise", "signal"), class = "factor"), `100` = c(2.05209, 
+%     2.75625, 2.18089, 2.77729, 2.07936, 2.601, 1.95364, 2.58064, 
+%     2.48004, 2.61121), `500` = c(1.64025, 2.69361, 1.91844, 2.704, 
+%     1.99809, 2.52004, 1.764, 2.51001, 2.04304, 2.43049), `1000` = c(1.18336, 
+%     2.22784, 1.63216, 2.65225, 1.64025, 2.401, 1.43641, 2.44036, 
+%     1.53664, 2.304), `10000` = c(0.169, 0.676, 0.576, 2.31361, 
+%     0.73441, 1.681, 0.58564, 1.96249, 1.61604, 0.324), `1e+05` = c(0.03969, 
+%     0.31329, 0.13456, 1.82329, 0.24649, 1.89225, 0.20164, 1.39876, 
+%     0.169, 1.14244)), .Names = c("chrom", "type", "100", "500", 
+% "1000", "10000", "1e+05"), row.names = c(NA, -10L), class = "data.frame")
+% print(xtable(w),include.rownames=FALSE)
 
 \begin{table}[ht]
 \centering
-    \begin{tabular}{rlp{1.1in}rrrrr}
+    \begin{tabular}{cccrrrrr}
   \hline
- & chrom.\ arm  & window length (in SNPs) & 100 & 500 & 1,000 & 10,000 & 100,000 \\ 
+        & & & \multicolumn{5}{c}{window length (SNPs)} \\
+ & chrom.\ arm  & & 100 & 500 & 1,000 & 10,000 & 100,000 \\ 
   \hline
-    & 2L & $\sigma_\text{noise}$  &    4.53 & 4.05 & 3.44 & 1.30 & 0.63 \\ 
-    & 	 & $\sigma_\text{signal}$ &    5.25 & 5.19 & 4.72 & 2.60 & 1.77 \\ 
-    & 2R & $\sigma_\text{noise}$  &    4.67 & 4.38 & 4.04 & 2.40 & 1.16 \\ 
-    & 	 & $\sigma_\text{signal}$ &    5.27 & 5.20 & 5.15 & 4.81 & 4.27 \\ 
-    & 3L & $\sigma_\text{noise}$  &    4.56 & 4.47 & 4.05 & 2.71 & 1.57 \\ 
-    & 	 & $\sigma_\text{signal}$ &    5.10 & 5.02 & 4.90 & 4.10 & 4.35 \\ 
-    & 3R & $\sigma_\text{noise}$  &    4.42 & 4.20 & 3.79 & 2.42 & 1.42 \\ 
-    & 	 & $\sigma_\text{signal}$ &    5.08 & 5.01 & 4.94 & 4.43 & 3.74 \\ 
-    & X  & $\sigma_\text{noise}$  &    4.98 & 4.52 & 3.92 & 4.02 & 1.30 \\ 
-    & 	 & $\sigma_\text{signal}$ &    5.11 & 4.93 & 4.80 & 1.80 & 3.38 \\
+    & 2L & $\sigma^2_\text{noise}$  & 2.05  &  1.64  &  1.18  &  0.17  &  0.04 \\
+    & 	 & $\sigma^2_\text{signal}$ & 2.76  &  2.69  &  2.23  &  0.68  &  0.31 \\
+    & 2R & $\sigma^2_\text{noise}$  & 2.18  &  1.92  &  1.63  &  0.58  &  0.13 \\
+    & 	 & $\sigma^2_\text{signal}$ & 2.78  &  2.70  &  2.65  &  2.31  &  1.82 \\
+    & 3L & $\sigma^2_\text{noise}$  & 2.08  &  2.00  &  1.64  &  0.73  &  0.25 \\
+    & 	 & $\sigma^2_\text{signal}$ & 2.60  &  2.52  &  2.40  &  1.68  &  1.89 \\
+    & 3R & $\sigma^2_\text{noise}$  & 1.95  &  1.76  &  1.44  &  0.59  &  0.20 \\
+    & 	 & $\sigma^2_\text{signal}$ & 2.58  &  2.51  &  2.44  &  1.96  &  1.40 \\
+    & X  & $\sigma^2_\text{noise}$  & 2.48  &  2.04  &  1.54  &  1.62  &  0.17 \\
+    & 	 & $\sigma^2_\text{signal}$ & 2.61  &  2.43  &  2.30  &  0.32  &  1.14 \\
    \hline
 \end{tabular}
 \caption{
     Measures of signal and noise,
     computed separately for each chromosome arm in the \textit{Drosophila} dataset,
     at different window sizes.
-    All values are multiplied by $100$
+    All values are multiplied by $1,000$
     (so typical variation is of order of 50\% of the actual values).
     Starting at windows of 1,000 SNPs, the signal (variation of PC1 between windows)
     starts to be substantially larger than the noise (standard error of PC1 for each window).
-    \plr{make 'window length' in bigger bar above the values}
 } \label{tab:window_sizes}
 \end{table}
 
+
+
 \subsection{Similarity of population structure between windows}
-We compared population structure in different genomic windows 
-using the first two principal components (PCs) and the corresponding eigenvalues from PCA.
-We do this, rather than using the entire covariance matrix for computational efficiency 
+
+We think of local population structure as being summarized by \emph{relative} position of the sampmles
+in the space defined by the top principal components.
+Since rotations of this space imply identical population structure,
+we do not compare population structure of different genomic windows using the PCs directly, 
+but instead compare the low-dimensional approximations of the local covariance matrices
+obtained using the top $k$ PCs.
+(For results shown here, we use $k=2$;
+results using larger numbers of PCs were nearly identical.)
+We do this, rather than using the entire covariance matrix, 
+both for computational efficiency 
 and because the top PCs summarize important population structure, 
-using only these should reduce the effect of noise.
-For example, the constructed matrixes for ith and jth window are as following. 
-($\lambda _{1i}$ and $\lambda _{2i}$ are the eigenvalues for the first two PCs for \textit{i}th window; 
-$M_i$ is the constructed new matrix for \textit{i}th window and \textit{j}th window.
-\plr{
-Say what $M_i$ and $M_j$ are in the text.  
-Also, how about we write $V$ instead of $PC$?  I like to use only one letter for variables, so it's clear it's just one thing, not the product of $P$ and $C$.
-And, isn't it $\sqrt{\lambda_{1j}^2+\lambda_{2j}^2}$ on the bottom? Check in the R code (pc{\textunderscore}dist.R).
-}
-
+so using only these should reduce the effect of noise.
+To remove the effect of variation in mutation rate between windows,
+we also rescale each covariance matrix so that the underlying data matrix has trace norm equal to one.
+To do this, define the $N \times k$ matrix $V(i)$ so that the $\ell^\text{th}$ column of $V(i)$
+is equal to the $\ell^\text{th}$ princpal component of the $i^\text{th}$ window,
+multiplied by $\sqrt{ \lambda_{\ell i} / \sum_{m=1}^k \lambda_{m i} }$.
+% \begin{equation}
+%     \begin{aligned}
+%         V_{i1}&=\sqrt{\frac{\lambda _{1i}}{\lambda _{1i}+\lambda _{2i}}}PC1_{i} ,
+%         \qquad
+%         V_{i2}&=\sqrt{\frac{\lambda _{2i}}{\lambda _{1i}+\lambda _{2i}}}PC2_{i} 
+%     \end{aligned}
+% \end{equation}
+Then, the rescaled, $k$-dimensional covariance matrix for the $i^\text{th}$ window is
 \begin{align}
-    M_{i} &= \frac{\lambda_{1i}PC1_{i}PC1_{i}^{T}+\lambda_{2i}PC2_{i}PC2_{i}^{T}}{\lambda_{1i}+\lambda_{2i}} 
+    M(i) &= \sum_{\ell=1}^k V_{i\ell} V_{i\ell}^T .
 \end{align}
+% \begin{align}
+%     M_{i} &= \frac{\lambda_{1i}PC1_{i}PC1_{i}^{T}+\lambda_{2i}PC2_{i}PC2_{i}^{T}}{\lambda_{1i}+\lambda_{2i}} 
+% \end{align}
 
-The Euclidean distance $D_{ij}$ between the matrices $M_i$ and $M_j$ stands for the similarity of population structure for the \textit{i}th window and \textit{j}th window. 
-Due to the orthogonality of eigenvectors,we could use the following method to calculate the pairwise distance greatly saving time and space.
-
-\plr{Define $D$.}
-
-\begin{equation}
-    \begin{aligned}
-        V_{i1}&=\sqrt{\frac{\lambda _{1i}}{\lambda _{1i}+\lambda _{2i}}}PC1_{i} \qquad
-        V_{i2}&=\sqrt{\frac{\lambda _{2i}}{\lambda _{1i}+\lambda _{2i}}}PC2_{i} \\
-    \end{aligned}
-\end{equation}
-
+We then use
+Euclidean distance $D_{ij}$ between the matrices $M(i)$ and $M(j)$ 
+to measure the similarity of population structure for the $i^\text{th}$ window and $j^\text{th}$ window. 
+Since 
+$\sum_{ij} (A_{ij}-B_{ij})^2 = \sum_{ij} (A^2_{ij} + B^2_{ij}) - 2 \tr(A^T B)$,
+and $M(i) = V(i) V(i)^T$,
+then due to the orthogonality of eigenvectors and the cyclic invariance of trace,
+$D_{ij}$ can be computed efficiently as
 \begin{align}
-    M_{i} &= V_{i1}V_{i1}^{T}+V_{i2}V_{i2}^{T}
+    D_{ij} 
+    = 
+    \frac{ \sum_{\ell=1}^k \lambda_{\ell i}^2 }{ (\sum_{\ell=1}^k \lambda_{\ell i})^2 }
+    + \frac{ \sum_{\ell=1}^k \lambda_{\ell j}^2 }{ (\sum_{\ell=1}^k \lambda_{\ell j})^2 }
+    - 2 \sum_{\ell, m=1}^k (V(i)^T V(j))^2_{\ell m} .
 \end{align}
+% from the code for pc_dist():
+% #' In the unweighted case, suppose that (u) and (v) are sets of vectors, and that 
+% #'    A = a_1 * u_1 u_1^T + ... + a_j * u_j u_j^T = U diag(a) U^T
+% #'    B = b_1 * v_1 v_1^T + ... + b_j * v_k v_k^T = V diag(b) V^T,
+% #' where U is the matrix whose columns are (u), and likewise for V.
+% #' Then 
+% #'    (A-B)^T (A-B) = A^T A + B^T B - A^T B - B^T A
+% #' and so
+% #'    ||A-B||^2 = ||A||^2 + ||B||^2 - 2 tr( A^T B )
+% #' By the cyclic invariance of trace, if X = U^T V then
+% #'    tr( A^T B ) = tr( U diag(a) U^T V diag(b) V^T ) = tr( diag(a) X diag(b) X^T ) .
+% \begin{align}
+%     \begin{split}
+%     D_{ij} &= 
+%         \left \{
+%                 \left ( 
+%                     V_{i1}\cdot V_{i1}^{} 
+%                 \right )^{2}
+%                 + \left ( V_{i2}\cdot V_{i2}^{} \right )^{2}
+%                 + \left ( V_{j1}\cdot V_{j1}^{} \right )^{2} 
+%                 +\left ( V_{j2}\cdot V_{j2}^{} \right )^{2} 
+%         \right. \\ 
+%         & \left. \qquad {}  
+%             -2\left [ 
+%                 \left ( V_{i1}\cdot V_{j1}^{} \right )^{2}
+%                 + \left ( V_{i1}\cdot V_{j2}^{} \right )^{2}
+%                 + \left ( V_{i2}\cdot V_{j1}^{} \right )^{2} 
+%                 + \left ( V_{i2}\cdot V_{j2}^{} \right )^{2}
+%             \right ]
+%         \right \}^{1/2}
+%     \end{split}
+% \end{align}
 
 
-\begin{align}
-    \begin{split}
-    D_{ij} &= 
-        \left \{
-                \left ( 
-                    V_{i1}\cdot V_{i1}^{} 
-                \right )^{2}
-                + \left ( V_{i2}\cdot V_{i2}^{} \right )^{2}
-                + \left ( V_{j1}\cdot V_{j1}^{} \right )^{2} 
-                +\left ( V_{j2}\cdot V_{j2}^{} \right )^{2} 
-        \right. \\ 
-        & \left. \qquad {}  
-            -2\left [ 
-                \left ( V_{i1}\cdot V_{j1}^{} \right )^{2}
-                + \left ( V_{i1}\cdot V_{j2}^{} \right )^{2}
-                + \left ( V_{i2}\cdot V_{j1}^{} \right )^{2} 
-                + \left ( V_{i2}\cdot V_{j2}^{} \right )^{2}
-            \right ]
-        \right \}^{1/2}
-    \end{split}
-\end{align}
+\subsection{Visualization of results}
 
-Using this procedure, 
-we get the pairwise distance matrix that says how similar population structure is 
-in each pair of genomic windows.
+We use multidimensional scaling (MDS) to visualize relationships between windows
+as summarized by the dissimilarity matrix $D$,
+that produces a set of $m$ coordinates for each window that
+give the arrangement in $m$-dimensional space that best recapitulates the original distance matrix.
+For results here, we use $m=2$ to produce one- or two-dimensional visualizations of relationships between windows' population structure.
 
-\subsubsection{Visualize the pairwise distance matrix}
-We use Multidimensional scaling (MDS) method to visualize the distance matrices. 
-It can reduce the dimensionality of a distance matrix while preserve the distance information between objects as well as possible. 
-The result is a set of coordinates for each sample with the property that 
-the first M coordinates give the arrangement in M-dimensional space that best recapitulates the original distance matrix.
-We use M=2 to produce one or two dimensional visualization of relationships between windows' population structure.
+We then locate variation in population structure along the genome
+by choosing collections of windows that are nearby in MDS cooridinates,
+and map their positions along the genome.
+Their common population structure is identified by extracting the corresponding genomic regions
+and performing PCA on all, aggregated regions.
 
+
+\subsection{Software}
+
+The methods described here
+are implemented in an open-source R package
+available at \url{https://github.com/petrelharp/lostruct},
+as well as scripts to perform all analyses from VCF files
+at various parameter settings.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results}
+
 In all these 3 species, PCA plots vary along the genome in a systematic way, showing strong chromosome-scale correlations.
 This implies that variation is truly due to population structure, 
 since fluctuations due to demographic noise are not expected to show long distance correlations. 
