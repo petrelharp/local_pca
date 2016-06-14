@@ -43,21 +43,21 @@
 \section*{Abstract}
 
 Dimension reduction techniques,
-such as principal components,
+such as principal component analysis (PCA),
 are often used to discover and display large-scale structure in genomic datasets
 found in the patterns of kinship
 between the genotyped individuals,
 and to control for the confounding effects of population structure in genome-wide association studies.
-The genome-wide mean kinship this uses
+The genome-wide mean kinship that principal component uses
 is an average of the relationships across all locus-specific genealogical trees.
 However, many biological factors,
 including linked selection,
 can systematically skew patterns of kinship over intermediate genomic scales.
 We show how to use principal components analysis (PCA) to describe this meso-scale variation in kinship,
 and apply the method to genomic data from three species.
-In each species we find substantial variation on the scale of megabases to tens of megabases.
+In each species we find that population structure varies on the scale of megabases to tens of megabases.
 In a global human dataset, small, discontinuous variation is likely explained by polymorphic chromosomal inversions.
-In a dataset of African \textit{Drosophila melanogaster}, large, continuous variation across each chromosome arm
+In a dataset of primarily African \textit{Drosophila melanogaster}, large, continuous variation across each chromosome arm
 is explained by known chromosomal inversions thought to be under recent selection.
 In a range-wide dataset of \textit{Medicago truncatula},
 common axes of variation in population structure are shared between chromosomes,
@@ -105,7 +105,7 @@ use a genetic covariance matrix to estimate the \emph{realized} proportion of th
 coinherited from sufficiently recent ancestors.
 
 Realized kinship summarizes the shapes
-of the genealogical that relate the samples
+of the genealogical trees that relate the samples
 at each location along the genome.
 Since these trees vary along the genome, so does realized kinship;
 but averaging over sufficiently many trees we hope to get a stable estimate,
@@ -122,7 +122,7 @@ species phylogenies can differ along the genome
 due to incomplete lineage sorting \citep[e.g.][]{pease2013accurate},
 adaptive introgression and/or local adaptation \citep[e.g.][]{ellegren2012genomic,nadeau2012genomic,pool2015natural,vernot2014resurrecting};
 and theoretical expectations predict that geographic patterns of relatedness should depend on selection
-\citet{charlesworth2003review}.
+\citep{charlesworth2003review}.
 Nonetheless, it is not generally known to what extent patterns of kinship vary along the genome,
 nor what the major axes of variation are.
 
@@ -139,7 +139,7 @@ such as time to most recent common ancestor and migration rate between populatio
 These patterns are often geographical, producing ``maps'' of population structure
 that reflect the samples' geographic origin distorted by rates of gene flow
 \citep{novembre2008genes},
-although other patterns emerge if recent migration or nongeographic kinship patterns are important
+although other patterns emerge if recent migration or nongeographic kinship patterns are having a strong role in relatedness determining.
 \citep{astle2009population}.
 % Through dimension-reduction, PCA can identify key components of population structure, which describes how different samples are related, and are often closely related to geography. 
 % Plots of the first two principal components (PCs) can mimic the samples' geographic origin to some extent. 
@@ -174,7 +174,7 @@ well as possible \citep{borg2005modern}.
 % distribution of inversions, and heterochromatin and gene density along the genome. 
 Each species showed distinct patterns, reflecting differences in their biology;
 before presenting results,
-it may help to have a prior idea of what factors are expected to affect population structure,
+it may be helpful to have a prior idea of what factors are expected to affect population structure,
 and how.
 PCA summarizes patterns in kinship found in the genetic covariance matrix,
 which is an average across locus-specific genealogies.
@@ -182,7 +182,7 @@ which is an average across locus-specific genealogies.
 % First, each site of DNA may have different gene tree. 
 % The covariance matrix of genotype matrix averages those gene trees. 
 If individuals are closer in the genealogies of a given genomic region, 
-they tends to be more close in the PCA maps for that region. 
+they tend to be closer in the PCA maps for that region. 
 % Different DNA segments may have different gene tree and therefore different population structure for those segments. 
 % Second, the strength of linked selection differs for different DNA segments, and produces different population structure in region under linked selection compared to other region. 
 % Selective sweeps cause local recent ancestry or short trees.
@@ -191,7 +191,7 @@ Strong selective sweeps of beneficial alleles can lead to relatively long genomi
 characterized by short genealogical trees \citep{przeworski2005signature,garud2013selective}.
 A genomic region with many targets for selection experiences
 background selection and/or recurrent selective sweeps \citep{stephan1992effect,coop2012patterns},
-which would tend to generally shorten genealogical trees in the region,
+which would tend to shorten genealogical trees in the region,
 similar to a reduction in effective population size \citep{hudson1995deleterious,sattath2011pervasive}.
 % Balancing selection causes deep trees.
 On the other hand, balancing selection leads to very deep trees \citep{gao2014footprints},
@@ -290,7 +290,7 @@ of 3,965 samples in total: 346 African-Americas, 73 Asians, 3,187 Europeans and 
 We use the allele that has highest frequency in the samples as the reference allele for each position. 
 
 \paragraph{\textit{Drosophila melanogaster}:}
-We also used whole-genome sequencing data from Drosophila Population Genomics Project (DPGP) and John Pool's lab \citep{lack2015drosophila}, 
+We also used whole-genome sequencing data from Drosophila Population Genomics Project (DPGP) \citep{lack2015drosophila}, 
 which together has 380 samples from 16 countries across Africa and Europe.
 \plr{Check: are all of our samples described in \citet{lack2015drosophila}? If yes, just say DPGP; if no, add appropriate citation (ask John what this should be). Also, add website?}
 Since the \textit{Drosophila} samples are from inbred lines, we treat the samples as haploid when recoding;
@@ -374,8 +374,8 @@ after choosing $\pcone_1$, for instance, and $u$ is the first eigenvector obtain
 for window $j$,
 then $\pcone_j = \pm u$,
 where the sign is chosen according to which of 
-$\sum_i (\pcone_{i1} - u_i)$ or
-$\sum_i (\pcone_{i1} + u_i)$ 
+$\sum_i (\pcone_{i1} - u_i)^{2}$ or
+$\sum_i (\pcone_{i1} + u_i)^{2}$ 
 is smaller.
 
 \subsection{Choosing window length}
@@ -621,7 +621,7 @@ We can see in Figure \ref{fig:pca_chr2L} the obvious difference between their PC
 
 \begin{figure}
     \begin{center}
-       \includegraphics{Fig2_pca_plots_allchr_3peaks_byMDS}
+       \includegraphics[width=1\textwidth]{Fig2_pca_plots_allchr_3peaks_label_update}
     \end{center}
     \caption{      
         PCA plots for the three sets of genomic windows colored in Figure \ref{fig:mds_chr2L}. 
@@ -732,7 +732,7 @@ Unlike in the human and Drosophila genomes, in \textit{Medicago truncatula}, maj
 
 \begin{figure}
     \begin{center}
-       \includegraphics{Fig6_MDS_1D_against_gene_count_all_chr_win104_with_lm}
+       \includegraphics[width=0.9\textwidth]{MDS_1D_against_gene_count_all_chr_win104_with_lm}
     \end{center}
     \caption{
         First MDS coordinate against gene density for all 8 chromosomes. 
