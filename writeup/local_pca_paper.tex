@@ -69,7 +69,7 @@ and is implemented as an R package.
 
 \plr{Add percent of variance explained by first two MDS coordinates, after subtracting the genome-wide mean covariance matrix.}
 
-\plr{Add whole-genome PCA plots for comparison (unless they look just like one of the three corners; in which case say so.}
+\plr{Add references to supplemental whole-genome PCA plots in the text.}
 
 \section{Introduction}
 
@@ -714,8 +714,9 @@ is beyond the scope of this paper.
 We also ran the method on all 22 autosomes together, 
 and found that, remarkably, 
 the inversion on chromosome 8 is still the most striking outlying signal.
-Further investigation would likely benefit from a denser set of SNPs,
-which would allow a finer genomic resolution.
+Further investigation with a denser set of SNPs,
+allowing a finer genomic resolution,
+may yield other patterns.
 
 \begin{figure}
     \begin{center}
@@ -734,28 +735,41 @@ which would allow a finer genomic resolution.
 \end{figure}
 
 
+%%%%%%%%%%%
 \subsection{\textit{Medicago truncatula}}
-We ran our method on all 8 chromosomes of \textit{Medicago truncatula} seperately 
-and found the correlation between each MDS plot and gene density along the genome in all 8 chromosomes. 
-This consistency implies that the factor driving the population structure for each chromosome might be the same, for example, background selection.
-So we ran all chromosomes together, that is, calculating the pairwise distance for all the windows along 8 chromosomes,
-and then get the MDS coordinates for each chromosome by locating the whole MDS coordinates.
-\plr{The results looked different than the other two species, with much less pronounced peaks...}  
-We computed gene density near each window using gene models in Mt4.0 JBrowse \citep{tang2014improved}. 
-The first MDS coordinate value is negatively correlated to the gene count for each window (Figure \ref{fig:mds_gene_count}).
-We found the position of the peak for each MDS plot has a coincidence with the position of heterochromatic regions. 
-This means that population structure in the windows located in heterochromatin tends to have higher similarity, since those windows are closer in MDS plots.
-Biologically, heterochromatic regions have lower gene density and may be less subject to selection \citep{kulikova2001integration,paape2013selection}. 
-Besides, we found the PCA plots are quite consistent for the peaks that more clustering away from the heterochromatic regions, 
-while the PCA plots are barely consistent for the peaks that more clustering around heterochromatic regions for the 8 chromosomes.
-Unlike in the human and Drosophila genomes, in \textit{Medicago truncatula}, major variation in population structure is likely due to linked selection. 
+
+Unlike the other two species,
+the method applied separately on all eight chromosomes of \textit{Medicago truncatula} 
+showed similar patterns of gradual change in population structure across each chromosome,
+with no indications of chromosome-specific patterns.
+This consistency suggests that the factor driving the population structure for each chromosome is the same,
+as might be caused by varying strengths of linked selection.
+To verify that variation in population structure is shared across chromosomes,
+we applied the method to all chromosomes together.
+Results for chromosome 3 are shown in Figures \ref{fig:mds12_medicago} and \ref{fig:pca_medicago}
+(other chromosomes are similar).
+
+Across chromosomes, the high values of MDS coordinate 1 coincide with the position of the heterochromatic regions surrounding the centromere,
+which often have lower gene density and may therefore be less subject to linked selection \citep{kulikova2001integration,paape2013selection}. 
+To verify that this is a possible explanation,
+we computed gene density near each window using gene models in Mt4.0 JBrowse \citep{tang2014improved}. 
+\plr{Say exactly what was computed.}
+These values are shown juxtaposed with
+the first MDS coordinate of each window is shown in Figure \ref{fig:mds_medicago},
+and are significantly correlated, as shown in Figure \ref{fig:mds_gene_count}.
+Other genomic features covary with gene density, however,
+so we cannot rule out alternative hypotheses.
+
+We also found nearly identical results when choosing shorter windows of 1,000 SNPs;
+or choosing windows of equal length in base pairs rather than SNPs.
 
 \begin{figure}
     \begin{center}
        \includegraphics[width=0.9\textwidth]{Fig5_MDS_and_gene_count_allchr}
     \end{center}
     \caption{
-         MDS results and gene density for the \textit{Medicago} genome (chromosome 1-8). 
+         MDS visualization and gene density for each window in the \textit{Medicago} genome,
+         for chromosomes 1--8 (numbered above each pair of figures).
          For each chromosome, the red plot above is first coordinate of MDS against the middle position of each window along each chromosome. 
          The black plot below is gene count for each window against the position of each window.
          \label{fig:mds_medicago}
@@ -767,7 +781,7 @@ Unlike in the human and Drosophila genomes, in \textit{Medicago truncatula}, maj
        \includegraphics[width=0.9\textwidth]{Fig6_Together_MDS_plot_chr3_final}
     \end{center}
     \caption{
-     MDS visualization for Medicago chromosome 3. Each point in the plot stands for a window (length 1000 SNPs).
+     MDS visualization for Medicago chromosome 3. Each point in the plot represents a window.
        \label{fig:mds12_medicago}
     }
 \end{figure}
@@ -777,8 +791,8 @@ Unlike in the human and Drosophila genomes, in \textit{Medicago truncatula}, maj
        \includegraphics[width=0.9\textwidth]{Fig7_pca_plots_for_Medicago_chr3_3peaks_byMDS}
     \end{center}
     \caption{
-        PCA plots for the three sets of genomic windows colored separately in Figure \ref{fig:mds12_medicago}. 
-        From left to right, the windows colored green, orange, and purple. Each point corresponds to a sample, colored by origin.
+        PCA plots for the sets of genomic windows colored (A) green, (B) orange, and (C) purple in Figure \ref{fig:mds12_medicago}. 
+        Each point corresponds to a sample, colored by country of origin.
         \label{fig:pca_medicago}
     }
 \end{figure}
@@ -786,11 +800,11 @@ Unlike in the human and Drosophila genomes, in \textit{Medicago truncatula}, maj
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=0.9\textwidth]{MDS_1D_against_gene_count_all_chr_win104_with_lm}
+       \includegraphics{MDS_1D_against_gene_count_all_chr_win104_with_lm}
     \end{center}
     \caption{
         First MDS coordinate against gene density for all 8 chromosomes. 
-        The first MDS coordinate is significantly correlated with gene count (r=0.146, p=$2.2\times 10^{-16}$). 
+        The first MDS coordinate is significantly correlated with gene count ($r=0.146$, $p=2.2\times 10^{-16}$). 
         (See supplementary for each single chromosome's MDS result against gene count for \textit{Medicago})
         \label{fig:mds_gene_count}
     }
@@ -852,7 +866,6 @@ Alternatively, windows could be chosen to have equal length in genetic distance,
 so that each would have roughly the same amount of phylogenetic information.
 However, given the insensitivity of our results to window length,
 this seems unlikely to give different results.
-\plr{If we check: We did not have this choice to have a substantial effect on results.}
 
 More generally, there are many possible methods to discover common structure in different parts of the genome.
 The methods we chose discovered strong biological signal of different types in three datasets;
@@ -888,13 +901,14 @@ for assistence with obtaining data and interpreting results
 (especially inversion status of \textit{D.~melanogaster} samples).
 Thanks also go to Yaniv Brandvain and Barbara Engelhardt for helpful comments 
 and for encouraging the project.
+\plr{Others?}
 
 \bibliographystyle{plainnat}
 \bibliography{references}  
 
 \appendix
 
-\subsection{Weighted PCA}
+\section{Weighted PCA}
 
 PCA can be thought of as finding a good low-dimensional matrix factorization \citep{engelhardt2010analysis}
 that well-approximates the original data in the least-squares sense:
