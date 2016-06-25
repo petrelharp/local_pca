@@ -71,6 +71,7 @@ and is implemented as an R package.
 
 \plr{Add references to supplemental whole-genome PCA plots in the text.}
 
+
 \section{Introduction}
 
 % The kinship matrix contains the kinship coefficient for pairwise individuals. 
@@ -650,8 +651,7 @@ and produced PCA plots for each collection of windows
 
 The variation in population structure turns out to be almost entirely explained by
 several large inversions that are polymorphic in these samples, identified in \citet{corbett2012population}. 
-Frequencies of each inversion in the sample are given in Table \ref{tab:inversion_freqs}.
-\plr{Add this table.}
+% Frequencies of each inversion in the sample are given in Table \ref{tab:inversion_freqs}.
 We recolored the PCA plots in Figure \ref{fig:pca_by_pop} by the orientation of the inversion for each sample,
 obtaining Figure \ref{fig:pca_by_inversion}.
 Taking chromosome arm 2L as an example,
@@ -687,7 +687,7 @@ and do not significantly influence population structure.
          As in Figure 2, except that samples are colored by orientation of the corresponding polymorphic inversions, 
          In(2L)t, In(2R)NS, In(3L)OK and In(3R)K respectively. 
          (Data from \citet{lack2015drosophila}.
-        \label{fig:color_inver}
+        \label{fig:pca_by_inversion}
     }
 \end{figure}
 
@@ -699,17 +699,19 @@ with results shown in Supplementary Figure XXX.
 \plr{Add plots for remaining autosomes to supplement.}
 On each, variation in population structure was dominated by a small number of windows
 having similar population structure to each other that differed dramatically from the rest of the chromosome.
-Such regions seem to often coincide with inversions:
+These may be primarily inversions:
 for instance, the eleven windows that are outliers in the first MDS coordinate of chromosome 8 (Figure \ref{fig:mds_human}b) 
-coincide with the position of known polymorphic inversions on 8p23. 
-Similar results are found in other chromosomes that have known inversions,
+coincide with the position of a particularly large, polymorphic inversion on 8p23. 
+More generally, we see signals coincident with 
+three of the six large polymorphic inversions described in \citet{antonacci2009characterization},
 shown in Figure \ref{fig:mds_human}.
 PCA plots of these windows show a characteristic trimodal shape,
 presumably distinguishing samples having each of the three diploid genotypes for each inversion orientation
-(although we do not have data on orientation status).
-PCA has been previously proposed as a method to computationally identify inversions \citep{ma2012investigation},
-but understanding how well the method can distinguish inversions from regions of low recombination
-is beyond the scope of this paper.
+(although we do not have data on orientation status),
+a signal that has been proposed as a method to identify inversions \citep{ma2012investigation}.
+However, distinguishing this hypothesis from others,
+such as regions of low recombination rate,
+would require additional data.
 
 We also ran the method on all 22 autosomes together, 
 and found that, remarkably, 
@@ -728,8 +730,7 @@ may yield other patterns.
          The first column shows the MDS visualization of relationships between windows;
          the second and third columns show the two MDS coordinates of each window against its position (midpoint) along the chromosome. 
          Rows, from top to bottom show chromosomes 8, 15, and 17. 
-         The vertical red lines show the breakpoints of known inversions from \citep{antonacci2009characterization},
-         whose values are listed in \plr{add these in a table}.
+         The vertical red lines show the breakpoints of known inversions from \citep{antonacci2009characterization}.
         \label{fig:mds_human}
     }
 \end{figure}
@@ -737,6 +738,7 @@ may yield other patterns.
 
 %%%%%%%%%%%
 \subsection{\textit{Medicago truncatula}}
+
 
 Unlike the other two species,
 the method applied separately on all eight chromosomes of \textit{Medicago truncatula} 
@@ -746,8 +748,12 @@ This consistency suggests that the factor driving the population structure for e
 as might be caused by varying strengths of linked selection.
 To verify that variation in population structure is shared across chromosomes,
 we applied the method to all chromosomes together.
-Results for chromosome 3 are shown in Figures \ref{fig:mds12_medicago} and \ref{fig:pca_medicago}
-(other chromosomes are similar).
+Results for chromosome 3 are shown in Figures \ref{fig:mds12_medicago} and \ref{fig:pca_medicago},
+and other chromosomes are similar:
+the two types of population structure with higher gene density (colored green and purple in Figure \ref{fig:mds12_medicago}
+are nearly identical across all chromosomes,
+but population structure associated with low gene density (colored orange)
+shows more chromsome-specific patterns (see Supplemental Figure \ref{fig:pca_drosophila_allchr}).
 
 Across chromosomes, the high values of MDS coordinate 1 coincide with the position of the heterochromatic regions surrounding the centromere,
 which often have lower gene density and may therefore be less subject to linked selection \citep{kulikova2001integration,paape2013selection}. 
@@ -782,6 +788,7 @@ or choosing windows of equal length in base pairs rather than SNPs.
     \end{center}
     \caption{
      MDS visualization for Medicago chromosome 3. Each point in the plot represents a window.
+     Plots for remaining chromosomes are shown in Supplemental Figure \ref{fig:mds_medicago_allchr}.
        \label{fig:mds12_medicago}
     }
 \end{figure}
@@ -793,6 +800,7 @@ or choosing windows of equal length in base pairs rather than SNPs.
     \caption{
         PCA plots for the sets of genomic windows colored (A) green, (B) orange, and (C) purple in Figure \ref{fig:mds12_medicago}. 
         Each point corresponds to a sample, colored by country of origin.
+        Plots for remaining chromosomes are shown in Supplemental Figure \ref{fig:pca_peaks_medicago_allchr}.
         \label{fig:pca_medicago}
     }
 \end{figure}
@@ -1002,6 +1010,7 @@ in our R implementation we use the Spectra library \citep{qiu2016rspectra}.
     \end{center}
     \caption{
         PCA plots for all 8 chromosomes' 3 peaks in \textit{Medicago truncatula}.
+        (A) green, (B) orange, and (C) purple.
         \label{fig:pca_peaks_medicago_allchr}
     }
 \end{figure}
