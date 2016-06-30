@@ -247,6 +247,8 @@ may benefit from other advances in this substantial literature
 
 \section{Methods}
 
+\plr{Peter to add bit about weighted PCA}
+
 The general steps in our method could be carried out in many ways.
 Referring to Figure \ref{fig:diagram}, these are
 (1) divide the genome into windows,
@@ -768,6 +770,7 @@ so we cannot rule out alternative hypotheses.
 
 We also found nearly identical results when choosing shorter windows of 1,000 SNPs;
 or choosing windows of equal length in base pairs rather than SNPs.
+\plr{Peter add sentence about weighted PCA.}
 
 \begin{figure}
     \begin{center}
@@ -858,6 +861,7 @@ the choice of samples is important,
 as variation not strongly represented in the sample will not be discovered.
 The effects of strongly imbalanced sampling schemes are often corrected by dropping samples in overrepresented groups;
 but downweighting may be a better option that does not discard data.
+\plr{and we have methods to do this}
 Next, the choice of window size may be important,
 although in our applications results were not sensitive to this,
 indicating that the limit of resolution was smaller than the scale on which patterns of kinship varies along the genome.
@@ -874,6 +878,7 @@ Alternatively, windows could be chosen to have equal length in genetic distance,
 so that each would have roughly the same amount of phylogenetic information.
 However, given the insensitivity of our results to window length,
 this seems unlikely to give different results.
+\plr{we tried this with bp}
 
 More generally, there are many possible methods to discover common structure in different parts of the genome.
 The methods we chose discovered strong biological signal of different types in three datasets;
@@ -882,6 +887,7 @@ or for summarizing the matrix of pairwise distances between windows
 would lead to different insights.
 Minor points we have not explored include how to decide how many PCs to use in approximating structure of each window
 (equations XX),
+\plr{(say we have explored)}
 how many MDS coordinates to use when describing the distance matrix between windows,
 or how to choose interesting regions of the genome when the MDS plot is not triangular.
 These are all part of more general techniques in dimension reduction and high-dimensional data visualization;
