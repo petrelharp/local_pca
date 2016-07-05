@@ -1,0 +1,1 @@
+Non-TE related gene data downloaded from [jcvi.org's JBrowse](http://jcvi.org/medicago/jbrowse/?data=data%2Fjson%2Fmedicago&loc=chr1%3A9010377..51403300&tracks=gene_models&highlight=) on 4 September 2015.
