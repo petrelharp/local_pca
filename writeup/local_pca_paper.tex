@@ -615,7 +615,9 @@ and that other windows' population structure may be a mixture of those extremes.
          and the second and third columns show the midpoint of each window against the two MDS coordinates; 
          rows correspond to chromosome arms.
          Colors are consistent for plots in each row. 
-         Vertical lines show the breakpoints of known polymorphic inversions.         
+         Vertical lines show the breakpoints of known polymorphic inversions.   
+         Solid black lines are for the inversions we used to obtaining Figure \ref{fig:pca_by_inversion},
+         while dotted grey lines are for other known inversions.     
          \label{fig:mds_allchr}
     }
 \end{figure}
@@ -880,15 +882,8 @@ but it is possible that other methods for measuring dissimilarity between window
 or for summarizing the matrix of pairwise distances between windows
 would lead to different insights.
 Minor points we have not explored include how to decide how many PCs to use in approximating structure of each window
-<<<<<<< HEAD
 (equations \ref{eqn:est_cov}),
-=======
-(equations XX),
 \plr{(say we have explored)}
-<<<<<<< Updated upstream
-=======
->>>>>>> origin/master
->>>>>>> Stashed changes
 how many MDS coordinates to use when describing the distance matrix between windows,
 or how to choose interesting regions of the genome when the MDS plot is not triangular.
 These are all part of more general techniques in dimension reduction and high-dimensional data visualization;
