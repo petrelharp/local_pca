@@ -42,20 +42,18 @@
 
 \section*{Abstract}
 
-Dimension reduction techniques,
-such as principal component analysis (PCA),
-are often used to discover and display large-scale structure in genomic datasets
-found in the patterns of kinship
-between the genotyped individuals,
-and to control for the confounding effects of population structure in genome-wide association studies.
-The genome-wide mean kinship that principal component uses
-is an average of the relationships across all locus-specific genealogical trees.
-However, many biological factors,
-including linked selection,
-can systematically skew patterns of kinship over intermediate genomic scales.
-We show how to use principal components analysis (PCA) to describe this meso-scale variation in kinship,
-and apply the method to genomic data from three species.
-In each species we find that population structure varies on the scale of megabases to tens of megabases.
+Dimension reduction techniques such as principal component analysis (PCA)
+are often used to discover and visualize the patterns 
+of mean kinship between individuals in large genomic datasets,
+known as population structure.
+% Modeling such kinship is key to controling the confounding effects of population structure in genome-wide association studies.
+Genome-wide mean kinship
+is an average of the relationships across all locus-specific genealogical trees,
+which can be strongly affected on intermediate genomic scales by many biological factors,
+such as linked selection.
+We show how to use local principal components analysis to describe this meso-scale variation,
+and apply the method to genomic data from three species,
+finding in each that population structure varies on the scale of megabases to tens of megabases.
 In a global human dataset, small, discontinuous variation is likely explained by polymorphic chromosomal inversions.
 In a dataset of primarily African \textit{Drosophila melanogaster}, large, continuous variation across each chromosome arm
 is explained by known chromosomal inversions thought to be under recent selection.
@@ -63,9 +61,7 @@ In a range-wide dataset of \textit{Medicago truncatula},
 common axes of variation in population structure are shared between chromosomes,
 correlate with local gene density,
 and may be caused by background selection or local adaptation.
-The method is a useful addition to the exploratory toolbox
-of population genomics,
-and is implemented as an R package.
+The method is implemented as an R package, called lostruct.
 
 \plr{Add percent of variance explained by first two MDS coordinates, after subtracting the genome-wide mean covariance matrix.}
 
@@ -82,31 +78,32 @@ and is implemented as an R package.
 % Populations are often structured in some way while there are systematic genetic variation between populations. 
 
 
-The phrase ``population structure'' refers to reduced gene flow between subpopulations, 
-often because of geographical isolation.
+The phrase ``population structure'',
+used to describe patterns in genome-wide mean kinship,
+calls to mind to reduced gene flow between subpopulations. %, often because of geographical isolation.
 However, it is widely recognized that because of selection the effects of gene flow are not equal everywhere on the genome,
 and patterns of polymorphism and divergence can vary significantly depending on factors including local gene density.
-This implies that, paradoxically, 
+This implies that, counterintuitively, 
 the population structure of a species depends on which part of the genome is being examined.
 
-Population structure leads to systematic patterns in genome-wide mean kinship,
-and so it is said that visualizations of kinship depict population structure,
-rather than the \emph{effects} of population structure (which would be more accurate).
-The \emph{kinship coefficient} for a pair of individuals
-gives the expected proportion of their genome
-that the two have inherited identically by descent;
-for a single individual it is the inbreeding coefficient.
-However, as \citet{wright1949genetical} wrote,
-``It has probably occurred to the reader that the coefficient of inbreeding
-may mean very different things in different cases.''
-The kinship coefficient originally referred to the expected probability
-of coinheritance within a given pedigree;
-while modern applications to ``unrelated'' individuals
-use a genetic covariance matrix to estimate the \emph{realized} proportion of the genome
-coinherited from sufficiently recent ancestors.
+% Population structure leads to systematic patterns in genome-wide mean kinship,
+% and so it is said that visualizations of kinship depict population structure,
+% rather than the \emph{effects} of population structure (which would be more accurate).
+% The \emph{kinship coefficient} for a pair of individuals
+% gives the expected proportion of their genome
+% that the two have inherited identically by descent;
+% for a single individual it is the inbreeding coefficient.
+% However, as \citet{wright1949genetical} wrote,
+% ``It has probably occurred to the reader that the coefficient of inbreeding
+% may mean very different things in different cases.''
+% The kinship coefficient originally referred to the expected probability
+% of coinheritance within a given pedigree;
+% while modern applications to ``unrelated'' individuals
+% use a genetic covariance matrix to estimate the \emph{realized} proportion of the genome
+% coinherited from sufficiently recent ancestors.
 
 Realized kinship summarizes the shapes
-of the genealogical trees that relate the samples
+of the genealogical trees % that relate the samples
 at each location along the genome.
 Since these trees vary along the genome, so does realized kinship;
 but averaging over sufficiently many trees we hope to get a stable estimate,
@@ -114,129 +111,71 @@ independent of the genomic region chosen.
 This hope is not entirely justified: for instance,
 kinship on sex chromosomes is expected to differ from the autosomes;
 and positive or negative selection on particular loci can dramatically disort shapes of nearby genealogies
-\citep{maynardsmith1974hitchhiking,barton2000genetic,neher2013genetic,charlesworth2012effects},
-and therefore patterns of kinship.
+\citep{maynardsmith1974hitchhiking,barton2000genetic,neher2013genetic,charlesworth2012effects}.
 Indeed,
-chromosome-scale variation in diversity and divergence has been observed in many species
-\citep[e.g.][]{langley2012genomic};
+many species show chromosome-scale variation in diversity and divergence
+\citep[sometimes dramatic:][]{langley2012genomic};
 species phylogenies can differ along the genome 
-due to incomplete lineage sorting \citep[e.g.][]{pease2013accurate},
-adaptive introgression and/or local adaptation \citep[e.g.][]{ellegren2012genomic,nadeau2012genomic,pool2015natural,vernot2014resurrecting};
+due to incomplete lineage sorting \citep[e.g.,][]{pease2013accurate},
+adaptive introgression and/or local adaptation \citep[e.g.,][]{ellegren2012genomic,nadeau2012genomic,pool2015natural,vernot2014resurrecting};
 and theoretical expectations predict that geographic patterns of relatedness should depend on selection
 \citep{charlesworth2003review}.
 Nonetheless, it is not generally known to what extent patterns of kinship vary along the genome,
-nor what the major axes of variation are.
+nor for what reasons.
 
 
 Patterns in genome-wide kinship are often summarized
-by applying principal components analysis (PCA) \citep{patterson2006population} 
+by applying principal components analysis \citep[PCA,][]{patterson2006population} 
 to the genetic covariance matrix,
 as pioneered by \citet{menozzi1978synthetic}.
 % About 37 years ago, \citet{menozzi1978synthetic} first applied principal component analysis (PCA) in population genetics to construct maps summarizing genetic variation \citep{menozzi1978synthetic}. 
 % Nowadays, PCA is a widely used powerful non-parametric method to extract information from genetic data.  
-% PCA results are derived from the covariance matrix of genotype matrix. 
-The results of PCA can be directly related to the underlying genealogical history of the samples, 
-such as time to most recent common ancestor and migration rate between populations \citep{novembre2008interpreting,mcvean2009genealogical}. 
-These patterns are often geographical, producing ``maps'' of population structure
+The results of PCA can be related to the genealogical history of the samples, 
+such as time to most recent common ancestor and migration rate between populations \citep{novembre2008interpreting,mcvean2009genealogical}, 
+and sometimes produce ``maps'' of population structure
 that reflect the samples' geographic origin distorted by rates of gene flow
-\citep{novembre2008genes},
-although other patterns emerge if recent migration or nongeographic kinship patterns are having a strong role in relatedness determining.
-\citep{astle2009population}.
+\citep{novembre2008genes}.
+% although other patterns can be caused by recent migration or nongeographic kinship patterns.  % \citep{astle2009population}.
 % Through dimension-reduction, PCA can identify key components of population structure, which describes how different samples are related, and are often closely related to geography. 
 % Plots of the first two principal components (PCs) can mimic the samples' geographic origin to some extent. 
 % Since population structure describes how different samples are related, samples living closer tend to be more genetically similar and thus tend to be clustered in PC plots \citep{novembre2008genes,patterson2006population}. 
 % However this relatedness is limited while there's recent migration or for group with nongeographic kinship patterns,for example, social or religious groups. \citep{astle2009population}
 
-As reviewed by \citet{astle2009population}, 
+Furthermore,
 modeling ``background'' kinship between samples
-is essential to successful genome-wide association studies,
-and PCA has often been used for stratification correction \citep{price2006principal},
-and so investigating variation in kinship along the genome can help us to have a
-better understanding of the relation between genome structure 
-and population structure, possibly leading to more powerful methods for association studies.
+is essential to genome-wide association studies \citep[GWAS,][]{price2006principal,astle2009population},
+% and PCA has often been used in this context \citep{price2006principal}.
+and so understanding variation in kinship along the genome 
+% can help us to have a better understanding of the relation between genome structure and population structure, 
+could lead to more generally powerful methods,
+and is essential for doing GWAS in species with substantial variation in population structure,
 
-To investigate how population structure varies along the genome in several datasets, 
-we cut each genome into windows (with hundreds to thousands of SNPs in each), 
-applied PCA to each window, 
-and visualized the major ways that population structure, as summarized by PCA, varies among windows.
-% In this project, we used SNP data for human, \textit{Medicago truncatula}, and
-whole genome sequencing data for \textit{Drosophila}.  
-% Based on the principal components, we can estimate the similarity of population structure contained in each genome window.  
-To quantify similarity of population structure between
-windows, we constructed for each window an approximate, scaled covariance
-matrix based on the first few principal components, and measured the pairwise Euclidean distance
-between those matrices.  
-We then use multidimensional scaling to visualize the
-relationships between windows, which reduces the pairwise distance matrix to
-lower dimension while preserving the distance information between windows as
-well as possible \citep{borg2005modern}.  
-
-% To interpret the results of MDS, we combine known genome feature information for each species, such as the
-% distribution of inversions, and heterochromatin and gene density along the genome. 
-Each species showed distinct patterns, reflecting differences in their biology;
-before presenting results,
-it may be helpful to have a prior idea of what factors are expected to affect population structure,
-and how.
-PCA summarizes patterns in kinship found in the genetic covariance matrix,
-which is an average across locus-specific genealogies.
-% However, different parts of genome have different genetic features. 
-% First, each site of DNA may have different gene tree. 
-% The covariance matrix of genotype matrix averages those gene trees. 
-If individuals are closer in the genealogies of a given genomic region, 
-they tend to be closer in the PCA maps for that region. 
-% Different DNA segments may have different gene tree and therefore different population structure for those segments. 
-% Second, the strength of linked selection differs for different DNA segments, and produces different population structure in region under linked selection compared to other region. 
-% Selective sweeps cause local recent ancestry or short trees.
-% Background selection causes shallow ones.
-Strong selective sweeps of beneficial alleles can lead to relatively long genomic regions
-characterized by short genealogical trees \citep{przeworski2005signature,garud2013selective}.
-A genomic region with many targets for selection experiences
-background selection and/or recurrent selective sweeps \citep{stephan1992effect,coop2012patterns},
-which would tend to shorten genealogical trees in the region,
-similar to a reduction in effective population size \citep{hudson1995deleterious,sattath2011pervasive}.
-% Balancing selection causes deep trees.
-On the other hand, balancing selection leads to very deep trees \citep{gao2014footprints},
-and population structure locally describes which individuals have which alleles
-rather than geographical proximity.
-Finally, 
-since recombination is suppressed between opposite orientations of a chromosomal inversion
-near its breakpoints,
-genealogies in these regions separate samples carrying the two orientations of the inversion.
-In the resulting extended block, population structure shows two (for haploids) or three (for diploids) clusters
-(indeed, \citep{ma2012investigation} has proposed using trimodality of local PCA plots
-as a way to identify inversions).
-% if a chromosomal inversion is polymorphic in the sample, 
-% the regions around the breakpoints of inversions usually have high linkage disequilibrium and the two directions of a inversion will have different linked alleles around the breakpoints. Recombination suppression across inversions thus results in different genome structure and population structure. 
-% Other effects, like noise, introgression might also influence population structure.
-We will look for strong variation in population structure shared across large regions of the genome.
-Many of the effects listed above (such as single selective sweeps or inversions) 
-are not expected to have similar effects on population structure in different regions of the genome
-because of randomness in which samples end up in which group;
-but if these coincide with a region of reduced recombination (such as an inversion),
-these could drive major patterns of variation.
-The more subtle effects of genome-wide linked selection could be shared across large regions
-due to large-scale variation in gene density
-(as by background selection or local adaptation at many genes).
+%% summary of the method: this happens in the method
+% To investigate how population structure varies along the genome in several datasets, 
+% we cut each genome into windows (with hundreds to thousands of SNPs in each), 
+% applied PCA to each window, 
+% and visualized the major ways that population structure, as summarized by PCA, varies among windows.
+% % In this project, we used SNP data for human, \textit{Medicago truncatula}, and
+% % whole genome sequencing data for \textit{Drosophila}.  
+% % Based on the principal components, we can estimate the similarity of population structure contained in each genome window.  
+% To quantify similarity of population structure between
+% windows, we constructed for each window an approximate, scaled covariance
+% matrix based on the first few principal components, and measured the pairwise Euclidean distance
+% between those matrices.  
+% We then use multidimensional scaling to visualize the
+% relationships between windows, which reduces the pairwise distance matrix to
+% lower dimension while preserving the distance information between windows as
+% well as possible \citep{borg2005modern}.  
 
 
-We chose PCA to summarize population structure,
-but other methods, such as STRUCTURE \citep{falush2003inference},
-SPA \citep{yang2012modelbased},
-SpaceMix \citep{bradburd2015spatial},
-or other matrix factorization methods \citep{engelhardt2010analysis}
-would highlight different sources of variation in the data.
-% There are other methods for visualizing population structure are like STRUCTURE,
-% \citep{pritchard2000inference,falush2003inference, falush2007inference,hubisz2009inferring} 
-% model-based approach,
-% maps of heterozygosity
-% \citep{ramachandran2005support}. 
-
-Finally, a number of general methods for dimensionality reduction also use a strategy of ``local PCA''
-\citep[e.g.][]{manjon2013diffusion,kambhatla1997dimension,weingessel2000local,roweis2000nonlinear},
+In this work we describe variation in population structure using local PCA,
+where ``local'' refers to proximity along the genome.
+A number of general methods for dimensionality reduction also use a strategy of ``local PCA''
+\citep[e.g.,][]{manjon2013diffusion,kambhatla1997dimension,weingessel2000local,roweis2000nonlinear},
 performing PCA not on the entire dataset but instead on subsets of observations,
-providing ``local'' pictures which are then stitched back together to give a global picture.
+providing local pictures which are then stitched back together to give a global picture.
 At first sight,
-this differs from our use of the term in that we restrict to subsets of \emph{variables} instead of subsets of observations.
+this differs from our method in that we restrict to subsets of \emph{variables} instead of subsets of observations.
 However, if we flip perspectives and think of each genetic variant as an observation,
 our method shares common threads, although the ultimate goals and methods for visualization are different.
 Future methods for visualization of genomic data
@@ -247,7 +186,6 @@ may benefit from other advances in this substantial literature
 
 \section{Methods}
 
-\plr{Peter to add bit about weighted PCA}
 
 The general steps in our method could be carried out in many ways.
 Referring to Figure \ref{fig:diagram}, these are
@@ -293,15 +231,20 @@ of 3,965 samples in total: 346 African-Americas, 73 Asians, 3,187 Europeans and 
 We use the allele that has highest frequency in the samples as the reference allele for each position. 
 
 \paragraph{\textit{Drosophila melanogaster}:}
-We also used whole-genome sequencing data from Drosophila Population Genomics Project (DPGP) \citep{lack2015drosophila}, 
-which together has 380 samples from 16 countries across Africa and Europe.
+We also used whole-genome sequencing data 
+from the Drosophila Genome Nexus \citep[\url{http://www.johnpool.net/genomes.html}][]{lack2015drosophila},
+consisting of the Drosophila Population Genomics Project phases 1--3 \citep[DPGP][]{langley2012genomic,pool2012population},
+and additional African genomes \citep[AGES][]{lack2015drosophila},
+After removing 20 genomes with more than 8\% missing data,
+we were left with 380 samples from 16 countries across Africa and Europe.
 Since the \textit{Drosophila} samples are from inbred lines, we treat the samples as haploid when recoding;
-regions with residual heterozygosity were marked as missing in the original dataset.
-Each chromosome arm we investigated (Chr2L, Chr2R, Chr3L, and Chr3R) has 2--3 million SNPs.
-Due to high density of missing data for some parts in the genome, 
-we first deleted any samples with more than 8\% missing genotypes, 
-and then deleted positions with more than 20\% missing data. 
-(We chose these cutoffs as the tails of the relevant empirical distributions.)
+regions with residual heterozygosity were marked as missing in the original dataset;
+we also removed positions with more than 20\% missing data. 
+% (We chose these cutoffs as the tails of the relevant empirical distributions.)
+Each chromosome arm we investigated (X, 2L, 2R, 3L, and 3R) has 2--3 million SNPs.
+
+% lack2015drosophila: describes the DGN, including the AGES samples.  reports diversity and mentions inversions but mostly a 'data' paper
+% pool2012population: describes 129 subsaharan samples (DPGP3)
 
 \paragraph{\textit{Medicago truncatula}:}
 Finally, we used whole-genome sequencing data from the \textit{Medicago truncatula} Hapmap Project \citep{tang2014improved},
@@ -377,6 +320,15 @@ $\sum_i (\pcone_{i1} - u_i)^{2}$ or
 $\sum_i (\pcone_{i1} + u_i)^{2}$ 
 is smaller.
 
+Several of the datasets we use have unbalanced representations of diverged populations,
+which can have a strong impact on the results of PCA.
+(The principal axes may describe variation \emph{within} an overrepresented group
+rather than more significant variation between groups.)
+Therefore, to check the effect of sampling on our results,
+we used a variant of PCA that gives roughly equal weight to each group of samples,
+rather than to each sample.
+The rationale and implementation of this method are described in Appendix \ref{apx:weighted_pca}.
+
 \subsection{Choosing window length}
 
 The choice of window length entails a balance between several factors.
@@ -406,7 +358,7 @@ Then, the mean variance across windows is
         \frac{1}{L}\sum_{i=1}^{L}\left ( \pcone_{ij} -\overline\pcone_{j} \right )^{2} ,
 \end{align*}
 where $\overline\pcone_j = (1/N) \sum_{j=1}^N \pcone_{ij}$.
-We estimate the standard error for each $\pcone_{ij}$ using the block jackknife \citep{efron1982jackknife}:
+We estimate the standard error for each $\pcone_{ij}$ using the block jackknife \citep{efron1982jackknife,busing1999deletem}:
 we divide the $j^\text{th}$ block into 10 equal-sized pieces,
 and let $\pcone_{ij,k}$ denote the first principal component of this region found after removing the $k^\text{th}$ piece;
 then the estimate of the squared standard error is
@@ -604,6 +556,10 @@ this suggests that there are at least three extreme types of population structur
 typified by windows found in the three corners of the triangle,
 and that other windows' population structure may be a mixture of those extremes. 
 
+\plr{\citet{corbett2012population} says In(1)Be is very young, $\sim$ 60 years, probably why it doesn't show up. 
+Also cite \citet{corbettdetig2012sequencebased} for a computational method for detecting inversions.}
+% corbettdetig2012sequencebased suggests these inversions are recent-ish (but before out-of-Africa)
+
 \begin{figure}
     \begin{center}
        \includegraphics[width=0.9\textwidth]{Fig1_allchr_Together_MDS_plot_compact_with_ChrX_inv}
@@ -660,12 +616,10 @@ The regions shown in purple on chromosome 2L lie near the centromere,
 and have population structure reflective of two axes of variation,
 seen in Figure \ref{fig:pca_by_pop},
 which correspond roughly to latitude within Africa and to degree of cosmopolitan admixture respectively
-(see \citet{pool2015natural} for more details).
-\plr{check that reference}
+(see \citet{lack2015drosophila} for more about admixture in this sample).
 The regions shown in orange on chromosome 2L mostly lie inside the inversion,
 and show population structure that is a mixture between the other two,
-as expected due to recombination within the (long) inversion \citep{kirkpatrick2015chromosome}.
-\plr{check that reference too}
+as expected due to recombination within the (long) inversion \citep{guerrero2011coalescent}.
 Similar results are found in other chromosome arms,
 except that the situation of Chr3R is a little more complicated,
 due to the coexistence of two polymorphic inversions (In(3R)K and In(3R)P) at intermediate frequency.
@@ -681,7 +635,7 @@ and do not significantly influence population structure.
     \caption{
          As in Figure 2, except that samples are colored by orientation of the corresponding polymorphic inversions, 
          In(2L)t, In(2R)NS, In(3L)OK, In(3R)K and In(1)A respectively. 
-         (Data from \citet{lack2015drosophila}.
+         \citep[Data from][.]{lack2015drosophila}
         \label{fig:pca_by_inversion}
     }
 \end{figure}
@@ -766,7 +720,8 @@ so we cannot rule out alternative hypotheses.
 
 We also found nearly identical results when choosing shorter windows of 1,000 SNPs;
 or choosing windows of equal length in base pairs rather than SNPs.
-\plr{Peter add sentence about weighted PCA.}
+Similarly, the results were not substantially changed
+when using weighted PCA to downweight the large group of Tunisian samples.
 
 \begin{figure}
     \begin{center}
@@ -839,7 +794,7 @@ but even low coverage, whole-genome sequence is very promising.
 \paragraph{Confounding in GWAS}
 So-called cryptic relatedness between samples
 has been one of the major sources of confounding in genome-wide association studies (GWAS)
-and so methods must account for it by modeling population structure or kinship \citep{gwas_confounding_review,mixed_models}.
+and so methods must account for it by modeling population structure or kinship \citep{astle2009population,yang2014advantages}.
 Since population structure is not constant along the genome,
 this could in principle lead to an inflation of false positives in parts of the genome
 with stronger population structure than the genome-wide average.
@@ -850,14 +805,57 @@ In the other species we examined, particularly \textit{Drosophila melanogaster},
 treating population structure as a single quantity could be severely misleading.
 
 
+\paragraph{The effect of selection}
+\plr{intro sentence}
+PCA summarizes patterns in kinship found in the genetic covariance matrix,
+which is an average across locus-specific genealogies.
+% However, different parts of genome have different genetic features. 
+% First, each site of DNA may have different gene tree. 
+% The covariance matrix of genotype matrix averages those gene trees. 
+If individuals are closer in the genealogies of a given genomic region, 
+they tend to be closer in the PCA maps for that region. 
+% Different DNA segments may have different gene tree and therefore different population structure for those segments. 
+% Second, the strength of linked selection differs for different DNA segments, and produces different population structure in region under linked selection compared to other region. 
+% Selective sweeps cause local recent ancestry or short trees.
+% Background selection causes shallow ones.
+Strong selective sweeps of beneficial alleles can lead to relatively long genomic regions
+characterized by short genealogical trees \citep{przeworski2005signature,garud2013selective}.
+A genomic region with many targets for selection experiences
+background selection and/or recurrent selective sweeps \citep{stephan1992effect,coop2012patterns},
+which would tend to shorten genealogical trees in the region,
+similar to a reduction in effective population size \citep{hudson1995deleterious,sattath2011pervasive}.
+% Balancing selection causes deep trees.
+On the other hand, balancing selection leads to very deep trees \citep{gao2014footprints},
+and population structure locally describes which individuals have which alleles
+rather than geographical proximity.
+Finally, 
+since recombination is suppressed between opposite orientations of a chromosomal inversion
+near its breakpoints,
+genealogies in these regions separate samples carrying the two orientations of the inversion.
+In the resulting extended block, population structure shows two (for haploids) or three (for diploids) clusters
+(indeed, \citep{ma2012investigation} has proposed using trimodality of local PCA plots
+as a way to identify inversions).
+% if a chromosomal inversion is polymorphic in the sample, 
+% the regions around the breakpoints of inversions usually have high linkage disequilibrium and the two directions of a inversion will have different linked alleles around the breakpoints. Recombination suppression across inversions thus results in different genome structure and population structure. 
+% Other effects, like noise, introgression might also influence population structure.
+We will look for strong variation in population structure shared across large regions of the genome.
+Many of the effects listed above (such as single selective sweeps or inversions) 
+are not expected to have similar effects on population structure in different regions of the genome
+because of randomness in which samples end up in which group;
+but if these coincide with a region of reduced recombination (such as an inversion),
+these could drive major patterns of variation.
+The more subtle effects of genome-wide linked selection could be shared across large regions
+due to large-scale variation in gene density
+(as by background selection or local adaptation at many genes).
+
 \paragraph{Parameter choices}
 There are several choices in the method that may affect the results.
 As with whole-genome PCA,
 the choice of samples is important,
 as variation not strongly represented in the sample will not be discovered.
 The effects of strongly imbalanced sampling schemes are often corrected by dropping samples in overrepresented groups;
-but downweighting may be a better option that does not discard data.
-\plr{and we have methods to do this}
+but downweighting may be a better option that does not discard data
+(and here we present a method to do this).
 Next, the choice of window size may be important,
 although in our applications results were not sensitive to this,
 indicating that we can see variation on a sufficiently fine scale.
@@ -872,23 +870,28 @@ Besides window length, there is also the question of how to choose windows.
 In these applications we have used nonoverlapping windows with equal numbers of polymorphic sites.
 Alternatively, windows could be chosen to have equal length in genetic distance,
 so that each would have roughly the same amount of phylogenetic information.
-However, given the insensitivity of our results to window length,
-this seems unlikely to give different results.
-\plr{we tried this with bp}
+However, we found little change in results when using different window sizes
+or when measuring windows in physical distance (in bp),
+so this seems unlikely to give different results.
 
 More generally, there are many possible methods to discover common structure in different parts of the genome.
 The methods we chose discovered strong biological signal of different types in three datasets;
 but it is possible that other methods for measuring dissimilarity between windows' covariance matrices
 or for summarizing the matrix of pairwise distances between windows
 would lead to different insights.
-Minor points we have not explored include how to decide how many PCs to use in approximating structure of each window
-(equations \ref{eqn:est_cov}),
-\plr{(say we have explored)}
-how many MDS coordinates to use when describing the distance matrix between windows,
-or how to choose interesting regions of the genome when the MDS plot is not triangular.
+Our software allows different choices for how many PCs to use in approximating structure of each window ($k$ in equation \ref{eqn:est_cov}),
+and how many MDS coordinates to use when describing the distance matrix between windows,
+but in our exploration, changing these has not produced dramatically different results.
 These are all part of more general techniques in dimension reduction and high-dimensional data visualization;
 we encourage the user to experiment.
 
+Finally,
+in this work we use PCA to summarize population structure,
+but other methods, such as STRUCTURE \citep{falush2003inference},
+SPA \citep{yang2012modelbased},
+SpaceMix \citep{bradburd2015spatial},
+or other matrix factorization methods \citep{engelhardt2010analysis}
+may highlight different sources of variation in the data.
 
 \paragraph{Chromosomal inversions}
 A major driver of variation in population structure in two datasets we examined are inversions.
@@ -919,8 +922,9 @@ and for encouraging the project.
 \appendix
 
 \section{Weighted PCA}
+\label{apx:weighted_pca}
 
-PCA can be thought of as finding a good low-dimensional matrix factorization \citep{engelhardt2010analysis}
+Principal components analysis can be thought of as finding a good low-dimensional matrix factorization \citep{engelhardt2010analysis}
 that well-approximates the original data in the least-squares sense:
 if $C$ is the $N \times N$ matrix of genotypes, 
 then to find the top $k$ principal components, 

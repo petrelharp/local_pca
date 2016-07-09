@@ -15,7 +15,7 @@ From that page:
 >  
 >  Information regarding the populations of origin is here:  [POPULATION SPREADSHEET](populations.xls).
 >  
->  A summary of the individual genomes is here:  [INDIVIDUAL SPREADSHEET](individuals.xls).  Included are depth, coverage, read characteristics, and chromosomal representation.  Each genome's origin from inbred, isofemale, or homozygous chromosome line adults, or else a haploid embryo (Langley et al. 2011 Genetics), is also noted. 
+>  A summary of the individual genomes is here:  [INDIVIDUAL SPREADSHEET](individuals.csv).  Included are depth, coverage, read characteristics, and chromosomal representation.  Each genome's origin from inbred, isofemale, or homozygous chromosome line adults, or else a haploid embryo (Langley et al. 2011 Genetics), is also noted. 
 >  
 >  Citation:  For the DGN alignments, please cite Lack et al. 2015 Genetics.  Users of these genomes should also always cite the original publications that described them.  
 
