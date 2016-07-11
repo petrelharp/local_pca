@@ -1,12 +1,29 @@
 Local PCA/population structure (lostruct)
 =========================================
 
-To load the package, make sure you have `devtools` (by doing `install.packages("devtools")`),
-and then running `library(devtools); load_all("PATH/TO/THIS/DIRECTORY/package")`.
+To install the package, make sure you have `devtools` (by doing `install.packages("devtools")`),
+and then running 
+```
+devtools::install_github("petrelharp/lostruct/package")
+```
 
-## Workflow
+## Using the R package
 
-The general order to see the code is 
+The example scripts in the directories above mostly work *without* the R package.
+To start using the code on your own data, have a look at these files:
+
+* [A quick example](popres/popres_example.R) : in four lines of code, reads in chromosome 22 from a TPED, and does local PCA.
+
+* [Setting up the medicago data](medicago/medicago_data_setup.html) : after documenting where the data are from,
+    does local PCA on a small subset of the whole dataset, to establish how the functions work.
+
+* [Script for medicago analysis](medicago/run_on_medicago.R) : an Rscript to run the same analysis on medicago data,
+    varying various parameters by command-line options: run `Rscript run_on_medicago.R --help` for a list.
+
+## Standalone code
+
+Also included is code we used to analyze the datasets in the paper (before the R package was written).
+The general order to see the code in each directory is 
 
 1. recode : turn bases into numbers
 2. PCA : find local PCs
@@ -49,16 +66,3 @@ For Medicago, it calculates the pairwise distance for all 8 chromosome together 
 - [Medicago_PCA_win104.R](medicago/Medicago_PCA_win104.R) : computes local PCs for chromosome 1
 - [Medicago_distance_all_chr.R](medicago/Medicago_distance_all_chr.R) : computes a distance matrix from PC information
 - [Medicago_MDS.R](medicago/Medicago_MDS.R) : computes and plots MDS plots from the distance matrix
-
-# Using the R package
-
-The example scripts in the directories above mostly work *without* the R package.
-To start using the code on your own data, have a look at these files:
-
-* [A quick example](popres/popres_example.R) : in four lines of code, reads in chromosome 22 from a TPED, and does local PCA.
-
-* [Setting up the medicago data](medicago/medicago_data_setup.html) : after documenting where the data are from,
-    does local PCA on a small subset of the whole dataset, to establish how the functions work.
-
-* [Script for medicago analysis](medicago/run_on_medicago.R) : an Rscript to run the same analysis on medicago data,
-    varying various parameters by command-line options: run `Rscript run_on_medicago.R --help` for a list.
