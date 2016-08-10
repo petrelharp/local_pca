@@ -82,7 +82,7 @@ The phrase ``population structure'',
 used to describe patterns in genome-wide mean kinship,
 calls to mind to reduced gene flow between subpopulations. %, often because of geographical isolation.
 However, it is widely recognized that because of selection the effects of gene flow are not equal everywhere on the genome,
-and patterns of polymorphism and divergence can vary significantly depending on factors including local gene density.
+and patterns of polymorphism within species and divergence between species can vary significantly depending on factors including local gene density.
 This implies that, counterintuitively, 
 the population structure of a species depends on which part of the genome is being examined.
 
@@ -112,17 +112,15 @@ This is not guarenteed:
 for instance,
 kinship on sex chromosomes is expected to differ from the autosomes;
 and positive or negative selection on particular loci can dramatically disort shapes of nearby genealogies
-\citep{maynardsmith1974hitchhiking,barton2000genetic,neher2013genetic,charlesworth2012effects}.
+\citep{kim2002hitchhiking,charlesworth1993effect,barton2000genetic}.
 Indeed,
 many species show chromosome-scale variation in diversity and divergence
-\citep[sometimes dramatic:][]{langley2012genomic};
+\citep[e.g.,][]{langley2012genomic};
 species phylogenies can differ along the genome 
 due to incomplete lineage sorting \citep[e.g.,][]{pease2013accurate},
 adaptive introgression and/or local adaptation \citep[e.g.,][]{ellegren2012genomic,nadeau2012genomic,pool2015natural,vernot2014resurrecting};
 and theoretical expectations predict that geographic patterns of relatedness should depend on selection
 \citep{charlesworth2003review}.
-Nonetheless, it is not generally known to what extent patterns of kinship vary along the genome,
-nor for what reasons.
 
 
 Patterns in genome-wide kinship are often summarized
@@ -130,7 +128,7 @@ by applying principal components analysis \citep[PCA,][]{patterson2006population
 to the genetic covariance matrix,
 as pioneered by \citet{menozzi1978synthetic}.
 % About 37 years ago, \citet{menozzi1978synthetic} first applied principal component analysis (PCA) in population genetics to construct maps summarizing genetic variation \citep{menozzi1978synthetic}. 
-% Nowadays, PCA is a widely used powerful non-parametric method to extract information from genetic data.  
+% Nowadays, PCA is a widely used powerful non-parametric method to extract information from genetic data.
 The results of PCA can be related to the genealogical history of the samples, 
 such as time to most recent common ancestor and migration rate between populations \citep{novembre2008interpreting,mcvean2009genealogical}, 
 and sometimes produce ``maps'' of population structure
@@ -185,7 +183,16 @@ may benefit from other advances in this substantial literature
 
 \plr{short paragraph describing what the approach does/brings to the table}
 
+Population genetics studies often describe variation in particular statistics along the genome,
+often with the aim of detecting particular signals.
+In this paper, we use a visualization technique to obtain an unbiased view
+of how patterns of kinship vary along the genome,
+in genome-wide, spatially distributed datasets for three species,
+to start to discover common patterns and differences.
 
+
+
+%%%
 \section{Methods}
 
 
