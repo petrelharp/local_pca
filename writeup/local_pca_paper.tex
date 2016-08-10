@@ -45,10 +45,10 @@
 Dimension reduction techniques such as principal component analysis (PCA)
 are often used to discover and visualize the patterns 
 of mean kinship between individuals in large genomic datasets,
-known as population structure.
+\plr{known as population structure.}
 % Modeling such kinship is key to controling the confounding effects of population structure in genome-wide association studies.
-Genome-wide mean kinship
-is an average of the relationships across all locus-specific genealogical trees,
+Mean kinship
+is an average of the relationships across locus-specific genealogical trees,
 which can be strongly affected on intermediate genomic scales by many biological factors,
 such as linked selection.
 We show how to use local principal components analysis to describe this meso-scale variation,
@@ -62,10 +62,10 @@ common axes of variation in population structure are shared between chromosomes,
 correlate with local gene density,
 and may be caused by background selection or local adaptation.
 The method is implemented as an R package, called lostruct.
+\plr{conclusion sentence.}
+\plr{methods or results?}
 
-\plr{Add percent of variance explained by first two MDS coordinates, after subtracting the genome-wide mean covariance matrix.}
-
-\plr{Add references to supplemental whole-genome PCA plots in the text.}
+\plr{check refs to supp figs}
 
 
 \section{Introduction}
@@ -107,8 +107,9 @@ of the genealogical trees % that relate the samples
 at each location along the genome.
 Since these trees vary along the genome, so does realized kinship;
 but averaging over sufficiently many trees we hope to get a stable estimate,
-independent of the genomic region chosen.
-This hope is not entirely justified: for instance,
+that doesn't depend much on the genetic markers chosen.
+This is not guarenteed:
+for instance,
 kinship on sex chromosomes is expected to differ from the autosomes;
 and positive or negative selection on particular loci can dramatically disort shapes of nearby genealogies
 \citep{maynardsmith1974hitchhiking,barton2000genetic,neher2013genetic,charlesworth2012effects}.
@@ -182,13 +183,13 @@ Future methods for visualization of genomic data
 may benefit from other advances in this substantial literature 
 \citep[reviewed in][]{vandermaaten2009dimensionality}.
 
+\plr{short paragraph describing what the approach does/brings to the table}
 
 
 \section{Methods}
 
 
-The general steps in our method could be carried out in many ways.
-As depicted in Figure \ref{fig:diagram}, these are
+As depicted in Figure \ref{fig:diagram}, the general steps to the method are:
 (1) divide the genome into windows,
 (2) summarize the patterns of relatedness (population structure) in each window,
 (3) measure dissimilarity in population structure between each pair of windows,
@@ -210,81 +211,6 @@ Details of how we carried these out are given below.
          \label{fig:diagram}
     }
 \end{figure}
-
-
-
-\subsection{Datasets}
-% Recode the DNA sequence to a matrix consisting of 0,1,2 (and NA).
-
-We used three publically available datasets (summarized in Table \ref{tab:data_stats});
-we converted each to a numeric matrix
-(with one row per polymorphic variant and one column per sample)
-by replacing each genotype with the number of nonreference alleles
-(or NA for missing data).
-A normalization step (see below) ensures the result does not depend on the choice of reference allele.
-
-\paragraph{\textit{Drosophila melanogaster}:}
-We used whole-genome sequencing data 
-from the Drosophila Genome Nexus \citep[\url{http://www.johnpool.net/genomes.html},][]{lack2015drosophila},
-consisting of the Drosophila Population Genomics Project phases 1--3 \citep{langley2012genomic,pool2012population},
-and additional African genomes \citep{lack2015drosophila}.
-After removing 20 genomes with more than 8\% missing data,
-we were left with 380 samples from 16 countries across Africa and Europe.
-Since the \textit{Drosophila} samples are from inbred lines or haploid embryos, 
-we treat the samples as haploid when recoding;
-regions with residual heterozygosity were marked as missing in the original dataset;
-we also removed positions with more than 20\% missing data. 
-% (We chose these cutoffs as the tails of the relevant empirical distributions.)
-Each chromosome arm we investigated (X, 2L, 2R, 3L, and 3R) has 2--3 million SNPs;
-PCA plots for each arm are shown in Figure \ref{fig:pca_drosophila_allchr}.
-
-\paragraph{Human:}
-We also used genomic data from the entire POPRES dataset \citep{nelson2008population},
-which has array-derived genotype information for 447,267 SNPs across the 22 autosomes
-of 3,965 samples in total: 346 African-Americas, 73 Asians, 3,187 Europeans and 359 Indian Asians.
-Since these data derive from genotyping arrays, the SNP density is much lower than the other datasets,
-which are each derived from whole genome sequencing.
-We excluded the sex chromosomes and the mitochondria.
-PCA plots for each chromosome, separately, are shown in Figure \ref{fig:pca_human_allchr}.
-% We use the allele that has highest frequency in the samples as the reference allele for each position. 
-
-% lack2015drosophila: describes the DGN, including the AGES samples.  reports diversity and mentions inversions but mostly a 'data' paper
-% pool2012population: describes 129 subsaharan samples (DPGP3)
-
-\paragraph{\textit{Medicago truncatula}:}
-Finally, we used whole-genome sequencing data from the \textit{Medicago truncatula} Hapmap Project \citep{tang2014improved},
-which has 263 samples from 24 countries,
-primarily distributed around the Mediterranean basin.
-Each of the 8 chromosomes has 3--5 million SNPs;
-PCA plots for these are shown in Figure \ref{fig:pca_medicago_allchr}.
-we did not use the mitochondria or chloroplasts.
-
-\begin{table}[ht]
-\centering
-    \begin{tabular}{p{0.8in}rrrr}
-  \hline
-    species 
-    & \parbox[t]{.8in}{\# SNPs per \\ window} 
-    & \parbox[t]{1in}{mean window\\ length (bp)}
-    & \parbox[t]{1.2in}{mean \# windows \\ per chromosome} 
-    & \parbox[t]{1.4in}{mean \% variance ex-\\plained by top 2 PCs} \\ 
-  \hline
-  \textit{Drosophila melanogaster} & 1,000 & 9,019 & 2,674 & 0.53 \\ 
-  Human & 100 & 636,494 & 203 & 0.55 \\ 
-  \textit{Medicago truncatula} & 10,000 & 102,580 & 467 & 0.50 \\ 
-   \hline
-\end{tabular}
-\caption{
-    Descriptive statistics for each dataset used.
-    % with the chosen window sizes.
-    % See text for how window sizes were chosen;
-    Columns 2--4 give statistics describing the window sizes used for most analyses for each dataset
-    (windows had a fixed number of SNPs).
-    The final column gives the percent variance explained by the top two principal components,
-    averaged across independent PCA of each window.
-    \label{tab:data_stats}
-}
-\end{table}
 
 
 \subsection{PCA in genomic windows}
@@ -548,6 +474,81 @@ are implemented in an open-source R package
 available at \url{https://github.com/petrelharp/lostruct},
 as well as scripts to perform all analyses from VCF files
 at various parameter settings.
+
+
+\subsection{Datasets}
+% Recode the DNA sequence to a matrix consisting of 0,1,2 (and NA).
+
+We used three publically available datasets (summarized in Table \ref{tab:data_stats});
+we converted each to a numeric matrix
+(with one row per polymorphic variant and one column per sample)
+by replacing each genotype with the number of nonreference alleles
+(or NA for missing data).
+A normalization step (see below) ensures the result does not depend on the choice of reference allele.
+
+\paragraph{\textit{Drosophila melanogaster}:}
+We used whole-genome sequencing data 
+from the Drosophila Genome Nexus \citep[\url{http://www.johnpool.net/genomes.html},][]{lack2015drosophila},
+consisting of the Drosophila Population Genomics Project phases 1--3 \citep{langley2012genomic,pool2012population},
+and additional African genomes \citep{lack2015drosophila}.
+After removing 20 genomes with more than 8\% missing data,
+we were left with 380 samples from 16 countries across Africa and Europe.
+Since the \textit{Drosophila} samples are from inbred lines or haploid embryos, 
+we treat the samples as haploid when recoding;
+regions with residual heterozygosity were marked as missing in the original dataset;
+we also removed positions with more than 20\% missing data. 
+% (We chose these cutoffs as the tails of the relevant empirical distributions.)
+Each chromosome arm we investigated (X, 2L, 2R, 3L, and 3R) has 2--3 million SNPs;
+PCA plots for each arm are shown in Figure \ref{fig:pca_drosophila_allchr}.
+
+\paragraph{Human:}
+We also used genomic data from the entire POPRES dataset \citep{nelson2008population},
+which has array-derived genotype information for 447,267 SNPs across the 22 autosomes
+of 3,965 samples in total: 346 African-Americas, 73 Asians, 3,187 Europeans and 359 Indian Asians.
+Since these data derive from genotyping arrays, the SNP density is much lower than the other datasets,
+which are each derived from whole genome sequencing.
+We excluded the sex chromosomes and the mitochondria.
+PCA plots for each chromosome, separately, are shown in Figure \ref{fig:pca_human_allchr}.
+% We use the allele that has highest frequency in the samples as the reference allele for each position. 
+
+% lack2015drosophila: describes the DGN, including the AGES samples.  reports diversity and mentions inversions but mostly a 'data' paper
+% pool2012population: describes 129 subsaharan samples (DPGP3)
+
+\paragraph{\textit{Medicago truncatula}:}
+Finally, we used whole-genome sequencing data from the \textit{Medicago truncatula} Hapmap Project \citep{tang2014improved},
+which has 263 samples from 24 countries,
+primarily distributed around the Mediterranean basin.
+Each of the 8 chromosomes has 3--5 million SNPs;
+PCA plots for these are shown in Figure \ref{fig:pca_medicago_allchr}.
+we did not use the mitochondria or chloroplasts.
+
+\begin{table}[ht]
+\centering
+    \begin{tabular}{p{0.8in}rrrr}
+  \hline
+    species 
+    & \parbox[t]{.8in}{\# SNPs per \\ window} 
+    & \parbox[t]{1in}{mean window\\ length (bp)}
+    & \parbox[t]{1.2in}{mean \# windows \\ per chromosome} 
+    & \parbox[t]{1.4in}{mean \% variance ex-\\plained by top 2 PCs} \\ 
+  \hline
+  \textit{Drosophila melanogaster} & 1,000 & 9,019 & 2,674 & 0.53 \\ 
+  Human & 100 & 636,494 & 203 & 0.55 \\ 
+  \textit{Medicago truncatula} & 10,000 & 102,580 & 467 & 0.50 \\ 
+   \hline
+\end{tabular}
+\caption{
+    Descriptive statistics for each dataset used.
+    % with the chosen window sizes.
+    % See text for how window sizes were chosen;
+    Columns 2--4 give statistics describing the window sizes used for most analyses for each dataset
+    (windows had a fixed number of SNPs).
+    The final column gives the percent variance explained by the top two principal components,
+    averaged across independent PCA of each window.
+    \label{tab:data_stats}
+}
+\end{table}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
