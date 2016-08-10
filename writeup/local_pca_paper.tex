@@ -176,10 +176,12 @@ providing local pictures which are then stitched back together to give a global 
 At first sight,
 this differs from our method in that we restrict to subsets of \emph{variables} instead of subsets of observations.
 However, if we flip perspectives and think of each genetic variant as an observation,
-our method shares common threads, although the ultimate goals and methods for visualization are different.
-Future methods for visualization of genomic data
-may benefit from other advances in this substantial literature 
-\citep[reviewed in][]{vandermaaten2009dimensionality}.
+our method shares common threads, although 
+our method does not subsequently use adjacency along the genome,
+as we aim to identify similar regions that may be distant.
+% Future methods for visualization of genomic data
+% may benefit from other advances in this substantial literature 
+% \citep[reviewed in][]{vandermaaten2009dimensionality}.
 
 \plr{short paragraph describing what the approach does/brings to the table}
 
@@ -650,7 +652,8 @@ and other chromosomes are similar:
 % but population structure associated with low gene density (colored orange)
 % shows more chromsome-specific patterns (see Supplemental Figure \ref{fig:pca_drosophila_allchr}).
 across chromosomes, the high values of the first MDS coordinate coincide with the position of the heterochromatic regions surrounding the centromere,
-which often have lower gene density and may therefore be less subject to linked selection \citep{kulikova2001integration,paape2013selection}. 
+which often have lower gene density and may therefore be less subject to linked selection.
+% Selection on genes in Medicago has been demonstrated by \citet{paape2013selection}. 
 To verify that this is a possible explanation,
 we computed gene densities in each window using gene models in Mt4.0 from \url{jcvi.org} \citep{tang2014improved},
 which are shown juxtaposed with
@@ -788,6 +791,7 @@ come in the form of predicted forms of the allele frequency spectrum which are o
 and it is unclear to what extent the spatial structure observed in most real populations will affect these predictions.
 It is possible that statistics making stronger use of spatial information
 will have more luck.
+\plr{expand}
 
 
 % How do we expect selection to affect population structure?
