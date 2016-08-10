@@ -215,10 +215,16 @@ Details of how we carried these out are given below.
 
 \subsection{PCA in genomic windows}
 
-After recoding, we divided the genome into contiguous segments (``windows''; see below),
+We first recoded sampled genotypes as numeric matrices in the usual manner,
+by recording the number of nonreference alleles seen at each locus for each sample.
+We then divided the genome into contiguous segments 
+(``windows'')
 % recoded matrix into contigous matrices that have the same columns but fewer rows than the original matrix, 
 and applied Principal Component Analysis (PCA) as described in \citet{mcvean2009genealogical}
 separately to the submatrices that corresponded to each window.
+The choice of window length entails a tradeoff between signal and noise,
+since shorter windows allow better resolution along the genome but allow less precise estimates of kinship.
+A method for choosing a window length is given in Appendix \ref{apx:window_length}.
 % Specifically, we did PCA as follows:
 Precisely,
 denote by $Z$ the $L\times N$ recoded genotype matrix ($L$ is the number of SNPs and $N$ is the sample size), 
@@ -239,7 +245,7 @@ normalized to have Euclidean length equal to one,
 and ordered by magnitude of the eigenvalues.
 
 The top few principal components generally display population structure; 
-we usually use the first two (referred to as $\pcone$ and $\pctwo$).
+we follow common practice and usually only use the first two (referred to as $\pcone$ and $\pctwo$).
 The above procedure can be performed on any subset of the data;
 for future reference, denote by $\pcone_j$ and $\pctwo_j$
 the result after applying to all SNPs in the $j^\text{th}$ window.
@@ -264,124 +270,22 @@ we used a variant of PCA that gives roughly equal weight to each group of sample
 rather than to each sample.
 The rationale and implementation of this method are described in Appendix \ref{apx:weighted_pca}.
 
-\subsection{Choosing window length}
-
-The choice of window length entails a balance between signal and noise.
-In very short windows, genealogies of the samples will only be represented by a few trees,
-so variation between windows represents demographic noise rather than meaningful variation in population structure.
-Longer windows generally have more distinct trees (and SNPs), 
-allowing for less noisy estimation of local population structure.
-However, to better resolve meaningful signal, i.e., differences in population structure along the genome,
-we would like reasonably short windows.
-% Window length choice therefore entails a signal versus noise tradeoff
-% in the estimates of population structure.
-% If we use the first principal component as a measure of population structure, 
-% then to choose the best window length,
-% we need to find a balance between the standard error of the first principal components for each window 
-% and the standard deviation between windows. 
-
-Since we summarize population structure using relative positions in the principal component maps,
-we quantify ``noise'' as the standard error of a sample's position on PC1 in a particular window,
-averaged across windows and samples,
-and ``signal'' as the standard deviation of the sample's position on PC1 over all windows,
-averaged over samples.
-(Recall that the signs for PCs are chosen to match each other.)
-Then, the mean variance across windows is
-\begin{align*}
-    \sigma_\text{signal}^2
-    = 
-    \frac{1}{N} \sum_{j=1}^{N}
-        \frac{1}{L}\sum_{i=1}^{L}\left ( \pcone_{ij} -\overline\pcone_{j} \right )^{2} ,
-\end{align*}
-where $\pcone_{ij}$ is the position of the $i^\text{th}$ individual on $\pcone$ in window $j$,
-and $\overline\pcone_j = (1/N) \sum_{j=1}^N \pcone_{ij}$.
-We estimate the standard error for each $\pcone_{ij}$ using the block jackknife \citep{efron1982jackknife,busing1999deletem}:
-we divide the $j^\text{th}$ window into 10 equal-sized pieces,
-and let $\pcone_{ij,k}$ denote the first principal component of this region found after removing the $k^\text{th}$ piece;
-then the estimate of the squared standard error is
-$\sigma^2_{ij} = \frac{9}{10} \sum_{k=1}^{10} ( \pcone_{ij,k} - \frac{1}{10} \sum_{\ell=1}^{10} \pcone_{ij,\ell} )^2$.
-Averaging over samples and windows,
-\begin{align*}
-    \sigma^2_\text{noise}
-    &=
-    \frac{1}{N} \sum_{j=1}^{N} \frac{1}{L}\sum_{i=1}^{L} \sigma^2_{ij} .
-\end{align*}
-
-For the main analysis, we defined windows to each consist of the same number of neighboring SNPs,
-and calculated $\sigma^2_\text{signal}$ and $\sigma^2_\text{noise}$
-for a range of window sizes (i.e., numbers of SNPs).
-For our main results we
-chose the smallest window for which $\sigma^2_\text{signal}$ was consistently larger than $\sigma^2_\text{noise}$ (but checked other sizes);
-the values for various window sizes across \textit{Drosophila} chromosomes are shown in Table \ref{tab:window_sizes}.
-% and the choices for all taxa are in Table \ref{tab:data_stats}.
-% In practice, even substantially different window sizes result in the same genome-wide patterns.
-In the cases we examined, we found nearly identical results after varying window size,
-and choosing windows to be of the same physical length (in bp) rather than in numbers of SNPs.
-
-% # Variances within and between windows for Drosophila, multiplied by 1000:
-% w <- structure(list(chrom = structure(c(1L, 1L, 2L, 2L, 3L, 3L, 4L, 
-% 4L, 5L, 5L), .Label = c("2L", "2R", "3L", "3R", "X"), class = "factor"), 
-%     type = structure(c(1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L
-%     ), .Label = c("noise", "signal"), class = "factor"), `100` = c(2.05209, 
-%     2.75625, 2.18089, 2.77729, 2.07936, 2.601, 1.95364, 2.58064, 
-%     2.48004, 2.61121), `500` = c(1.64025, 2.69361, 1.91844, 2.704, 
-%     1.99809, 2.52004, 1.764, 2.51001, 2.04304, 2.43049), `1000` = c(1.18336, 
-%     2.22784, 1.63216, 2.65225, 1.64025, 2.401, 1.43641, 2.44036, 
-%     1.53664, 2.304), `10000` = c(0.169, 0.676, 0.576, 2.31361, 
-%     0.73441, 1.681, 0.58564, 1.96249, 1.61604, 0.324), `1e+05` = c(0.03969, 
-%     0.31329, 0.13456, 1.82329, 0.24649, 1.89225, 0.20164, 1.39876, 
-%     0.169, 1.14244)), .Names = c("chrom", "type", "100", "500", 
-% "1000", "10000", "1e+05"), row.names = c(NA, -10L), class = "data.frame")
-% print(xtable(w),include.rownames=FALSE)
-
-\begin{table}[ht]
-\centering
-    \begin{tabular}{cccrrrrr}
-  \hline
-        & & & \multicolumn{5}{c}{window length (SNPs)} \\
- & chrom.\ arm  & & 100 & 500 & 1,000 & 10,000 & 100,000 \\ 
-  \hline
-    & 2L & $\sigma^2_\text{noise}$  & 2.05  &  1.64  &  1.18  &  0.17  &  0.04 \\
-    & 	 & $\sigma^2_\text{signal}$ & 2.76  &  2.69  &  2.23  &  0.68  &  0.31 \\
-    & 2R & $\sigma^2_\text{noise}$  & 2.18  &  1.92  &  1.63  &  0.58  &  0.13 \\
-    & 	 & $\sigma^2_\text{signal}$ & 2.78  &  2.70  &  2.65  &  2.31  &  1.82 \\
-    & 3L & $\sigma^2_\text{noise}$  & 2.08  &  2.00  &  1.64  &  0.73  &  0.25 \\
-    & 	 & $\sigma^2_\text{signal}$ & 2.60  &  2.52  &  2.40  &  1.68  &  1.89 \\
-    & 3R & $\sigma^2_\text{noise}$  & 1.95  &  1.76  &  1.44  &  0.59  &  0.20 \\
-    & 	 & $\sigma^2_\text{signal}$ & 2.58  &  2.51  &  2.44  &  1.96  &  1.40 \\
-    & X  & $\sigma^2_\text{noise}$  & 2.48  &  2.04  &  1.54  &  1.62  &  0.17 \\
-    & 	 & $\sigma^2_\text{signal}$ & 2.61  &  2.43  &  2.30  &  0.32  &  1.14 \\
-   \hline
-\end{tabular}
-\caption{
-    Measures of signal and noise,
-    computed separately for each chromosome arm in the \textit{Drosophila} dataset,
-    at different window sizes.
-    All values are multiplied by $1,000$
-    (so typical variation is of order of 50\% of the actual values).
-    Starting at windows of 1,000 SNPs, the signal (variation of PC1 between windows)
-    starts to be substantially larger than the noise (standard error of PC1 for each window).
-} \label{tab:window_sizes}
-\end{table}
-
-
 
 \subsection{Similarity of population structure between windows}
 
 We think of local population structure as being summarized by \emph{relative} position of the samples
 in the space defined by the top principal components.
-Since rotations of this space imply identical population structure,
-we do not compare population structure of different genomic windows using the PCs directly, 
-but instead compare the low-dimensional approximations of the local covariance matrices
-obtained using the top $k$ PCs.
+However, 
+we do not compare population structure of different genomic by directly comparing the PCs,
+since rotations or reflections of these imply identical population structure.
+Instead, we compare the low-dimensional approximations of the local covariance matrices
+obtained using the top $k$ PCs,
+which is invariant under reflections and rotations and yet contains all other information about the PCs.
 (For results shown here, we use $k=2$;
 results using larger numbers of PCs were nearly identical.)
-We do this, rather than using the entire covariance matrix, 
-both for computational efficiency 
-and because the top PCs summarize important population structure, 
-so using only these should reduce the effect of noise.
-To remove the effect of variation in mutation rate between windows,
-we also rescale each covariance matrix so that the underlying data matrix has trace norm equal to one.
+Furthermore, to remove the effect of artifacts such as mutation rate variation,
+we also rescale each approximate covariance matrix 
+so that the underlying data matrix has trace norm equal to one.
 
 To do this, define the $N \times k$ matrix $V(i)$ so that $V(i)_{\cdot \ell}$, 
 the $\ell^\text{th}$ column of $V(i)$,
@@ -403,9 +307,17 @@ Then, the rescaled, rank $k$ approximate covariance matrix for the $i^\text{th}$
 %     M_{i} &= \frac{\lambda_{1i}PC1_{i}PC1_{i}^{T}+\lambda_{2i}PC2_{i}PC2_{i}^{T}}{\lambda_{1i}+\lambda_{2i}} 
 % \end{align}
 
-We then use
-Euclidean distance $D_{ij}$ between the matrices $M(i)$ and $M(j)$ 
-to measure the similarity of population structure for the $i^\text{th}$ window and $j^\text{th}$ window. 
+To measure the similarity of population structure for the $i^\text{th}$ window and $j^\text{th}$ window,
+we then use
+Euclidean distance $D_{ij}$ between the matrices $M(i)$ and $M(j)$:
+$D_{ij}^2 = \sum_{k\ell} ( M(i)_{k,\ell} - M(j)_{k,\ell} )^2$.
+
+
+Although we were motivated by comparing PC plots up to rotation and reflection,
+the method suggests instead directly comparing entire local covariance matrices. 
+However, with thousands of samples and tens of thousands of windows,
+computing the distance matrix would take months of CPU time,
+while $D$ can be computed in minutes using the following method.
 Since 
 $\sum_{ij} (A_{ij}-B_{ij})^2 = \sum_{ij} (A^2_{ij} + B^2_{ij}) - 2 \tr(A^T B)$,
 and $M(i) = V(i) V(i)^T$,
@@ -556,7 +468,8 @@ we did not use the mitochondria or chloroplasts.
 
 In these three species, PCA plots vary along the genome in a systematic way, showing strong chromosome-scale correlations.
 This implies that variation is due to meaningful variation in population structure, 
-since fluctuations due to demographic noise are not expected to show long distance correlations. 
+since noise due to randomness in choice of local genealogical trees
+are not expected to show long distance correlations. 
 Below, we discuss the results and likely underlying causes.
 
 
@@ -565,6 +478,7 @@ Below, we discuss the results and likely underlying causes.
 
 We ran the method on chromosome arms 2L, 2R, 3L, 3R and X separately. 
 For each, the two-dimensional MDS visualization resembles a triangle,
+sometimes with additional points,
 as seen in Figure \ref{fig:mds_allchr}.
 Since the relative position of each window in this plot shows the similarity between windows, 
 this suggests that there are at least three extreme types of population structure 
@@ -594,9 +508,14 @@ Also cite \citet{corbettdetig2012sequencebased} for a computational method for d
 \end{figure}
 
 
-To investigate these extremes, for each chromosome arm we visually selected three ``extreme'' windows in the MDS plot,
-and take out the 5\% of windows that are closest to it in the MDS coordinates;
-these three groups of windows are shown in color in Figure \ref{fig:mds_allchr} and PCA plots for each collection are shown in Figure \ref{fig:pca_by_pop}.
+To investigate each extreme on a particular chromosome arm, 
+we selected an ``extreme'' window in the MDS plot
+and the 5\% of windows that are closest to it in the MDS coordinates,
+then highlighted these windows' positions along the genome,
+and created PCA plots for the windows, combined.
+Representative plots are shown for three groups of windows on each chromosome arm
+in Figure \ref{fig:mds_allchr} (groups are shown in color)
+in Figure \ref{fig:pca_by_pop} (PCA plots).
 
 
 \begin{figure}
@@ -747,7 +666,11 @@ when using weighted PCA to downweight the large group of Tunisian samples.
     \end{center}
     \caption{
        MDS visualization of population structure on \textit{M.~truncatula} chromosome 3. 
-       Each point in the plot represents a window.
+       Each point in the plot represents a window;
+       the structure revealed by the MDS plot is strongly clustered along the chromosome,
+       with windows in the upper-right corner of the MDS plot (colored red) clustered around the centromere,
+       windows in the upper-left corner (purple) furthest from the centromere,
+       and the remaining corner (green) intermediate.
        Plots for remaining chromosomes are shown in Supplemental Figure \ref{fig:mds_medicago_allchr}.
        \label{fig:mds12_medicago}
     }
@@ -793,11 +716,10 @@ when using weighted PCA to downweight the large group of Tunisian samples.
 %%%%%%% %%%%%%%%%
 \section{Discussion}
 
-Our investigations have found a remarkable amount of variation in population structure across the genomes
+Our investigations have found substantial variation in population structure across the genomes
 of three diverse species,
 revealing distinct biological processes driving this variation in each species.
 More investigation, particularly on more species and datasets, will help to uncover which patterns are generalizable.
-
 With growing appreciation of the heterogeneous effects of selection across the genome,
 especially the importance of adaptive introgression, hybrid speciation \citep{pool2015natural,brandvain2014speciation,hufford2013genomic,fitzpatrick2010rapid,staubach2012genome},
 local adaptation \citep{lenormand2002limits,wang2014isolation},
@@ -808,60 +730,97 @@ local PCA may prove to be a useful exploratory tool to discover important genomi
 % our investigations with one such dataset were inconclusive --
 % but even low coverage, whole-genome sequence is very promising.
 
+We now discuss possible implications of this variation in population structure,
+the impact of various parameter choices in implementing the method,
+and possible additional applications.
 
-\paragraph{Confounding in GWAS}
-So-called cryptic relatedness between samples
-has been one of the major sources of confounding in genome-wide association studies (GWAS)
-and so methods must account for it by modeling population structure or kinship \citep{astle2009population,yang2014advantages}.
-Since population structure is not constant along the genome,
-this could in principle lead to an inflation of false positives in parts of the genome
-with stronger population structure than the genome-wide average.
-Fortunately, in our human dataset this does not seem likely to have a strong effect:
-most variation is due to small, independent regions, possibly primarily inversions,
-and so may not have a major effect on GWAS.
-In the other species we examined, particularly \textit{Drosophila melanogaster},
-treating population structure as a single quantity could be severely misleading.
+
+\paragraph{Chromosomal inversions}
+A major driver of variation in population structure in two datasets we examined are inversions.
+This may be common,
+but the example of \textit{Medicago truncatula} shows that polymorphic inversions are not ubiquitous.
+PCA has been proposed as a method for discovering inversions \citep{ma2012investigation};
+however, the signal left by inversions likely cannot be distinguished from long haplotypes under balancing selection 
+or simply regions of reduced recombination
+without additional lines of evidence.
+However, in many applications, inversions are a nuisance.
+For instance, SMARTPCA \citep{patterson2006population} reduces their effect on PCA plots
+by regressing out the effect of linked SNPs on each other.
+Removing samples with the less common orientation of each inversion reduced,
+but did not eliminate, the signal of inversions
+seen in the \textit{Drosophila melanogaster} dataset,
+demonstrating that the genomic effects of transiently polymorphic inversions
+may outlast the inversions themselves.
 
 
 \paragraph{The effect of selection}
-How can we expect selection to affect population structure?
-PCA summarizes patterns in kinship found in the genetic covariance matrix,
-which is an average across locus-specific genealogies:
-if individuals are closer in the genealogies of a given genomic region, 
-they tend to be closer in the PCA maps for that region. 
+It seems clear that the variation in population structure we see in the \textit{Medicago truncatula} and \textit{Drosophila melanogaster} datasets
+is likely due to selection.
+Furthermore, 
+the selection must be affecting many targets across the genome,
+since we see similar effects across long distances (even distinct chromosomes).
+For this reason, the most likely candidate may be selection against linked deleterious mutations, known as ``background selection'' \citep{charlesworth1993effect,charlesworth2013background}.
+Background selection can be thought of as reducing the number of potential contributors to the gene pool in regions of the genome with many possible deleterious mutations \citep{hudson1995deleterious};
+for this reason, if it acts in a spatial context, it is expected to induce samples from nearby locations to cluster together more frequently,
+Regions of the genome harboring many targets of local adaptation may show similar patterns,
+since migrant alleles in these regions will be selected against,
+and so locally gene trees will more closely reflect spatial proximity.
+
+A third possibility is that variation in population structure is due to recent admixture between previously separated populations,
+the effects of which were not uniform across the genome due to selection.
+For instance, it has been hypothesized that large-scale variation in amount of introgressed Neanderthal DNA along the genome
+is due to selection against Neanderthal genes, leading to greater introgression in regions of lower gene density
+\citep{harris2016genetic,juric2016strength}.
+African \textit{Drosophila melanogaster} are known to have a substantial amount of recently introgressed genome from ``cosmopolitan'' sources;
+if selection regularly favors genes from one origin,
+this could lead to substantial variation in population structure correlated with local gene density.
+
+There has been substantial debate over the relative impacts of different forms of selection.
+These have been difficult to disentangle in part because most concrete theoretical predictions
+come in the form of predicted forms of the allele frequency spectrum which are only strictly valid in randomly mating (i.e., unstructured) populations,
+and it is unclear to what extent the spatial structure observed in most real populations will affect these predictions.
+It is possible that statistics making stronger use of spatial information
+will have more luck.
+
+
+% How do we expect selection to affect population structure?
+% PCA summarizes patterns in kinship found in the genetic covariance matrix,
+% which is an average across locus-specific genealogies:
+% if individuals are closer in the genealogies of a given genomic region, 
+% they tend to be closer in the PCA maps for that region. 
 % Different DNA segments may have different gene tree and therefore different population structure for those segments. 
 % Second, the strength of linked selection differs for different DNA segments, and produces different population structure in region under linked selection compared to other region. 
 % Selective sweeps cause local recent ancestry or short trees.
 % Background selection causes shallow ones.
-Strong selective sweeps of beneficial alleles can lead to relatively long genomic regions
-characterized by short genealogical trees \citep{przeworski2005signature,garud2013selective}.
-A genomic region with many targets for selection experiences
-background selection and/or recurrent selective sweeps \citep{stephan1992effect,coop2012patterns},
-which would tend to shorten genealogical trees in the region,
-similar to a reduction in effective population size \citep{hudson1995deleterious,sattath2011pervasive}.
-% Balancing selection causes deep trees.
-On the other hand, balancing selection leads to very deep trees \citep{gao2014footprints},
-and population structure locally describes which individuals have which alleles
-rather than geographical proximity.
-Finally, 
-since recombination is suppressed between opposite orientations of a chromosomal inversion
-near its breakpoints,
-genealogies in these regions separate samples carrying the two orientations of the inversion.
+% Strong selective sweeps of beneficial alleles can lead to relatively long genomic regions
+% characterized by short genealogical trees \citep{przeworski2005signature,garud2013selective}.
+% A genomic region with many targets for selection experiences
+% background selection and/or recurrent selective sweeps \citep{stephan1992effect,coop2012patterns},
+% which would tend to shorten genealogical trees in the region,
+% similar to a reduction in effective population size \citep{hudson1995deleterious,sattath2011pervasive}.
+% % Balancing selection causes deep trees.
+% On the other hand, balancing selection leads to very deep trees \citep{gao2014footprints},
+% and population structure locally describes which individuals have which alleles
+% rather than geographical proximity.
+% Finally, 
+% since recombination is suppressed between opposite orientations of a chromosomal inversion
+% near its breakpoints,
+% genealogies in these regions separate samples carrying the two orientations of the inversion.
 % In the resulting extended block, population structure shows two (for haploids) or three (for diploids) clusters
 % (indeed, \citep{ma2012investigation} has proposed using trimodality of local PCA plots
 % as a way to identify inversions).
 % if a chromosomal inversion is polymorphic in the sample, 
 % the regions around the breakpoints of inversions usually have high linkage disequilibrium and the two directions of a inversion will have different linked alleles around the breakpoints. Recombination suppression across inversions thus results in different genome structure and population structure. 
 % Other effects, like noise, introgression might also influence population structure.
-
-Many of the effects listed above (such as single selective sweeps or inversions) 
-are not expected to have similar effects on population structure in different regions of the genome
-because of randomness in which samples end up in which group;
-but if these coincide with a region of reduced recombination (or an inversion),
-these could drive major patterns of variation.
-The more subtle effects of genome-wide linked selection could be shared across large regions
-due to large-scale variation in gene density
-(as by background selection or local adaptation at many genes).
+% 
+% Many of the effects listed above (such as single selective sweeps or inversions) 
+% are not expected to have similar effects on population structure in different regions of the genome
+% because of randomness in which samples end up in which group;
+% but if these coincide with a region of reduced recombination (or an inversion),
+% these could drive major patterns of variation.
+% The more subtle effects of genome-wide linked selection could be shared across large regions
+% due to large-scale variation in gene density
+% (as by background selection or local adaptation at many genes).
 
 \paragraph{Parameter choices}
 There are several choices in the method that may affect the results.
@@ -906,19 +865,21 @@ These are all part of more general techniques in dimension reduction and high-di
 we encourage the user to experiment.
 
 
-\paragraph{Chromosomal inversions}
-A major driver of variation in population structure in two datasets we examined are inversions.
-This may be common,
-but the example of \textit{Medicago truncatula} shows that polymorphic inversions are not ubiquitous.
-PCA has been proposed as a method for discovering inversions \citep{ma2012investigation};
-however, the signal left by inversions likely cannot be distinguished from long haplotypes under balancing selection 
-or simply regions of reduced recombination
-without additional lines of evidence.
-However, in many applications, inversions are a nuisance.
-For instance, SMARTPCA \citep{patterson2006population} reduces their effect on PCA plots
-by regressing out the effect of linked SNPs on each other.
-It would be interesting to see if somehow removing the effects of inversions in the \textit{Drosophila melanogaster} or human datasets
-would produce a pattern similar to that seen in \textit{Medicago truncatula}.
+
+\paragraph{Applications}
+So-called cryptic relatedness between samples
+has been one of the major sources of confounding in genome-wide association studies (GWAS)
+and so methods must account for it by modeling population structure or kinship \citep{astle2009population,yang2014advantages}.
+Since population structure is not constant along the genome,
+this could in principle lead to an inflation of false positives in parts of the genome
+with stronger population structure than the genome-wide average.
+A method such as ours might be used to provide a more sensitive correction.
+Fortunately, in our human dataset this does not seem likely to have a strong effect:
+most variation is due to small, independent regions, possibly primarily inversions,
+and so may not have a major effect on GWAS.
+In the other species we examined, particularly \textit{Drosophila melanogaster},
+treating population structure as a single quantity would entail a substantial loss of power,
+and could potentially be misleading.
 
 %%%%%%%%
 \subsection*{Acknowledgements}
@@ -926,7 +887,7 @@ would produce a pattern similar to that seen in \textit{Medicago truncatula}.
 We are indebted to John Pool, Russ Corbett-Detig, Matilde Cordeiro, and Peter Chang 
 for assistence with obtaining data and interpreting results
 (especially inversion status of \textit{D.~melanogaster} samples).
-Thanks also go to Yaniv Brandvain and Barbara Engelhardt for helpful comments 
+Thanks also go to Yaniv Brandvain, Barbara Engelhardt, Charles Langley, Graham Coop, and Jeremy Berg for helpful comments
 and for encouraging the project.
 
 \bibliographystyle{plainnat}
@@ -937,6 +898,108 @@ and for encouraging the project.
 \renewcommand{\thetable}{S\arabic{table}}
 \setcounter{figure}{0}
 \renewcommand{\thefigure}{S\arabic{figure}}
+
+
+\section{Choosing window length}
+\label{apx:window_length}
+
+The choice of window length entails a balance between signal and noise.
+In very short windows, genealogies of the samples will only be represented by a few trees,
+so variation between windows represents demographic noise rather than meaningful variation in population structure.
+Longer windows generally have more distinct trees (and SNPs), 
+allowing for less noisy estimation of local population structure.
+However, to better resolve meaningful signal, i.e., differences in population structure along the genome,
+we would like reasonably short windows.
+% Window length choice therefore entails a signal versus noise tradeoff
+% in the estimates of population structure.
+% If we use the first principal component as a measure of population structure, 
+% then to choose the best window length,
+% we need to find a balance between the standard error of the first principal components for each window 
+% and the standard deviation between windows. 
+
+Since we summarize population structure using relative positions in the principal component maps,
+we quantify ``noise'' as the standard error of a sample's position on PC1 in a particular window,
+averaged across windows and samples,
+and ``signal'' as the standard deviation of the sample's position on PC1 over all windows,
+averaged over samples.
+(Recall that the signs for PCs are chosen to match each other.)
+Then, the mean variance across windows is
+\begin{align*}
+    \sigma_\text{signal}^2
+    = 
+    \frac{1}{N} \sum_{j=1}^{N}
+        \frac{1}{L}\sum_{i=1}^{L}\left ( \pcone_{ij} -\overline\pcone_{j} \right )^{2} ,
+\end{align*}
+where $\pcone_{ij}$ is the position of the $i^\text{th}$ individual on $\pcone$ in window $j$,
+and $\overline\pcone_j = (1/N) \sum_{j=1}^N \pcone_{ij}$.
+We estimate the standard error for each $\pcone_{ij}$ using the block jackknife \citep{efron1982jackknife,busing1999deletem}:
+we divide the $j^\text{th}$ window into 10 equal-sized pieces,
+and let $\pcone_{ij,k}$ denote the first principal component of this region found after removing the $k^\text{th}$ piece;
+then the estimate of the squared standard error is
+$\sigma^2_{ij} = \frac{9}{10} \sum_{k=1}^{10} ( \pcone_{ij,k} - \frac{1}{10} \sum_{\ell=1}^{10} \pcone_{ij,\ell} )^2$.
+Averaging over samples and windows,
+\begin{align*}
+    \sigma^2_\text{noise}
+    &=
+    \frac{1}{N} \sum_{j=1}^{N} \frac{1}{L}\sum_{i=1}^{L} \sigma^2_{ij} .
+\end{align*}
+
+For the main analysis, we defined windows to each consist of the same number of neighboring SNPs,
+and calculated $\sigma^2_\text{signal}$ and $\sigma^2_\text{noise}$
+for a range of window sizes (i.e., numbers of SNPs).
+For our main results we
+chose the smallest window for which $\sigma^2_\text{signal}$ was consistently larger than $\sigma^2_\text{noise}$ (but checked other sizes);
+the values for various window sizes across \textit{Drosophila} chromosomes are shown in Table \ref{tab:window_sizes}.
+% and the choices for all taxa are in Table \ref{tab:data_stats}.
+% In practice, even substantially different window sizes result in the same genome-wide patterns.
+In the cases we examined, we found nearly identical results after varying window size,
+and choosing windows to be of the same physical length (in bp) rather than in numbers of SNPs.
+
+% # Variances within and between windows for Drosophila, multiplied by 1000:
+% w <- structure(list(chrom = structure(c(1L, 1L, 2L, 2L, 3L, 3L, 4L, 
+% 4L, 5L, 5L), .Label = c("2L", "2R", "3L", "3R", "X"), class = "factor"), 
+%     type = structure(c(1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L, 1L, 2L
+%     ), .Label = c("noise", "signal"), class = "factor"), `100` = c(2.05209, 
+%     2.75625, 2.18089, 2.77729, 2.07936, 2.601, 1.95364, 2.58064, 
+%     2.48004, 2.61121), `500` = c(1.64025, 2.69361, 1.91844, 2.704, 
+%     1.99809, 2.52004, 1.764, 2.51001, 2.04304, 2.43049), `1000` = c(1.18336, 
+%     2.22784, 1.63216, 2.65225, 1.64025, 2.401, 1.43641, 2.44036, 
+%     1.53664, 2.304), `10000` = c(0.169, 0.676, 0.576, 2.31361, 
+%     0.73441, 1.681, 0.58564, 1.96249, 1.61604, 0.324), `1e+05` = c(0.03969, 
+%     0.31329, 0.13456, 1.82329, 0.24649, 1.89225, 0.20164, 1.39876, 
+%     0.169, 1.14244)), .Names = c("chrom", "type", "100", "500", 
+% "1000", "10000", "1e+05"), row.names = c(NA, -10L), class = "data.frame")
+% print(xtable(w),include.rownames=FALSE)
+
+\begin{table}[ht]
+\centering
+    \begin{tabular}{cccrrrrr}
+  \hline
+        & & & \multicolumn{5}{c}{window length (SNPs)} \\
+ & chrom.\ arm  & & 100 & 500 & 1,000 & 10,000 & 100,000 \\ 
+  \hline
+    & 2L & $\sigma^2_\text{noise}$  & 2.05  &  1.64  &  1.18  &  0.17  &  0.04 \\
+    & 	 & $\sigma^2_\text{signal}$ & 2.76  &  2.69  &  2.23  &  0.68  &  0.31 \\
+    & 2R & $\sigma^2_\text{noise}$  & 2.18  &  1.92  &  1.63  &  0.58  &  0.13 \\
+    & 	 & $\sigma^2_\text{signal}$ & 2.78  &  2.70  &  2.65  &  2.31  &  1.82 \\
+    & 3L & $\sigma^2_\text{noise}$  & 2.08  &  2.00  &  1.64  &  0.73  &  0.25 \\
+    & 	 & $\sigma^2_\text{signal}$ & 2.60  &  2.52  &  2.40  &  1.68  &  1.89 \\
+    & 3R & $\sigma^2_\text{noise}$  & 1.95  &  1.76  &  1.44  &  0.59  &  0.20 \\
+    & 	 & $\sigma^2_\text{signal}$ & 2.58  &  2.51  &  2.44  &  1.96  &  1.40 \\
+    & X  & $\sigma^2_\text{noise}$  & 2.48  &  2.04  &  1.54  &  1.62  &  0.17 \\
+    & 	 & $\sigma^2_\text{signal}$ & 2.61  &  2.43  &  2.30  &  0.32  &  1.14 \\
+   \hline
+\end{tabular}
+\caption{
+    Measures of signal and noise,
+    computed separately for each chromosome arm in the \textit{Drosophila} dataset,
+    at different window sizes.
+    All values are multiplied by $1,000$
+    (so typical variation is of order of 50\% of the actual values).
+    Starting at windows of 1,000 SNPs, the signal (variation of PC1 between windows)
+    starts to be substantially larger than the noise (standard error of PC1 for each window).
+} \label{tab:window_sizes}
+\end{table}
 
 
 \section{Weighted PCA}
