@@ -122,6 +122,7 @@ adaptive introgression and/or local adaptation \citep[e.g.,][]{ellegren2012genom
 and theoretical expectations predict that geographic patterns of relatedness should depend on selection
 \citep{charlesworth2003review}.
 
+\plr{mention Fst along the genome}
 
 Patterns in genome-wide kinship are often summarized
 by applying principal components analysis \citep[PCA,][]{patterson2006population} 
@@ -493,6 +494,7 @@ Since the relative position of each window in this plot shows the similarity bet
 this suggests that there are at least three extreme types of population structure 
 typified by windows found in the three corners of the triangle,
 and that other windows' population structure may be a mixture of those extremes. 
+\plr{make clear corners are arbitrary}
 
 \plr{\citet{corbett2012population} says In(1)Be is very young, $\sim$ 60 years, probably why it doesn't show up. 
 Also cite \citet{corbettdetig2012sequencebased} for a computational method for detecting inversions.}
@@ -587,6 +589,22 @@ however, each breakpoint visibly affects patterns in the MDS coordinates.
         \label{fig:pca_by_inversion}
     }
 \end{figure}
+
+To attempt to see how population structure varies without the effect of polymorphic inversions,
+we then performed the same analyses after removing, for each chromosome arm,
+the samples having the less frequent orientation of any inversion on that chromosome arm.
+The result showed substantially less variation in MDS axes,
+although some variation associated with inversion breakpoints was still visible,
+as shown in Supplemental Figure \ref{sfig:mds_allchr_noinversions}.
+For instance, the majority of the variation along 3L in Figure \ref{fig:mds_allchr}
+is on the left end of the arm, dominated by two large peaks around the inversion breakpoints;
+there is also a relatively small dip on the right end of the arm (near the centromere).
+In contrast, Supplemental Figure \ref{sfig:mds_allchr_noinversions} shows that after removing polymorphic inversions,
+remaining structure is dominated by the dip near the centromere.
+The remaining variation seems to vary systematically along the chromosome,
+following roughly similar patterns to that seen in recombination rate and diversity in \citet{langley2012genomic} and \citet{mackay2012drosophila}.
+
+\plr{gene density from RefSeq Genes from UCSC, showing genes from NCBI RNA references sequence collections. we use txStart and txEnd (transcription start/end).}
 
 %%%%%%%%%%%
 \subsection{Human}
@@ -1188,6 +1206,24 @@ to find only the top $k$ eigenvectors.
     }
 \end{figure}
 
+
+\begin{figure}
+    \begin{center}
+        \includegraphics{MDS_allchr_Together_plot_samples_noinv}
+    \end{center}
+    \caption{
+        Variation in structure for windows across \textit{Drosophila melanogaster} chromosome arms: without inversions.
+         As in Figure \label{fig:mds_allchr}, but after omitting for each chromosome arm individuals carrying the less frequent orientation
+         of any inversions on that chromosome arm.
+        In all plots, each point represents one window along the genome.
+         The first column shows the MDS visualization of relationships between windows, 
+         and the second and third columns show the midpoint of each window against the two MDS coordinates; 
+         rows correspond to chromosome arms.
+         Colors are consistent for plots in each row. 
+         Vertical lines show the breakpoints of known polymorphic inversions.   
+         \label{sfig:mds_allchr_noinversions}
+    }
+\end{figure}
 
 
 
