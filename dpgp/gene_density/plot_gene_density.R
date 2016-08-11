@@ -28,12 +28,29 @@ names(genes) <- c("bin", "name", "chrom", "strand", "txStart", "txEnd", "cdsStar
 genes <- subset(genes, chrom %in% c("chr2L","chr2R","chr3L","chr3R","chrX"))
 genes$chrom <- factor(genes$chrom)
 
-breaks <- seq(1,max(genes$txEnd)+1e5,by=1e4)
+# recomb rates
+recomb <- read.table("recomb_rates.tsv",header=TRUE, sep='\t', stringsAsFactors=FALSE)
+recomb$chrom <- paste0("chr",sapply( strsplit( recomb$Genomic.locus, ":" ), "[", 1 ))
+recomb$start <- as.integer( sapply( strsplit( recomb$Genomic.locus, "[:.]" ), "[", 2 ) )
+recomb$end <- as.integer( sapply( strsplit( recomb$Genomic.locus, "[:.]" ), "[", 4 ) )
+recomb$mid <- (recomb$start+recomb$end)/2
+
+breaks <- seq(1,max(genes$txEnd)+1e5,by=5e5)
 mids <- breaks[-1]-diff(breaks)/2
 
 layout((1:nlevels(genes$chrom)))
+par(mar=c(5,4,.5,4)+.1)
 for (this.chrom in levels(genes$chrom)) {
-    plot( mids, (table(cut(subset(genes,chrom==this.chrom)$txStart,breaks=breaks)) 
-                    + table(cut(subset(genes,chrom==this.chrom)$txEnd,breaks=breaks)))/2,
-           ylab=this.chrom, pch=20, cex=0.5 )
+    tx.bins <- as.numeric( table(cut(subset(genes,chrom==this.chrom)$txStart,breaks=breaks)) 
+                    + table(cut(subset(genes,chrom==this.chrom)$txEnd,breaks=breaks)) )
+    ylims <- c(0,1.1*quantile(tx.bins/2,.95))
+    plot( mids,tx.bins/2,
+            ylim=ylims, ylab=this.chrom, pch=20, cex=0.5 )
+    with( subset(recomb,chrom==this.chrom), {
+            points( mid, (ylims[2]/15)*Comeron.Midpoint.rate, col='red', pch=20 );
+            axis(4, at=pretty(Comeron.Midpoint.rate)*(ylims[2]/15), 
+                    labels=pretty(Comeron.Midpoint.rate), col='red', col.axis='red' )
+            mtext("recombination rate", side=4, col='red', line=3, cex=0.75)
+        })
 }
+
