@@ -1,0 +1,8 @@
+Han Li wrote on 8/12/2016:
+I've uploaded the tables for drosophila. 
+
+- "results/mds_chr*_window_10000snp.tsv" are for all samples using win length as 1000;  
+- "results/mds_chr*_noinversion_window_1000snp.tsv" are for samples without inversions win length as 1000;  
+- "results/mds_chr*_noinversion_window_10000snp.tsv" are for samples without inversions win length as 10000. 
+
+Each file contains 5 columns: chromosome, start, end, MDS1, MDS2. I'm using (start+end)/2 as the window's position when plotting.
