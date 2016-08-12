@@ -193,7 +193,7 @@ and may be essential for doing GWAS in species with substantial heterogeneity in
 % well as possible \citep{borg2005modern}.  
 
 
-A note on nomenclature: In this work we describe variation in population structure using local PCA,
+A note on nomenclature: In this work we describe variation in patterns of relatedness using local PCA,
 where ``local'' refers to proximity along the genome.
 A number of general methods for dimensionality reduction also use a strategy of ``local PCA''
 \citep[e.g.,][]{manjon2013diffusion,kambhatla1997dimension,weingessel2000local,roweis2000nonlinear},
@@ -209,19 +209,14 @@ as we aim to identify similar regions that may be distant.
 % may benefit from other advances in this substantial literature 
 % \citep[reviewed in][]{vandermaaten2009dimensionality}.
 
-Population genetics studies often describe variation in particular statistics along the genome,
-often with the aim of detecting particular signals.
-In this paper, we use a visualization technique to obtain an unbiased view
-of how patterns of kinship vary along the genome,
-in genome-wide, spatially distributed datasets for three species,
-to start to discover common patterns and differences.
-
 As reviewed above,
 % In searching for loci of interest, 
 it is common to describe variation in genetic differentiation between pairs of populations along the genome (often using $F_{ST}$),
 and also to use methods such as PCA to visualize large-scale patterns in genome-wide relatedness.
 In this paper we aim to combine these two, by describing in an unbiased, descriptive way
 how patterns of mean relatedness vary systematically along the genome, with a focus on large, geographically distributed populations.
+Geographic population structure sets the stage by establishing similar patterns of relatedness across much of the genome;
+we then aim to describe how this structure is affected by selection and other factors.
 Our aim is not to identify outlier loci,
 but rather to describe larger-scale variation shared by many parts of the genome.
 By doing this with three taxa with diverse population histories,
@@ -234,10 +229,10 @@ since the method is an visualization method, we allow ourselves to be suprised b
 
 As depicted in Figure \ref{fig:diagram}, the general steps to the method are:
 (1) divide the genome into windows,
-(2) summarize the patterns of relatedness (population structure) in each window,
-(3) measure dissimilarity in population structure between each pair of windows,
+(2) summarize the patterns of relatedness in each window,
+(3) measure dissimilarity in relatedness between each pair of windows,
 (4) visualize the resulting dissimilarity matrix,
-and (5) combine similar windows to more accurately estimate local population structure.
+and (5) combine similar windows to more accurately visualize local effects of population structure.
 Details of how we carried these out are given in the Methods.
 
 \begin{figure}
@@ -260,7 +255,7 @@ of African populations of the fruit fly \textit{Drosophila melanogaster},
 a worldwide dataset of humans,
 and a range-wide dataset of the partially selfing weedy annual plant \textit{Medicago truncatula}.
 In these three species, PCA plots vary along the genome in a systematic way, showing strong chromosome-scale correlations.
-This implies that variation is due to meaningful variation in population structure, 
+This implies that variation is due to meaningful variation in the effects of population structure, 
 since noise due to randomness in choice of local genealogical trees
 are not expected to show long distance correlations. 
 Below, we discuss the results and likely underlying causes.
@@ -274,9 +269,9 @@ For each, the two-dimensional MDS visualization resembles a triangle,
 sometimes with additional points,
 as seen in Figure \ref{fig:mds_allchr}.
 Since the relative position of each window in this plot shows the similarity between windows, 
-this suggests that there are at least three extreme types of population structure 
+this suggests that there are at least three extreme manifestations of population structure 
 typified by windows found in the three corners of the triangle,
-and that other windows' population structure may be a mixture of those extremes. 
+and that other windows' patterns of relatedness may be a mixture of those extremes. 
 \plr{make clear corners are arbitrary}
 
 \plr{\citet{corbett2012population} says In(1)Be is very young, $\sim$ 60 years, probably why it doesn't show up. 
@@ -329,25 +324,25 @@ in Figure \ref{fig:pca_by_pop} (PCA plots).
 \end{figure}
 
 
-The variation in population structure turns out to be almost entirely explained by
+The variation in patterns of relatedness turns out to be almost entirely explained by
 several large inversions that are polymorphic in these samples, 
 disussed in \citet{corbett2012population} and \citet{langley2012genomic}.
 % Frequencies of each inversion in the sample are given in Table \ref{tab:inversion_freqs}.
 To depict this, Figure \ref{fig:pca_by_inversion} shows
 the PCA plots in Figure \ref{fig:pca_by_pop} recolored by the orientation of the inversion for each sample.
 Taking chromosome arm 2L as an example,
-the two regions of similar, extreme population structure
+the two regions of similar, extreme patterns of relatedness
 shown in green in the first row of Figure \ref{fig:mds_allchr}
 lie directly around the breakpoints of the inversion In(2L)t,
 and the PCA plots in the first rows of Figure \ref{fig:pca_by_inversion}
-shows that population structure here is mostly determined by inversion orientation.
+shows that patterns of relatedness here are mostly determined by inversion orientation.
 The regions shown in purple on chromosome 2L lie near the centromere,
-and have population structure reflective of two axes of variation,
+and have patterns of relatedness reflective of two axes of variation,
 seen in Figure \ref{fig:pca_by_pop},
 which correspond roughly to latitude within Africa and to degree of cosmopolitan admixture respectively
 (see \citet{lack2015drosophila} for more about admixture in this sample).
 The regions shown in orange on chromosome 2L mostly lie inside the inversion,
-and show population structure that is a mixture between the other two,
+and show patterns of relatedness that are a mixture between the other two,
 as expected due to recombination within the (long) inversion \citep{guerrero2011coalescent}.
 Similar results are found in other chromosome arms,
 albeit complicated by the coexistence of more than one polymorphic inversion;
@@ -373,7 +368,7 @@ however, each breakpoint visibly affects patterns in the MDS coordinates.
     }
 \end{figure}
 
-To see how population structure varies without the effect of polymorphic inversions,
+To see how patterns of relatedness vary without the effect of polymorphic inversions,
 we then performed the same analyses after removing, for each chromosome arm,
 the samples having the less frequent orientation of any inversion on that chromosome arm.
 The result showed substantially less variation in MDS axes,
@@ -388,7 +383,7 @@ The remaining variation varies systematically along the chromosome,
 following roughly similar patterns to that seen in recombination rate and diversity in \citet{langley2012genomic} and \citet{mackay2012drosophila}.
 Indeed, correlations between the recombination rate \plr{XXX} near each window and the position on the first MDS coordinate are highly significant
 (Figure \ref{fig:drosophila_recomb_rate}).
-This is consistent with the hypothesis that variation in population structure
+This is consistent with the hypothesis that variation in the effects of population structure
 is due to selection, since the strength of linked selection increases with local gene density, measured in units of recombination distance.
 However, the number of genes -- measured as the number of transcription start and end sites within each window --
 was more weakly correlated with MDS coordinate (Supplemental Figures \ref{sfig:drosophila_gene_density_plots} and \ref{sfig:drosophila_gene_density_correlations}).
@@ -398,7 +393,7 @@ was more weakly correlated with MDS coordinate (Supplemental Figures \ref{sfig:d
         % \includegraphics{}
     \end{center}
     \caption{
-        Population structure without inversions is correlated to recombination rate:
+        The effects of population structure without inversions is correlated to recombination rate:
         \plr{XXX}
         \label{fig:drosophila_recomb_rate}
     }
@@ -409,8 +404,8 @@ was more weakly correlated with MDS coordinate (Supplemental Figures \ref{sfig:d
 \subsection{Human}
 
 As for the \textit{Drosophila} data, we ran our method separately on all 22 human autosomes.
-On each, variation in population structure was dominated by a small number of windows
-having similar population structure to each other that differed dramatically from the rest of the chromosome.
+On each, variation in patterns of relatedness was dominated by a small number of windows
+having similar patterns of relatedness to each other that differed dramatically from the rest of the chromosome.
 These may be primarily inversions: outlying windows coincide with
 three of the six large polymorphic inversions described in \citet{antonacci2009characterization},
 notably a particularly large, polymorphic inversion on 8p23 (Figure \ref{fig:mds_human}). 
@@ -455,11 +450,11 @@ may yield other patterns.
 
 Unlike the other two species,
 the method applied separately on all eight chromosomes of \textit{Medicago truncatula} 
-showed similar patterns of gradual change in population structure across each chromosome,
+showed similar patterns of gradual change in patterns of relatedness across each chromosome,
 with no indications of chromosome-specific patterns.
-This consistency suggests that the factor driving the population structure for each chromosome is the same,
+This consistency suggests that the factor affecting the population structure for each chromosome is the same,
 as might be caused by varying strengths of linked selection.
-To verify that variation in population structure is shared across chromosomes,
+To verify that variation in the effects of population structure is shared across chromosomes,
 we applied the method to all chromosomes together.
 Results for chromosome 3 are shown in Figures \ref{fig:mds12_medicago} and \ref{fig:pca_medicago},
 and other chromosomes are similar:
@@ -494,7 +489,7 @@ when using weighted PCA to downweight the large group of Tunisian samples.
        \includegraphics{Fig6_Together_MDS_plot_chr3_final}
     \end{center}
     \caption{
-       MDS visualization of population structure on \textit{M.~truncatula} chromosome 3. 
+       MDS visualization of patterns of relatedness on \textit{M.~truncatula} chromosome 3. 
        Each point in the plot represents a window;
        the structure revealed by the MDS plot is strongly clustered along the chromosome,
        with windows in the upper-right corner of the MDS plot (colored red) clustered around the centromere,
@@ -545,7 +540,7 @@ when using weighted PCA to downweight the large group of Tunisian samples.
 %%%%%%% %%%%%%%%%
 \section{Discussion}
 
-Our investigations have found substantial variation in population structure across the genomes
+Our investigations have found substantial variation in the patterns of relatedness formed by population structure across the genomes
 of three diverse species,
 revealing distinct biological processes driving this variation in each species.
 More investigation, particularly on more species and datasets, will help to uncover which patterns are generalizable.
@@ -559,13 +554,13 @@ local PCA may prove to be a useful exploratory tool to discover important genomi
 % our investigations with one such dataset were inconclusive --
 % but even low coverage, whole-genome sequence is very promising.
 
-We now discuss possible implications of this variation in population structure,
+We now discuss possible implications of this variation in the effects of population structure,
 the impact of various parameter choices in implementing the method,
 and possible additional applications.
 
 
 \paragraph{Chromosomal inversions}
-A major driver of variation in population structure in two datasets we examined are inversions.
+A major driver of variation in patterns of relatedness in two datasets we examined are inversions.
 This may be common,
 but the example of \textit{Medicago truncatula} shows that polymorphic inversions are not ubiquitous.
 PCA has been proposed as a method for discovering inversions \citep{ma2012investigation};
@@ -583,7 +578,7 @@ may outlast the inversions themselves.
 
 
 \paragraph{The effect of selection}
-It seems clear that the variation in population structure we see in the \textit{Medicago truncatula} and \textit{Drosophila melanogaster} datasets
+It seems clear that the variation in patterns of relatedness we see in the \textit{Medicago truncatula} and \textit{Drosophila melanogaster} datasets
 is likely due to selection.
 Furthermore, 
 the selection must be affecting many targets across the genome,
@@ -595,14 +590,14 @@ Regions of the genome harboring many targets of local adaptation may show simila
 since migrant alleles in these regions will be selected against,
 and so locally gene trees will more closely reflect spatial proximity.
 
-A third possibility is that variation in population structure is due to recent admixture between previously separated populations,
+A third possibility is that variation in patterns of relatedness is due to recent admixture between previously separated populations,
 the effects of which were not uniform across the genome due to selection.
 For instance, it has been hypothesized that large-scale variation in amount of introgressed Neanderthal DNA along the genome
 is due to selection against Neanderthal genes, leading to greater introgression in regions of lower gene density
 \citep{harris2016genetic,juric2016strength}.
 African \textit{Drosophila melanogaster} are known to have a substantial amount of recently introgressed genome from ``cosmopolitan'' sources;
 if selection regularly favors genes from one origin,
-this could lead to substantial variation in population structure correlated with local gene density.
+this could lead to substantial variation in patterns of relatedness correlated with local gene density.
 
 There has been substantial debate over the relative impacts of different forms of selection.
 These have been difficult to disentangle in part because most concrete theoretical predictions
@@ -678,7 +673,7 @@ However, we found little change in results when using different window sizes
 or when measuring windows in physical distance (in bp).
 
 More generally, there are many possible methods to discover common structure in different parts of the genome:
-in this work we use PCA to summarize population structure,
+in this work we use PCA to visualize the effects of population structure,
 but other methods, such as STRUCTURE \citep{falush2003inference},
 SPA \citep{yang2012modelbased},
 SpaceMix \citep{bradburd2015spatial},
@@ -700,7 +695,7 @@ we encourage the user to experiment.
 So-called cryptic relatedness between samples
 has been one of the major sources of confounding in genome-wide association studies (GWAS)
 and so methods must account for it by modeling population structure or kinship \citep{astle2009population,yang2014advantages}.
-Since population structure is not constant along the genome,
+Since the effects of population structure is not constant along the genome,
 this could in principle lead to an inflation of false positives in parts of the genome
 with stronger population structure than the genome-wide average.
 A method such as ours might be used to provide a more sensitive correction.
@@ -756,7 +751,7 @@ The principal components are the eigenvectors of $C$,
 normalized to have Euclidean length equal to one,
 and ordered by magnitude of the eigenvalues.
 
-The top few principal components generally display population structure; 
+The top few principal components are generally good summaries of population structure; 
 we follow common practice and usually only use the first two (referred to as $\pcone$ and $\pctwo$).
 The above procedure can be performed on any subset of the data;
 for future reference, denote by $\pcone_j$ and $\pctwo_j$
@@ -783,13 +778,13 @@ rather than to each sample.
 The rationale and implementation of this method are described in Appendix \ref{apx:weighted_pca}.
 
 
-\subsection{Similarity of population structure between windows}
+\subsection{Similarity of patterns of relatedness between windows}
 
-We think of local population structure as being summarized by \emph{relative} position of the samples
+We think of the local effects of population structure as being summarized by \emph{relative} position of the samples
 in the space defined by the top principal components.
 However, 
-we do not compare population structure of different genomic by directly comparing the PCs,
-since rotations or reflections of these imply identical population structure.
+we do not compare patterns of relatedness of different genomic regions by directly comparing the PCs,
+since rotations or reflections of these imply identical patterns of relatedness.
 Instead, we compare the low-dimensional approximations of the local covariance matrices
 obtained using the top $k$ PCs,
 which is invariant under reflections and rotations and yet contains all other information about the PCs.
@@ -819,7 +814,7 @@ Then, the rescaled, rank $k$ approximate covariance matrix for the $i^\text{th}$
 %     M_{i} &= \frac{\lambda_{1i}PC1_{i}PC1_{i}^{T}+\lambda_{2i}PC2_{i}PC2_{i}^{T}}{\lambda_{1i}+\lambda_{2i}} 
 % \end{align}
 
-To measure the similarity of population structure for the $i^\text{th}$ window and $j^\text{th}$ window,
+To measure the similarity of patterns of relatedness for the $i^\text{th}$ window and $j^\text{th}$ window,
 we then use
 Euclidean distance $D_{ij}$ between the matrices $M(i)$ and $M(j)$:
 $D_{ij}^2 = \sum_{k\ell} ( M(i)_{k,\ell} - M(j)_{k,\ell} )^2$.
@@ -882,12 +877,12 @@ We use multidimensional scaling (MDS) to visualize relationships between windows
 as summarized by the dissimilarity matrix $D$.
 MDS produces a set of $m$ coordinates for each window that
 give the arrangement in $m$-dimensional space that best recapitulates the original distance matrix.
-For results here, we use $m=2$ to produce one- or two-dimensional visualizations of relationships between windows' population structure.
+For results here, we use $m=2$ to produce one- or two-dimensional visualizations of relationships between windows' patterns of relatedness.
 
-We then locate variation in population structure along the genome
+We then locate variation in patterns of relatedness along the genome
 by choosing collections of windows that are nearby in MDS coordinates,
 and map their positions along the genome.
-Their common population structure is visualized by extracting the corresponding genomic regions
+A visualization of the effects of population structure across the entire colletion is formed by extracting the corresponding genomic regions
 and performing PCA on all, aggregated, regions.
 
 
@@ -990,10 +985,10 @@ We did not use the mitochondria or chloroplasts.
 
 The choice of window length entails a balance between signal and noise.
 In very short windows, genealogies of the samples will only be represented by a few trees,
-so variation between windows represents demographic noise rather than meaningful variation in population structure.
+so variation between windows represents demographic noise rather than meaningful variation in patterns of relatedness.
 Longer windows generally have more distinct trees (and SNPs), 
-allowing for less noisy estimation of local population structure.
-However, to better resolve meaningful signal, i.e., differences in population structure along the genome,
+allowing for less noisy estimation of local patterns of relatedness.
+However, to better resolve meaningful signal, i.e., differences in patterns of relatedness along the genome,
 we would like reasonably short windows.
 % Window length choice therefore entails a signal versus noise tradeoff
 % in the estimates of population structure.
@@ -1002,7 +997,7 @@ we would like reasonably short windows.
 % we need to find a balance between the standard error of the first principal components for each window 
 % and the standard deviation between windows. 
 
-Since we summarize population structure using relative positions in the principal component maps,
+Since we summarize patterns of relatedness using relative positions in the principal component maps,
 we quantify ``noise'' as the standard error of a sample's position on PC1 in a particular window,
 averaged across windows and samples,
 and ``signal'' as the standard deviation of the sample's position on PC1 over all windows,
@@ -1206,7 +1201,7 @@ to find only the top $k$ eigenvectors.
         \includegraphics{MDS_and_gene_count_allchr_drosophila_win104_try}
     \end{center}
     \caption{
-        Gene number and population structure for \textit{Drosophila melanogaster}:
+        Gene number and the effects of population structure for \textit{Drosophila melanogaster}:
         The first MDS coordinate along the genome (black, above) is as shown in Supplemental Figure \ref{sfig:mds_allchr_noinversions};
         below is the number of genes' transcription start and end sites within each window, divided by two.
         Transcription start and end sites were obtained from the RefGene table from the UCSC browser, assembly dm3, on August 11, 2016.
@@ -1220,7 +1215,7 @@ to find only the top $k$ eigenvectors.
         \includegraphics{MDS_against_gene_count_allchr_drosophila_win104}
     \end{center}
     \caption{
-        Gene number and population structure for \textit{Drosophila melanogaster}:
+        Gene number and the effects of population structure for \textit{Drosophila melanogaster}:
         this shows the first MDS coordinate and gene number, as in Supplementary Figure \ref{sfig:drosophila_gene_density_plots},
         against each other.
         The correlation coefficient and $p$-values for each linear regression are as follows:
@@ -1391,7 +1386,7 @@ to find only the top $k$ eigenvectors.
        \includegraphics[width=1\textwidth]{FigS_MDS1D_plot_all_chr_human}
     \end{center}
     \caption{
-        MDS visualization of variation in population structure amongst windows across \emph{all} human autosomes simultaneously.
+        MDS visualization of variation in the effects of population structure amongst windows across \emph{all} human autosomes simultaneously.
         The small group of windows with positive outlying MDS values lie around the inversion at 8p23.
         \label{sfig:mds1_along_allchr_human}
     }
@@ -1402,7 +1397,7 @@ to find only the top $k$ eigenvectors.
        \includegraphics[width=0.85\textwidth]{FigS_Together_MDS_plot_allchr}
     \end{center}
     \caption{
-        MDS visualizations of population structure for all 8 chromosomes of the \textit{Medicago truncatula} data.
+        MDS visualizations of the effects of population structure for all 8 chromosomes of the \textit{Medicago truncatula} data.
         \label{sfig:mds_medicago_allchr}
     }
 \end{figure}
