@@ -231,9 +231,10 @@ As depicted in Figure \ref{fig:diagram}, the general steps to the method are:
 (1) divide the genome into windows,
 (2) summarize the patterns of relatedness in each window,
 (3) measure dissimilarity in relatedness between each pair of windows,
-(4) visualize the resulting dissimilarity matrix,
-and (5) combine similar windows to more accurately visualize local effects of population structure.
-Details of how we carried these out are given in the Methods.
+(4) visualize the resulting dissimilarity matrix using multidimensional scaling (MDS),
+and (5) combine similar windows to more accurately visualize local effects of population structure using PCA.
+Details of how we carried out each step are given in the Methods,
+and code to run the analyses is provided as an R package at \url{https://github.com/petrelharp/local_pca}.
 
 \begin{figure}
     \begin{center}
@@ -250,12 +251,12 @@ Details of how we carried these out are given in the Methods.
     }
 \end{figure}
 
-We applied the method to genomic datasets with good geographic sampling
-of African populations of the fruit fly \textit{Drosophila melanogaster},
+We applied the method to genomic datasets with good geographic sampling:
+African populations of the fruit fly \textit{Drosophila melanogaster},
 a worldwide dataset of humans,
 and a range-wide dataset of the partially selfing weedy annual plant \textit{Medicago truncatula}.
-In these three species, PCA plots vary along the genome in a systematic way, showing strong chromosome-scale correlations.
-This implies that variation is due to meaningful variation in the effects of population structure, 
+In all three species, PCA plots vary along the genome in a systematic way, showing strong chromosome-scale correlations.
+This implies that variation is due to meaningful heterogeneity in a biological process,
 since noise due to randomness in choice of local genealogical trees
 are not expected to show long distance correlations. 
 Below, we discuss the results and likely underlying causes.

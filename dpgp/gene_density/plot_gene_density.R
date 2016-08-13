@@ -21,12 +21,18 @@
 # cdsEndStat 	cmpl	enum('none', 'unk', 'incmpl', 'cmpl') 	values 	enum('none','unk','incmpl','cmpl')
 # exonFrames 	0,	longblob 	  	Exon frame {0,1,2}, or -1 if no frame for exon
 
+lens <- structure(c(22963456L, 21142841L, 24536634L, 27894163L, 22418422L), .Dim = 5L, .Dimnames = list(c("chr2L", "chr2R", "chr3L", "chr3R", "chrX")))
+
 genes <- read.table("refGene.txt.gz", header=FALSE, stringsAsFactors=FALSE)
 names(genes) <- c("bin", "name", "chrom", "strand", "txStart", "txEnd", "cdsStart", 
             "cdsEnd", "exonCount", "exonStarts", "exonEnds", "score", "name2", 
             "cdsStartStat", "cdsEndStat", "exonFrames")
 genes <- subset(genes, chrom %in% c("chr2L","chr2R","chr3L","chr3R","chrX"))
 genes$chrom <- factor(genes$chrom)
+
+window.length <- 1e5
+gene.breaks <- seq(1,max(genes$txEnd)+window.length,by=window.length)
+gene.mids <- gene.breaks[-1]-diff(gene.breaks)/2
 
 # recomb rates
 recomb <- read.table("recomb_rates.tsv",header=TRUE, sep='\t', stringsAsFactors=FALSE)
@@ -35,22 +41,132 @@ recomb$start <- as.integer( sapply( strsplit( recomb$Genomic.locus, "[:.]" ), "[
 recomb$end <- as.integer( sapply( strsplit( recomb$Genomic.locus, "[:.]" ), "[", 4 ) )
 recomb$mid <- (recomb$start+recomb$end)/2
 
-breaks <- seq(1,max(genes$txEnd)+1e5,by=5e5)
-mids <- breaks[-1]-diff(breaks)/2
+# MDS scores: windows of 1,000 SNPs
+mds.1e3 <- do.call( rbind, lapply( levels(genes$chrom), function (this.chrom) {
+        read.table(file.path("..","results",sprintf("mds_%s_noinversion_window_1000snp.tsv",this.chrom)),sep='\t',header=TRUE)
+    } ) )
+mds.1e3$chrom <- gsub("Chr","chr",mds.1e3$chrom)
+mds.1e3$mid <- (mds.1e3$start+mds.1e3$end)/2
 
-layout((1:nlevels(genes$chrom)))
-par(mar=c(5,4,.5,4)+.1)
+# MDS scores: windows of 10,000 SNPs
+mds.1e4 <- do.call( rbind, lapply( levels(genes$chrom), function (this.chrom) {
+        read.table(file.path("..","results",sprintf("mds_%s_noinversion_window_10000snp.tsv",this.chrom)),sep='\t',header=TRUE)
+    } ) )
+mds.1e4$chrom <- gsub("Chr","chr",mds.1e4$chrom)
+mds.1e4$mid <- (mds.1e4$start+mds.1e4$end)/2
+mds.1e4$MDS1[ mds.1e4$chrom %in% c("chr3L","chr3R") ]  <- (-1) * mds.1e4$MDS1[ mds.1e4$chrom %in% c("chr3L","chr3R") ]
+
+pdf( file="../../writeup/drosophila_recomb_mds.pdf", width=6, height=3, pointsize=10 )
+layout( matrix( 1:(3*nlevels(genes$chrom)), nrow=3 ), 
+       heights=c(1.25,1,1.5), widths=c(1.4,1,1,1,1) )
 for (this.chrom in levels(genes$chrom)) {
-    tx.bins <- as.numeric( table(cut(subset(genes,chrom==this.chrom)$txStart,breaks=breaks)) 
-                    + table(cut(subset(genes,chrom==this.chrom)$txEnd,breaks=breaks)) )
+    # png(file=sprintf("things_along_%s.png",this.chrom), width=4*144, height=6*144, res=144, pointsize=10)
+    # layout(1:3,heights=c(1.2,1,1))
+    m.left <- if ( this.chrom=="chr2L" ) { 4 } else { 0.25 }
+    m.right <- if ( this.chrom=="chrX" ) { 1 } else { 0.25 }
+    tx.bins <- as.numeric( table(cut(subset(genes,chrom==this.chrom)$txStart,breaks=gene.breaks)) 
+                    + table(cut(subset(genes,chrom==this.chrom)$txEnd,breaks=gene.breaks)) )
     ylims <- c(0,1.1*quantile(tx.bins/2,.95))
-    plot( mids,tx.bins/2,
-            ylim=ylims, ylab=this.chrom, pch=20, cex=0.5 )
+    xlims <- c(0,lens[this.chrom]/1e6)
+    par(mar=c(0.25,m.left,2,m.right)+.1)
+    with( subset(mds.1e4,chrom==this.chrom), {
+             plot( mid/1e6, MDS1, pch=20, col='red', cex=0.5,
+                 xlim=xlims, main=this.chrom,
+                 ylab=if(this.chrom=="chr2L"){'MDS 1'}else{""},
+                 yaxt=if(this.chrom=="chr2L"){'s'}else{"n"},
+                 xaxt='n', xlab='' )
+        } )
+    par(mar=c(0.25,m.left,0.25,m.right)+.1)
     with( subset(recomb,chrom==this.chrom), {
-            points( mid, (ylims[2]/15)*Comeron.Midpoint.rate, col='red', pch=20 );
-            axis(4, at=pretty(Comeron.Midpoint.rate)*(ylims[2]/15), 
-                    labels=pretty(Comeron.Midpoint.rate), col='red', col.axis='red' )
-            mtext("recombination rate", side=4, col='red', line=3, cex=0.75)
+            plot( mid/1e6, (ylims[2]/15)*Comeron.Midpoint.rate, col='blue', pch=20,
+                 xlim=xlims,cex=0.5,
+               ylab=if(this.chrom=="chr2L"){'recomb rate (cM/Mbp)'}else{""},
+               yaxt=if(this.chrom=="chr2L"){'s'}else{"n"},
+               xaxt='n', xlab='' );
         })
+    par(mar=c(5,m.left,0.25,m.right)+.1)
+    plot( gene.mids/1e6, tx.bins/2, cex=0.5,
+           ylim=ylims, xlim=xlims, pch=20,
+           ylab=if(this.chrom=="chr2L"){'gene count'}else{""},
+           yaxt=if(this.chrom=="chr2L"){'s'}else{"n"},
+           xlab='position (Mbp)' )
+    # dev.off()
 }
+dev.off()
+
+average_windows <- function (start,end,value,new.start,new.end) {
+    out <- numeric(length(new.start))
+    for (k in seq_along(new.start)) {
+        weights <- pmax(0,pmin( new.end[k], end ) - pmax( new.start[k], start )) / (end-start)
+        out[k] <- sum(weights * value)/sum(weights)
+    }
+    return(out)
+}
+
+stats <- do.call( rbind, lapply( levels(genes$chrom), function (this.chrom) {
+                this.start <- gene.breaks[which(gene.breaks < lens[this.chrom])]
+                this.end <- gene.breaks[1+which(gene.breaks < lens[this.chrom])]
+                this.breaks <- gene.breaks[c(1,1+which(gene.breaks < lens[this.chrom]))]
+                data.frame(
+                           chrom=this.chrom,
+                           start=this.start,
+                           end=this.end,
+                           gene.count = with( subset(genes,chrom==this.chrom), ( as.numeric( table(cut(txStart,this.breaks)) ) + as.numeric( table(cut(txEnd,this.breaks)) ) )/2 ),
+                           recomb = with( subset(recomb,chrom==this.chrom), average_windows( start, end, Comeron.Midpoint.rate, this.start, this.end ) ),
+                           MDS1 = with( subset(mds.1e4,chrom==this.chrom), average_windows( start, end, MDS1, this.start, this.end ) )
+                       )
+           } ) )
+
+tapply( 1:nrow(stats), stats$chrom, function (kk) {
+           coef( summary( lm( recomb ~ MDS1, data=stats[kk,] ) ) )
+        } )
+# $chr2L
+#             Estimate Std. Error   t value     Pr(>|t|)
+# (Intercept) 2.633651  0.1221639 21.558336 4.684732e-56
+# MDS1        5.916170  0.6602309  8.960759 1.436909e-16
+# 
+# $chr2R
+#             Estimate Std. Error   t value     Pr(>|t|)
+# (Intercept) 3.008740  0.1379687 21.807404 2.605543e-54
+# MDS1        6.260817  0.9493917  6.594556 3.868908e-10
+# 
+# $chr3L
+#              Estimate Std. Error   t value     Pr(>|t|)
+# (Intercept)  1.977199 0.08985335 22.004731 1.736407e-59
+# MDS1        -4.728210 0.59530596 -7.942488 7.648323e-14
+# 
+# $chr3R
+#              Estimate Std. Error   t value     Pr(>|t|)
+# (Intercept)  2.175621  0.1094316 19.881100 3.939434e-55
+# MDS1        -4.867609  0.5725929 -8.500995 1.213363e-15
+# 
+# $chrX
+#             Estimate Std. Error   t value     Pr(>|t|)
+# (Intercept) 3.194880  0.1540236 20.742800 2.619987e-53
+# MDS1        8.012976  0.9607161  8.340629 8.701074e-15
+
+tapply( 1:nrow(stats), stats$chrom, function (kk) {
+           ( summary( lm( recomb ~ MDS1, data=stats[kk,] ) ) )$r.squared
+        } )
+
+# chr2L     chr2R     chr3L     chr3R      chrX 
+# 0.2682810 0.1815880 0.2081380 0.2081019 0.2436077 
+
+pdf( file="../../writeup/drosophila_recomb_mds_correlation.pdf", width=6, height=2, pointsize=10 )
+layout( t(1:5), widths=c(1.3,1,1,1,1.1) )
+par( mar=c(5,4,2,0.25)+.1 )
+for (this.chrom in levels(genes$chrom)) {
+    with( subset( stats, chrom==this.chrom ), {
+             plot( recomb, MDS1, pch=20, main=this.chrom,
+                 xlab='recomb. rate (cM/Mbp)',
+                 yaxt=if(this.chrom=="chr2L") { 's' } else { 'n' },
+                 ylab=if(this.chrom=="chr2L") { "MDS coordinate 1" } else { "" },
+                  )
+             abline( coef( lm( MDS1 ~ recomb ) ) )
+        } )
+    if (this.chrom=="chr3R") { par( mar=c(5,0.25,2,1)+.1 ) } else { par( mar=c(5,0.25,2,0.25)+.1 ) }
+}
+dev.off()
+
+
 
