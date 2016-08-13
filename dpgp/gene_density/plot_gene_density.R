@@ -158,6 +158,8 @@ do.call( rbind,
 # chr3R 0.4561819 0.2081019
 # chrX  0.4935663 0.2436077
 
+cor( stats$recomb, stats$MDS1, use='pairwise' )
+
 pdf( file="../../writeup/drosophila_recomb_mds_correlation.pdf", width=6, height=2, pointsize=10 )
 layout( t(1:5), widths=c(1.3,1,1,1,1.1) )
 par( mar=c(5,4,2,0.25)+.1 )
