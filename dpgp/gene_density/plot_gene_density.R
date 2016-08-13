@@ -80,7 +80,7 @@ for (this.chrom in levels(genes$chrom)) {
     with( subset(recomb,chrom==this.chrom), {
             plot( mid/1e6, (ylims[2]/15)*Comeron.Midpoint.rate, col='blue', pch=20,
                  xlim=xlims,cex=0.5,
-               ylab=if(this.chrom=="chr2L"){'recomb rate (cM/Mbp)'}else{""},
+               ylab=if(this.chrom=="chr2L"){'recombination rate'}else{""},
                yaxt=if(this.chrom=="chr2L"){'s'}else{"n"},
                xaxt='n', xlab='' );
         })
@@ -145,12 +145,18 @@ tapply( 1:nrow(stats), stats$chrom, function (kk) {
 # (Intercept) 3.194880  0.1540236 20.742800 2.619987e-53
 # MDS1        8.012976  0.9607161  8.340629 8.701074e-15
 
-tapply( 1:nrow(stats), stats$chrom, function (kk) {
-           ( summary( lm( recomb ~ MDS1, data=stats[kk,] ) ) )$r.squared
-        } )
+do.call( rbind, 
+    tapply( 1:nrow(stats), stats$chrom, function (kk) {
+               c( cor( stats$recomb[kk], stats$MDS1[kk], use='pairwise' ), 
+               ( summary( lm( recomb ~ MDS1, data=stats[kk,] ) ) )$r.squared )
+            } )
+    )
 
-# chr2L     chr2R     chr3L     chr3R      chrX 
-# 0.2682810 0.1815880 0.2081380 0.2081019 0.2436077 
+# chr2L 0.5179585 0.2682810
+# chr2R 0.4261314 0.1815880
+# chr3L 0.4562214 0.2081380
+# chr3R 0.4561819 0.2081019
+# chrX  0.4935663 0.2436077
 
 pdf( file="../../writeup/drosophila_recomb_mds_correlation.pdf", width=6, height=2, pointsize=10 )
 layout( t(1:5), widths=c(1.3,1,1,1,1.1) )
@@ -158,7 +164,7 @@ par( mar=c(5,4,2,0.25)+.1 )
 for (this.chrom in levels(genes$chrom)) {
     with( subset( stats, chrom==this.chrom ), {
              plot( recomb, MDS1, pch=20, main=this.chrom,
-                 xlab='recomb. rate (cM/Mbp)',
+                 xlab='recomb. rate',
                  yaxt=if(this.chrom=="chr2L") { 's' } else { 'n' },
                  ylab=if(this.chrom=="chr2L") { "MDS coordinate 1" } else { "" },
                   )

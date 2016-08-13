@@ -1199,12 +1199,17 @@ to find only the top $k$ eigenvectors.
 
 \begin{figure}
     \begin{center}
-        \includegraphics{MDS_and_gene_count_allchr_drosophila_win104_try}
+        \includegraphics{drosophila_recomb_mds}
     \end{center}
     \caption{
-        Gene number and the effects of population structure for \textit{Drosophila melanogaster}:
-        The first MDS coordinate along the genome (black, above) is as shown in Supplemental Figure \ref{sfig:mds_allchr_noinversions};
-        below is the number of genes' transcription start and end sites within each window, divided by two.
+        Recombination rate, gene number, and the effects of population structure for \textit{Drosophila melanogaster}:
+        The first MDS coordinate along the genome (black, above) is as shown in Supplemental Figure \ref{sfig:mds_allchr_noinversions},
+        but inverted for chromosome 3 (as each chromosome arm was run separately, relative orientation has no meaning).
+        The second plot (in blue) shows
+        local average recombination rates in cM/Mbp, obtained as midpoint estimates for 100Kbp windows 
+        downloaded from the Drosophila recombination rate calculator \citep{fistonlavier2010drosophila} release 5,
+        derived from the estimates of \citet{comeron2012many}.
+        The third plot (in black) shows the number of genes' transcription start and end sites within each window, divided by two.
         Transcription start and end sites were obtained from the RefGene table from the UCSC browser, assembly dm3, on August 11, 2016.
         The extremely dense cluster of histone genes on chromosome arm 2L is excluded.
         \label{sfig:drosophila_gene_density_plots}
@@ -1213,125 +1218,22 @@ to find only the top $k$ eigenvectors.
 
 \begin{figure}
     \begin{center}
-        \includegraphics{MDS_against_gene_count_allchr_drosophila_win104}
+        \includegraphics{drosophila_recomb_mds_correlation}
     \end{center}
     \caption{
-        Gene number and the effects of population structure for \textit{Drosophila melanogaster}:
-        this shows the first MDS coordinate and gene number, as in Supplementary Figure \ref{sfig:drosophila_gene_density_plots},
+        Recombination rate, and the effects of population structure for \textit{Drosophila melanogaster}:
+        this shows the first MDS coordinate and recombination rate (in cM/Mbp), as in Supplementary Figure \ref{sfig:drosophila_gene_density_plots},
         against each other.
+        Since the windows underlying estimates of Supplementary Figure \ref{sfig:drosophila_gene_density_plots} do not coincide,
+        to obtain correlations we divided the genome into 100Kbp bins, 
+        and for each variable (recombination rate and MDS coordinate 1)
+        averaged the values of each overlapping bin with weight proportional to the proportion of overlap.
         The correlation coefficient and $p$-values for each linear regression are as follows:
-        \plr{FILL THIS IN}.
-% >summary of the linear regression of MDS against gene count for 2L
-% 
-% Call:
-% lm(formula = coordinate1_2L[-k] ~ gene_count1[-k])
-% 
-% Residuals:
-%      Min       1Q   Median       3Q      Max 
-% -0.40257 -0.15326  0.04554  0.15037  0.32149 
-% 
-% Coefficients:
-%                   Estimate Std. Error t value Pr(>|t|)
-% (Intercept)      0.0087783  0.0182530   0.481    0.631
-% gene_count1[-k] -0.0003592  0.0006379  -0.563    0.574
-% 
-% Residual standard error: 0.1851 on 273 degrees of freedom
-% Multiple R-squared:  0.00116,	Adjusted R-squared:  -0.002498 
-% F-statistic: 0.3172 on 1 and 273 DF,  p-value: 0.5738
-% 
-% 
-% 
-% > summary of the linear regression of MDS against gene count for 2R
-% 
-% Call:
-% lm(formula = coordinate1_2R ~ gene_count2)
-% 
-% Residuals:
-%      Min       1Q   Median       3Q      Max 
-% -0.30622 -0.08482  0.02146  0.08438  0.30339 
-% 
-% Coefficients:
-%               Estimate Std. Error t value Pr(>|t|)    
-% (Intercept)  0.0846724  0.0163485   5.179 5.08e-07 ***
-% gene_count2 -0.0028749  0.0004704  -6.112 4.52e-09 ***
-% ---
-% Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-% 
-% Residual standard error: 0.1285 on 217 degrees of freedom
-% Multiple R-squared:  0.1469,	Adjusted R-squared:  0.1429 
-% F-statistic: 37.35 on 1 and 217 DF,  p-value: 4.516e-09
-% 
-% 
-% 
-% 
-% > summary of the linear regression of MDS against gene count for 3L
-% 
-% Call:
-% lm(formula = coordinate1_3L ~ gene_count3)
-% 
-% Residuals:
-%      Min       1Q   Median       3Q      Max 
-% -0.24754 -0.09927 -0.04406  0.09895  0.34383 
-% 
-% Coefficients:
-%               Estimate Std. Error t value Pr(>|t|)    
-% (Intercept) -0.0455675  0.0135826  -3.355  0.00091 ***
-% gene_count3  0.0018695  0.0004338   4.309 2.31e-05 ***
-% ---
-% Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-% 
-% Residual standard error: 0.1393 on 265 degrees of freedom
-% Multiple R-squared:  0.06548,	Adjusted R-squared:  0.06196 
-% F-statistic: 18.57 on 1 and 265 DF,  p-value: 2.312e-05
-% 
-% 
-% 
-% 
-% 
-% 
-% > summary of the linear regression of MDS against gene count for 3R
-% 
-% Call:
-% lm(formula = coordinate1_3R ~ gene_count4)
-% 
-% Residuals:
-%     Min      1Q  Median      3Q     Max 
-% -0.2883 -0.1316 -0.0424  0.0892  0.4433 
-% 
-% Coefficients:
-%               Estimate Std. Error t value Pr(>|t|)    
-% (Intercept) -0.0606512  0.0158644  -3.823 0.000161 ***
-% gene_count4  0.0022703  0.0004608   4.927  1.4e-06 ***
-% ---
-% Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-% 
-% Residual standard error: 0.1713 on 291 degrees of freedom
-% Multiple R-squared:  0.077,	Adjusted R-squared:  0.07383 
-% F-statistic: 24.28 on 1 and 291 DF,  p-value: 1.403e-06
-% 
-% 
-% 
-% 
-% 
-% > summary of the linear regression of MDS against gene count for X
-% 
-% Call:
-% lm(formula = coordinate1_X ~ gene_count5)
-% 
-% Residuals:
-%      Min       1Q   Median       3Q      Max 
-% -0.46790 -0.09270  0.01922  0.11102  0.35063 
-% 
-% Coefficients:
-%               Estimate Std. Error t value Pr(>|t|)    
-% (Intercept)  0.0411519  0.0139012   2.960 0.003331 ** 
-% gene_count5 -0.0020778  0.0005487  -3.787 0.000186 ***
-% ---
-% Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-% 
-% Residual standard error: 0.1471 on 286 degrees of freedom
-% Multiple R-squared:  0.04774,	Adjusted R-squared:  0.04441 
-% F-statistic: 14.34 on 1 and 286 DF,  p-value: 0.0001862
+        2L: correlation $=0.52$, $r^2=0.27$;
+        2R: correlation $=0.43$, $r^2=0.18$;
+        3L: correlation $=0.47$, $r^2=0.21$;
+        3R: correlation $=0.46$, $r^2=0.21$;
+        X:  correlation $=0.50$, $r^2=0.24$.
         \label{sfig:drosophila_gene_density_correlations}
     }
 \end{figure}
