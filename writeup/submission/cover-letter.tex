@@ -1,32 +1,110 @@
-To the editor(s) --
+\documentclass[stdletter,letterpaper,addrfromright,orderfromdateto,dateleft,11pt,noaddrto,sigleft]{newlfm}
+\usepackage[hidelinks]{hyperref}
+
+\topmarginskip{-0.35in}
+\bottommarginskip{-1.5in}
+\leftmarginsize{1in}
+\rightmarginsize{1.25in}
+\sigskipbefore{0.4in}
+\sigskipafter{0in}
+\noLines
+\nolines
+\noHeadline
+\noheadline
+\signature{Peter Ralph and Han Li}
+
+\namefrom{}
+\addrfrom{Peter Ralph \\ Fenton Hall \\ University of Oregon \\ Eugene, OR 97403-1222 USA \\ \textsc{phone:} (541) 346-5530 \\ \textsc{fax:} (541) 346-0987 \\ \href{mailto:plr@uoregon.edu}{plr@uoregon.edu}}
+\phonefrom{(541) 346-5530}
+\faxfrom{(541) 346-0987}
+\emailfrom{plr@uoregon.edu}
+
+% Department of Mathematics
+% Fenton Hall
+% University of Oregon
+% Eugene, OR 97403-1222 USA
+% Phone: 1-541-346-4705
+% FAX 1-541-346-0987
+
+\greetto{To the editor(s) --}
+\closeline{Sincerely,}
+
+\begin{document}
+
+\begin{newlfm}
+
+
+% A cover letter MUST include:
+% (1) name, address, telephone number, fax number, and e-mail address of author responsible for correspondence regarding the manuscript;
+% (2) paragraph highlighting the main points of the work;
+% (3) statement that the manuscript has been seen and approved by all listed authors;
+% (4) a list of potential referees (referees' names, institution, and e-mail), and, if desired, a reasonable list of individuals with potential conflict, as we work very hard to avoid sending manuscripts to competitors;
+% (5) status of any statements of personal communication or other permissions needed (any data presented as unpublished results from individuals other than the authors require permission for use);
+% (6) statement regarding databank submission of data; and
+% (7) assurance that all gene/protein names and symbols used in the paper adhere to approved nomenclature guidelines for specific species. 
+
 
 We are writing to submit our paper,
-``Local PCA shows how population structure differs along the genome'',
-for consideration in JOURNAL XXX.
-The paper brings together several topics that are currently of substantial interest 
-to a wide audience:
-First, principal components analysis is one of the most widely used descriptive methods 
-applied to genomic data;
-however, the results depend on the portion of the genome examined, 
-and we provide a systematic method to examine this variation.
-Second, the three species we study show substantially different patterns
-reflective of substantially different biology,
-most notably, the role and scale of chromosomal inversions.
-Finally,
-although we don't develop these ideas,
-our method points the way towards move powerful methods for genome-wide association studies.
-Furthermore,
-the methods are provided as an R package,
-to allow others to easily use the method.
+``Local PCA Shows How the Effect of Population Structure Differs Along the Genome'',
+for consideration in \textit{JOURNAL XXX}.
+In this paper, we set out to describe how background patterns of relatedness 
+(colloquially, ``population structure'')
+vary along the genome at a scale larger than correlations induced by linkage.
+It was not certain that we would find anything of interest:
+in the field we tend to think of neutral, background population structure as a single thing,
+against which outlying signals of selection can be identified.
+What we found was not only substantial variation at chromosomal scales,
+but different underlying causes in the three species we consider.
+The focus of our paper is on the method we developed to identify and visualize such variation in patterns of relatedness.
+We believe our method represents a fundamental advance because it lets the data speak for itself,
+providing an unbiased view of what are the most important variation in patterns of relatedness,
+rather than looking for specific signals.
+The method is therefore complementary to more common methods that identify small regions of the genome
+that are outliers for particular summaries of relatedness (e.g., $F_{ST}$-based scans for selection).
+We think the paper will be of interest to readers of \textit{JOURNAL XXX}
+because the method fills an important gap in the genomicist's toolkit,
+that is tailored to describing variation in modern, spatially sampled datasets,
+and because it sheds light on the roles of linked selection and chromosomal inversions in 
+establishing modern genetic diversity.
+% Our results are consistent with what is known about linked selection and chromosomal inversions
+% (a possible suprise being no evidence for segregating inversions in \textit{Medicago truncatula});
+% the strength of the biological results lie in the unified framework that allows 
+% flexible discovery and comparison between the three species.
 
-In summary, the paper aims to both
-provide conceptual unification to a range of observations
-(variation along the genome, linked selection, population structure),
-and provide a new statistical method,
-which leads to biologically interesting observations.
+Potential reviewers for this paper could include:
+John Novembre (U Chicago, \href{mailto:jnovembre@uchicago.edu}{jnovembre@uchicago.edu}),
+Joe Pickrell (NY Genome Center, \href{mailto:jkpickrell@nygenome.org}{jkpickrell@nygenome.org}),
+David Lowry (MSU, \href{mailto:dlowry@msu.edu}{dlowry@msu.edu}),
+or Andy Clark (Cornell, \href{mailto:ac347@cornell.edu}{ac347@cornell.edu}).
 
 
-Sincerely,
+The paper has been seen and approved by both authors.  
+All data we use is publically available, and so no permissions or databank submissions are needed;
+however, all source code and substantial derived statistics are available at 
+\href{https://github.com/petrelharp/local_pca}{our github page}.
+We adhere to all relevant nomenclature guidelines.
 
- Peter Ralph and Han Li
 
+\end{newlfm}
+\end{document}  
+
+
+Our paper brings together several topics that are currently of substantial interest 
+to a wide audience: 
+Methods that search for functional variants in genomic data fundamentally search for regions of the genome
+showing unusual patterns of relatedness:
+divergence between populations in the case of scans for selection,
+or association with a phenotype in the case of GWAS.
+In this paper,
+we provide a method to visualize larger-scale variations in patterns of relatedness,
+show that this variation can be substantial, and is likely the result of both selection and structural variation.
+The method represents a fundamental advance because it lets the data speak for itself,
+providing an unbiased view of what are the most important variation in patterns of relatedness,
+rather than looking for specific signals.
+The method is also more suitable to modern, spatially sampled datasets that may not be easily separable into a small number of populations.
+On the other hand, the method will be familiar to readers as it combines two often-used approaches: 
+visualization with PCA and plots along the genome.
+The biological conclusions are also of substantial interest,
+as we find that the three species we study differ fundamentally in terms of the influence of linked selection
+and the scale and importance of chromosomal inversions,
+in particular finding strong evidence to suggest that \textit{Medicago truncatula} harbors no inversions segregating at any appreciable frequency.
