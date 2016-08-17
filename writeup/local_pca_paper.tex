@@ -47,19 +47,20 @@ between individuals in large genomic datasets,
 which are often discovered and visualized using dimension reduction techniques such as principal component analysis (PCA).
 Mean relatedness
 is an average of the relationships across locus-specific genealogical trees,
-which can be strongly affected on intermediate genomic scales by many biological factors,
-such as linked selection.
-We show how to use local principal components analysis to describe this meso-scale variation,
+which can be strongly affected on intermediate genomic scales by linked selection and other factors,
+We show how to use local principal components analysis to describe this 
+meso-scale heterogeneity in patterns of relatedness,
 and apply the method to genomic data from three species,
-finding in each that the effect of population structure varies on the scale of megabases to tens of megabases.
-In a global human dataset, small, discontinuous variation is likely explained by polymorphic chromosomal inversions.
+finding in each that the effect of population structure 
+can vary substantially across only a few megabases.
+In a global human dataset, localized heterogeneity is likely explained by polymorphic chromosomal inversions.
 In a range-wide dataset of \textit{Medicago truncatula},
-common axes of variation are shared between chromosomes,
+factors that produce heterogeneity are shared between chromosomes,
 correlate with local gene density,
 and may be caused by background selection or local adaptation.
-In a dataset of primarily African \textit{Drosophila melanogaster}, large, continuous variation across each chromosome arm
+In a dataset of primarily African \textit{Drosophila melanogaster}, large-scale heterogeneity across each chromosome arm
 is explained by known chromosomal inversions thought to be under recent selection,
-and after removing samples carrying inversions, remaining variation is correlated with recombination rate and gene density,
+and after removing samples carrying inversions, remaining heterogeneity is correlated with recombination rate and gene density,
 again suggesting a role for linked selection.
 % The method is implemented as an R package, called lostruct.
 The visualization method provides a flexible new way to discover biological drivers of genetic variation,
@@ -210,18 +211,21 @@ as we aim to identify similar regions that may be distant.
 % \citep[reviewed in][]{vandermaaten2009dimensionality}.
 
 As reviewed above,
-% In searching for loci of interest, 
-it is common to describe variation in genetic differentiation between pairs of populations along the genome (often using $F_{ST}$),
+it is common to describe variation along the genome of simple statistics such as $F_{ST}$,
 and also to use methods such as PCA to visualize large-scale patterns in genome-wide relatedness.
-In this paper we aim to combine these two, by describing in an unbiased, descriptive way
-how patterns of mean relatedness vary systematically along the genome, with a focus on large, geographically distributed populations.
+In this paper we 
+apply PCA locally along the genome,
+thus describing in an unbiased, descriptive way
+how patterns of mean relatedness vary systematically along the genome, 
+in a way particularly suited to large samples from geographically distributed populations.
 Geographic population structure sets the stage by establishing similar patterns of relatedness across much of the genome;
 we then aim to describe how this structure is affected by selection and other factors.
 Our aim is not to identify outlier loci,
 but rather to describe larger-scale variation shared by many parts of the genome.
 By doing this with three taxa with diverse population histories,
 we can compare relative contributions of different sorts of variation across taxa;
-since the method is an visualization method, we allow ourselves to be suprised by unexpected signals in the data.
+since the method is an visualization method, 
+we allow ourselves to be suprised by unexpected signals in the data.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -254,7 +258,7 @@ and code to run the analyses is provided as an R package at \url{https://github.
 We applied the method to genomic datasets with good geographic sampling:
 380 African \textit{Drosophila melanogaster} from the Drosophila Genome Nexus \citep{lack2015drosophila},
 a worldwide dataset of humans,
-3.965 humans from several locations worldwide from the POPRES dataset \citep{nelson2008population},
+3,965 humans from several locations worldwide from the POPRES dataset \citep{nelson2008population},
 and 263 \textit{Medicago truncatula} from 24 countries around the Mediterranean basin 
 a range-wide dataset of the partially selfing weedy annual plant 
 from the \textit{Medicago truncatula} Hapmap Project \citep{tang2014improved},
@@ -289,10 +293,12 @@ to show how the plot of the first column is laid out along the genome.
        \includegraphics[width=0.9\textwidth]{Fig1_allchr_Together_MDS_plot_compact_with_ChrX_inv}
     \end{center}
     \caption{
-        Variation in structure for windows across \textit{Drosophila melanogaster} chromosome arms.
+        Variation in patterns of relatedness for windows across \textit{Drosophila melanogaster} chromosome arms.
         In all plots, each point represents one window along the genome.
          The first column shows the MDS visualization of relationships between windows, 
-         and the second and third columns show the midpoint of each window against the two MDS coordinates; 
+         and the second and third columns show 
+        the two MDS coordinates
+         against the midpoint of each window;
          rows correspond to chromosome arms.
          Colors are consistent for plots in each row. 
          Vertical lines show the breakpoints of known polymorphic inversions.   
@@ -384,7 +390,7 @@ however, each breakpoint visibly affects patterns in the MDS coordinates
 
 To see how patterns of relatedness vary in the absence of polymorphic inversions,
 we performed the same analyses after removing, for each chromosome arm,
-any samples carrying inversions.
+any samples carrying inversions on that arm.
 In the result, shown in Supplemental Figure \ref{sfig:mds_allchr_noinversions},
 the striking peaks associated with inversion breakpoints are gone,
 and previously smaller-scale variation now dominates the MDS visualization.
@@ -409,15 +415,18 @@ was not significantly correlated with MDS coordinate ($p=0.22$).
     \end{center}
     \caption{
         The effects of population structure without inversions is correlated to recombination rate in \textit{Drosophila melanogaster}.
-        The first MDS coordinate along the genome (black, above) is as shown in Supplemental Figure \ref{sfig:mds_allchr_noinversions},
-        but inverted for chromosome 3 (as each chromosome arm was run separately, relative orientation has no meaning).
+        The first plot (in red) shows the first MDS coordinate along the genome 
+        for windows of 10,000 SNPs,
+        obtained after removing samples with inversions.
+        (A plot analogous to Figure \ref{fig:mds_allchr} is shown
+        in Supplemental Figure \ref{sfig:mds_allchr_noinversions}.)
         The second plot (in blue) shows
         local average recombination rates in cM/Mbp, obtained as midpoint estimates for 100Kbp windows 
         from the Drosophila recombination rate calculator \citep{fistonlavier2010drosophila} release 5,
         using rates from \citet{comeron2012many}.
-        The third plot (in black) shows the number of genes' transcription start and end sites within each window, divided by two.
+        The third plot (in black) shows the number of genes' transcription start and end sites within each 100Kbp window, divided by two.
         Transcription start and end sites were obtained from the RefGene table from the UCSC browser. %, assembly dm3, on August 11, 2016.
-        The extremely dense cluster of histone genes on chromosome arm 2L is excluded.
+        The histone gene cluster on chromosome arm 2L is excluded.
         \label{fig:drosophila_recomb_rate}
     }
 \end{figure}
@@ -426,7 +435,7 @@ was not significantly correlated with MDS coordinate ($p=0.22$).
 %%%%%%%%%%%
 \subsection{Human}
 
-As for the \textit{Drosophila} data, we applied our method separately on all 22 human autosomes.
+As we did for the \textit{Drosophila} data, we applied our method separately to all 22 human autosomes.
 On each, variation in patterns of relatedness was dominated by a small number of windows
 having similar patterns of relatedness to each other that differed dramatically from the rest of the chromosome.
 These may be primarily inversions: outlying windows coincide with
@@ -599,7 +608,8 @@ Furthermore,
 the selection must be affecting many targets across the genome,
 since we see similar effects across long distances (even distinct chromosomes).
 For this reason, the most likely candidate may be selection against linked deleterious mutations, known as ``background selection'' \citep{charlesworth1993effect,charlesworth2013background}.
-Background selection can be thought of as reducing the number of potential contributors to the gene pool in regions of the genome with many possible deleterious mutations \citep{hudson1995deleterious};
+Informally, background selection reduces the number of potential contributors to the gene pool 
+in regions of the genome with many possible deleterious mutations \citep{hudson1995deleterious};
 for this reason, if it acts in a spatial context, it is expected to induce samples from nearby locations to cluster together more frequently,
 Therefore, regions of the genome harboring many targets of local adaptation may show similar patterns,
 since migrant alleles in these regions will be selected against,
@@ -740,7 +750,7 @@ by recording the number of nonreference alleles seen at each locus for each samp
 We then divided the genome into contiguous segments 
 (``windows'')
 % recoded matrix into contiguous matrices that have the same columns but fewer rows than the original matrix, 
-and applied Principal Component Analysis (PCA) as described in \citet{mcvean2009genealogical}
+and applied principal component analysis (PCA) as described in \citet{mcvean2009genealogical}
 separately to the submatrices that corresponded to each window.
 The choice of window length entails a tradeoff between signal and noise,
 since shorter windows allow better resolution along the genome but provide less precise estimates of relatedness.
@@ -770,7 +780,7 @@ The above procedure can be performed on any subset of the data;
 for future reference, denote by $\pcone_j$ and $\pctwo_j$
 the result after applying to all SNPs in the $j^\text{th}$ window.
 
-Since eigenvectors are still only defined up to sign,
+Since the definition of eigenvectors does not specify their sign,
 when comparing between windows we choose signs to best match each other:
 after choosing $\pcone_1$, for instance, 
 if $u$ is the first eigenvector obtained from the covariance matrix
@@ -785,8 +795,8 @@ Several of the datasets we use have unbalanced representations of diverged popul
 which can have a strong impact on the results of PCA.
 (The principal axes may describe variation \emph{within} an overrepresented group
 rather than more significant variation between groups.)
-Therefore, to control the effect of sampling on our results,
-we used a variant of PCA that gives roughly equal weight to each group of samples,
+Therefore, to check that sampling patterns do not affect our results,
+we compared to a variant of PCA that gives roughly equal weight to each group of samples,
 rather than to each sample.
 The rationale and implementation of this method are described in Appendix \ref{apx:weighted_pca}.
 
@@ -1196,9 +1206,14 @@ to find only the top $k$ eigenvectors.
         \includegraphics{MDS_allchr_Together_plot_samples_noinv}
     \end{center}
     \caption{
-        Variation in structure for windows across \textit{Drosophila melanogaster} chromosome arms: without inversions.
+        Variation in structure for windows of 1,000 SNPs 
+        across \textit{Drosophila melanogaster} chromosome arms: without inversions.
          As in Figure \ref{fig:mds_allchr}, but after omitting for each chromosome arm individuals carrying the less frequent orientation
          of any inversions on that chromosome arm.
+         The values differ from those in \ref{fig:drosophila_recomb_rate}
+         in the window size used and that some MDS values were inverted
+         (but relative orientation is meaningless as chromosome arms were run separately,
+         unlike for \textit{Medicago}).
         In all plots, each point represents one window along the genome.
          The first column shows the MDS visualization of relationships between windows, 
          and the second and third columns show the midpoint of each window against the two MDS coordinates; 
