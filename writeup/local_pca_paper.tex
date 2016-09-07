@@ -317,25 +317,11 @@ then highlighted these windows' positions along the genome,
 and created PCA plots for the windows, combined.
 Representative plots are shown for three groups of windows on each chromosome arm
 in Figure \ref{fig:mds_allchr} (groups are shown in color),
-and in Figure \ref{fig:pca_by_pop} (PCA plots).
+and in Supplemental Figure \ref{fig:pca_by_pop} (PCA plots).
 The latter plots are quite different,
-showing that genomic windows in different regions of the MDS plot indeed show quite different patterns of relatedness:
+showing that genomic windows in different regions of the MDS plot indeed show quite different patterns of relatedness.
 
-\begin{figure}
-    \begin{center}
-       \includegraphics[width=1\textwidth]{Fig2_pca_plots_allchr_3peaks_label_update}
-    \end{center}
-    \caption{      
-        PCA plots for the three sets of genomic windows colored in Figure \ref{fig:mds_allchr},
-        on each chromosome arm of \textit{Drosophila melanogaster}.
-        In all plots, each point represents a sample. 
-        The first column shows the combined PCA plot for windows 
-        whose points are colored green in Figure \ref{fig:mds_allchr}; 
-        the second is for orange windows; 
-        and third is for purple windows.
-         \label{fig:pca_by_pop}
-    }
-\end{figure}
+% Fig fig:pca_by_pop WAS HERe
 
 
 The most striking variation in patterns of relatedness turns out to be explained by
@@ -499,7 +485,7 @@ across chromosomes, the high values of the first MDS coordinate coincide with th
 which often have lower gene density and may therefore be less subject to linked selection.
 % Selection on genes in Medicago has been demonstrated by \citet{paape2013selection}. 
 To verify that this is a possible explanation,
-we computed gene densities in each window using gene models in Mt4.0 from \url{jcvi.org} \citep{tang2014improved},
+we counted the number of genes found in each window using gene models in Mt4.0 from \url{jcvi.org} \citep{tang2014improved},
 which are shown juxtaposed with
 the first MDS coordinate of each window in Figure \ref{fig:mds_medicago},
 and are significantly correlated, as shown in Supplemental Figure \ref{sfig:mds_gene_count}.
@@ -509,7 +495,7 @@ divided by two, assigned to the nearest window.)
 However, other genomic features, such as distance to centromere show roughly the same patterns,
 so we cannot rule out alternative hypotheses.
 In particular, the recombination rates estimated by \citet{paape2012finescale} appear visually to be similar,
-but were not readily available for comparison.
+but were not available in a form that can be compared to our MDS values.
 
 We also found nearly identical results when choosing shorter windows of 1,000 SNPs;
 or choosing windows of equal length in base pairs rather than SNPs.
@@ -519,28 +505,23 @@ when using weighted PCA to downweight the large group of Tunisian samples.
 \begin{figure}
     \begin{center}
        \includegraphics{Fig6_Together_MDS_plot_chr3_final}
+       \includegraphics{Fig7_pca_plots_for_Medicago_chr3_3peaks_byMDS}
     \end{center}
     \caption{
-       MDS visualization of patterns of relatedness on \textit{M.~truncatula} chromosome 3. 
+       MDS visualization of patterns of relatedness on \textit{M.~truncatula} chromosome 3,
+       with corresponding PCA plots.
        Each point in the plot represents a window;
        the structure revealed by the MDS plot is strongly clustered along the chromosome,
        with windows in the upper-right corner of the MDS plot (colored red) clustered around the centromere,
        windows in the upper-left corner (purple) furthest from the centromere,
        and the remaining corner (green) intermediate.
        Plots for remaining chromosomes are shown in Supplemental Figure \ref{sfig:mds_medicago_allchr}.
-       \label{fig:mds12_medicago}
-    }
-\end{figure}
-
-\begin{figure}
-    \begin{center}
-       \includegraphics{Fig7_pca_plots_for_Medicago_chr3_3peaks_byMDS}
-    \end{center}
-    \caption{
+       \textbf{(below)}
         PCA plots for the sets of genomic windows colored (A) green, (B) orange, and (C) purple in Figure \ref{fig:mds12_medicago}. 
         Each point corresponds to a sample, colored by country of origin.
         Plots for remaining chromosomes are shown in Supplemental Figure \ref{sfig:pca_peaks_medicago_allchr}.
-        \label{fig:pca_medicago}
+       \label{fig:mds12_medicago}
+       \label{fig:pca_medicago}
     }
 \end{figure}
 
@@ -556,7 +537,6 @@ when using weighted PCA to downweight the large group of Tunisian samples.
          \label{fig:mds_medicago}
     }
 \end{figure}
-
 
 %%%%%%% %%%%%%%%%
 \section{Discussion}
@@ -728,15 +708,6 @@ and so may not have a major effect on GWAS.
 In the other species we examined, particularly \textit{Drosophila melanogaster},
 treating population structure as a single quantity would entail a substantial loss of power,
 and could potentially be misleading.
-
-%%%%%%%%
-\subsection*{Acknowledgements}
-
-We are indebted to John Pool, Russ Corbett-Detig, Matilde Cordeiro, and Peter Chang 
-for assistance with obtaining data and interpreting results
-(especially inversion status of \textit{D.~melanogaster} samples).
-Thanks also go to Yaniv Brandvain, Barbara Engelhardt, Charles Langley, Graham Coop, and Jeremy Berg for helpful comments
-and for encouraging the project.
 
 %%%%%%%%%%%%%%%%%
 \section{Methods}
@@ -983,7 +954,7 @@ We did not use the mitochondria or chloroplasts.
 }
 \end{table}
 
-\subsection{Data accessibility}
+\section{Data access}
 
 The methods described here
 are implemented in an open-source R package
@@ -991,6 +962,24 @@ available at \url{https://github.com/petrelharp/local_pca},
 as well as scripts to perform all analyses from VCF files
 at various parameter settings.
 
+Datasets are available as follows:
+human (POPRES) at dbGaP with accession number phs000145.v4.p2,
+\textit{Medicago} at the Medicago Hapmap \url{http://www.medicagohapmap.org/},
+and \textit{Drosophila} at the Drosophila Genome Nexus, \url{http://www.johnpool.net/genomes.html}.
+
+%%%%%%%%
+\section*{Acknowledgements}
+
+We are indebted to John Pool, Russ Corbett-Detig, Matilde Cordeiro, and Peter Chang 
+for assistance with obtaining data and interpreting results
+(especially inversion status of \textit{D.~melanogaster} samples).
+Thanks also go to Yaniv Brandvain, Barbara Engelhardt, Charles Langley, Graham Coop, and Jeremy Berg for helpful comments
+and for encouraging the project.
+
+%%%%%%%%
+\section*{Disclosure declaration}
+
+The authors declare no conflicts of interest.
 
 
 \bibliographystyle{plainnat}
@@ -1170,6 +1159,22 @@ but has the interpretation
 \end{align*}
 In our R implementation we use the Spectra library \citep{qiu2016rspectra}
 to find only the top $k$ eigenvectors.
+
+\begin{figure}
+    \begin{center}
+       \includegraphics[width=1\textwidth]{Fig2_pca_plots_allchr_3peaks_label_update}
+    \end{center}
+    \caption{      
+        PCA plots for the three sets of genomic windows colored in Figure \ref{fig:mds_allchr},
+        on each chromosome arm of \textit{Drosophila melanogaster}.
+        In all plots, each point represents a sample. 
+        The first column shows the combined PCA plot for windows 
+        whose points are colored green in Figure \ref{fig:mds_allchr}; 
+        the second is for orange windows; 
+        and third is for purple windows.
+         \label{fig:pca_by_pop}
+    }
+\end{figure}
 
 \begin{figure}
     \begin{center}
