@@ -11,19 +11,28 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage[utf8]{inputenc}
 
-% % stuff for submission
-% \usepackage[nomarkers,figuresonly]{endfloat}
-% \usepackage{setspace}
-% \doublespacing
-% \usepackage{lineno}
-% \linenumbers
-% \bibliographystyle{plos2015}
-% \newcommand\citet{\cite}
-% \newcommand\citep{\cite}
-
-% % for the nice version
-\usepackage[square,sort,comma,numbers]{natbib} \bibpunct{(}{)}{;}{author-year}{}{,} 
-\bibliographystyle{plainnat}
+\newif\ifsubmission
+% \submissiontrue
+\submissionfalse
+\ifsubmission
+    % % stuff for submission
+    % \usepackage[nomarkers,figuresonly]{endfloat}
+    \usepackage{setspace}
+    \doublespacing
+    \usepackage{lineno}
+    \linenumbers
+    \bibliographystyle{plos2015}
+    \newcommand\citet{\cite}
+    \newcommand\citep{\cite}
+    \renewcommand\includegraphics{\relax}
+    \renewcommand{\includegraphics}[2][]{\relax}
+\else
+    % for the nice version
+    \usepackage[square,sort,comma,numbers]{natbib} \bibpunct{(}{)}{;}{author-year}{}{,} 
+    \bibliographystyle{plainnat}
+\fi
+% grrr
+\newcommand{\citetx}[2][]{\ifsubmission#1 \cite{#2}\else\citet{#2}\fi}
 
 \usepackage{color}
 \newcommand{\plr}[1]{{\em \color{blue} #1}}
@@ -90,13 +99,13 @@ can have on observed patterns of genetic variation.
 % Wright 1949, The Genetical Structure of Populations, says that:
 % "I propose to discuss certain genetic aspects of population structure. The term is used to include such matters as numbers, composition by age and sex, and state of subdivision."
 
-\citet{wright1949genetical} defined \emph{population structure} to encompass ``such matters as numbers, composition by age and sex, and state of subdivision'',
+\citetx[Wright]{wright1949genetical} defined \emph{population structure} to encompass ``such matters as numbers, composition by age and sex, and state of subdivision'',
 where ``subdivision'' refers to restricted migration between subpopulations.
 The phrase is also commonly used to refer to the genetic patterns that result from this process,
 as for instance reduced mean relatedness between individuals from distinct populations.
 However, it is not necessarily clear what aspects of demography should be included in the concept.
 For instance, 
-\citet{blair1943population} defines \emph{population structure} to be the sum total of
+\citetx[Blair]{blair1943population} defines \emph{population structure} to be the sum total of
 ``such factors as size of breeding populations, periodic fluctuation of population size, sex ratio, activity range and \emph{differential survival of progeny}'' (emphasis added).
 The definition is similar to Wright's, but differs in including the effects of natural selection.
 On closer examination, incorporating differential survival or fecundity makes the concept less clear:
@@ -167,7 +176,7 @@ and theoretical expectations predict that geographic patterns of relatedness sho
 Patterns in genome-wide relatedness are often summarized
 by applying principal components analysis (PCA, \citep{patterson2006population}) 
 to the genetic covariance matrix,
-as pioneered by \citet{menozzi1978synthetic}.
+as pioneered by \citetx[Menozzi et al]{menozzi1978synthetic}.
 % About 37 years ago, \citet{menozzi1978synthetic} first applied principal component analysis (PCA) in population genetics to construct maps summarizing genetic variation \citep{menozzi1978synthetic}. 
 % Nowadays, PCA is a widely used powerful non-parametric method to extract information from genetic data.
 The results of PCA can be related to the genealogical history of the samples, 
@@ -334,7 +343,6 @@ and in Supplemental Figure \ref{fig:pca_by_pop} (PCA plots).
 The latter plots are quite different,
 showing that genomic windows in different regions of the MDS plot indeed show quite different patterns of relatedness.
 
-% Fig fig:pca_by_pop WAS HERe
 
 
 The most striking variation in patterns of relatedness turns out to be explained by
@@ -1171,6 +1179,9 @@ but has the interpretation
 \end{align*}
 In our R implementation we use the Spectra library \citep{qiu2016rspectra}
 to find only the top $k$ eigenvectors.
+
+\section{Supplementary Figures}
+
 
 \begin{figure}
     \begin{center}
