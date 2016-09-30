@@ -16,7 +16,7 @@
 \submissionfalse
 \ifsubmission
     % % stuff for submission
-    % \usepackage[nomarkers,figuresonly]{endfloat}
+    \usepackage[nofiglist,nomarkers,figuresonly]{endfloat}
     \usepackage{setspace}
     \doublespacing
     \usepackage{lineno}
@@ -26,10 +26,15 @@
     \newcommand\citep{\cite}
     \renewcommand\includegraphics{\relax}
     \renewcommand{\includegraphics}[2][]{\relax}
+    \renewcommand{\figurename}{Fig.}
+    \newcommand{\Figure}{Fig }
+    \newcommand{\Figures}{Fig }
 \else
     % for the nice version
     \usepackage[square,sort,comma,numbers]{natbib} \bibpunct{(}{)}{;}{author-year}{}{,} 
     \bibliographystyle{plainnat}
+    \newcommand{\Figure}{{Figure }}
+    \newcommand{\Figures}{{Figures }}
 \fi
 % grrr
 \newcommand{\citetx}[2][]{\ifsubmission#1 \cite{#2}\else\citet{#2}\fi}
@@ -51,15 +56,36 @@
 \DeclareMathOperator{\tr}{tr}
 
 
-\title{Local PCA Shows How the Effect of Population Structure Differs Along the Genome}
-\author{Han Li, Peter Ralph}
-%\date{}							% Activate to display a given date or no date
-
 \begin{document}
-\maketitle
-%\section{}
-%\subsection{}
-% \doublespacing
+\vspace*{0.35in}
+
+% Title must be 250 characters or less.
+% Please capitalize all terms in the title except conjunctions, prepositions, and articles.
+\begin{flushleft}
+{\Large
+\textbf\newline{Local PCA Shows How the Effect of Population Structure Differs Along the Genome}
+}
+\newline
+% Insert author names, affiliations and corresponding author email (do not include titles, positions, or degrees).
+\\
+Han Li\textsuperscript{1},
+Peter Ralph\textsuperscript{1,2,3,*}
+\\
+\bigskip
+\bf{1} Department of Molecular and Computational Biology, University of Southern California, Los Angeles, CA , USA
+\\
+\bf{2} Institute of Ecology and Evolution, University of Oregon, Eugene, OR, USA
+\\
+\bf{3} Department of Mathematics, University of Oregon, Eugene, OR, USA
+\\
+
+\bigskip
+
+* plr@uoregon.edu
+
+\end{flushleft}
+
+
 
 
 \section*{Abstract}
@@ -253,7 +279,7 @@ we allow ourselves to be suprised by unexpected signals in the data.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results}
 
-As depicted in Figure \ref{fig:diagram}, the general steps to the method are:
+As depicted in \Figure \ref{fig:diagram}, the general steps to the method are:
 (1) divide the genome into windows,
 (2) summarize the patterns of relatedness in each window,
 (3) measure dissimilarity in relatedness between each pair of windows,
@@ -296,7 +322,7 @@ Below, we discuss the results and likely underlying causes.
 \subsection{\textit{Drosophila melanogaster}}
 
 We applied the method to windows of average length 9 Kbp, across chromosome arms 2L, 2R, 3L, 3R and X separately.
-The first column of Figure \ref{fig:mds_allchr} is a multidimensional scaling (MDS) visualization 
+The first column of \Figure \ref{fig:mds_allchr} is a multidimensional scaling (MDS) visualization 
 of the matrix of dissimilarities between genomic windows:
 in other words, genomic windows that are closer to each other in the MDS plot show more similar patterns of relatedness.
 For each chromosome arm, the MDS visualization roughly resembles a triangle,
@@ -305,7 +331,7 @@ Since the relative position of each window in this plot shows the similarity bet
 this suggests that there are at least three extreme manifestations of population structure 
 typified by windows found in the ``corners'' of the figure,
 and that other windows' patterns of relatedness may be a mixture of those extremes. 
-The next two columns of Figure \ref{fig:mds_allchr} respectively depict the two MDS coordinates of each window,
+The next two columns of \Figure \ref{fig:mds_allchr} respectively depict the two MDS coordinates of each window,
 plotted against the window's position along the genome,
 to show how the plot of the first column is laid out along the genome.
 
@@ -324,7 +350,7 @@ to show how the plot of the first column is laid out along the genome.
          rows correspond to chromosome arms.
          Colors are consistent for plots in each row. 
          Vertical lines show the breakpoints of known polymorphic inversions.   
-         Solid black lines are for the inversions we used in Figure \ref{fig:pca_by_inversion},
+         Solid black lines are for the inversions we used in \Figure \ref{fig:pca_by_inversion},
          while dotted grey lines are for other known inversions.     
          \label{fig:mds_allchr}
     }
@@ -338,8 +364,8 @@ and the 5\% of windows that are closest to it in the MDS coordinates,
 then highlighted these windows' positions along the genome,
 and created PCA plots for the windows, combined.
 Representative plots are shown for three groups of windows on each chromosome arm
-in Figure \ref{fig:mds_allchr} (groups are shown in color),
-and in Supplemental Figure \ref{fig:pca_by_pop} (PCA plots).
+in \Figure \ref{fig:mds_allchr} (groups are shown in color),
+and in Supplemental \Figure \ref{fig:pca_by_pop} (PCA plots).
 The latter plots are quite different,
 showing that genomic windows in different regions of the MDS plot indeed show quite different patterns of relatedness.
 
@@ -349,17 +375,17 @@ The most striking variation in patterns of relatedness turns out to be explained
 several large inversions that are polymorphic in these samples, 
 discussed in \citet{corbett2012population} and \citet{langley2012genomic}.
 % Frequencies of each inversion in the sample are given in Table \ref{tab:inversion_freqs}.
-To depict this, Figure \ref{fig:pca_by_inversion} shows
-the PCA plots in Figure \ref{fig:pca_by_pop} recolored by the orientation of the inversion for each sample.
+To depict this, \Figure \ref{fig:pca_by_inversion} shows
+the PCA plots in \Figure \ref{fig:pca_by_pop} recolored by the orientation of the inversion for each sample.
 Taking chromosome arm 2L as an example,
 the two regions of similar, extreme patterns of relatedness
-shown in green in the first row of Figure \ref{fig:mds_allchr}
+shown in green in the first row of \Figure \ref{fig:mds_allchr}
 lie directly around the breakpoints of the inversion In(2L)t,
-and the PCA plots in the first rows of Figure \ref{fig:pca_by_inversion}
+and the PCA plots in the first rows of \Figure \ref{fig:pca_by_inversion}
 shows that patterns of relatedness here are mostly determined by inversion orientation.
 The regions shown in purple on chromosome 2L lie near the centromere,
 and have patterns of relatedness reflective of two axes of variation,
-seen in Figure \ref{fig:pca_by_pop},
+seen in \Figures \ref{fig:pca_by_pop} and \ref{fig:pca_by_inversion},
 which correspond roughly to latitude within Africa and to degree of cosmopolitan admixture respectively
 (see \citet{lack2015drosophila} for more about admixture in this sample).
 The regions shown in orange on chromosome 2L mostly lie inside the inversion,
@@ -368,7 +394,7 @@ as expected due to recombination within the (long) inversion \citep{guerrero2011
 Similar results are found in other chromosome arms,
 albeit complicated by the coexistence of more than one polymorphic inversion;
 however, each breakpoint visibly affects patterns in the MDS coordinates
-(see vertical lines in Figure \ref{fig:mds_allchr}).
+(see vertical lines in \Figure \ref{fig:mds_allchr}).
 % \plr{\citet{corbett2012population} says In(1)Be is very young, $\sim$ 60 years.
 % Also cite \citet{corbettdetig2012sequencebased} for a computational method for detecting inversions.}
 % corbettdetig2012sequencebased suggests these inversions are recent-ish (but before out-of-Africa)
@@ -386,9 +412,16 @@ however, each breakpoint visibly affects patterns in the MDS coordinates
        \includegraphics{Fig3_pca_plots_color_by_inv_allchr_with_ChrX_In1A}
     \end{center}
     \caption{
-         As in Figure 2, except that samples are colored by orientation of the polymorphic inversions 
-         In(2L)t, In(2R)NS, In(3L)OK, In(3R)K and In(1)A respectively. 
-         (data from \citep{lack2015drosophila})
+        PCA plots for the three sets of genomic windows colored in \Figure \ref{fig:mds_allchr},
+        on each chromosome arm of \textit{Drosophila melanogaster}.
+        In all plots, each point represents a sample. 
+        The first column shows the combined PCA plot for windows 
+        whose points are colored green in \Figure \ref{fig:mds_allchr}; 
+        the second is for orange windows; 
+        and third is for purple windows.
+         In each, samples are colored by orientation of the polymorphic inversions 
+         In(2L)t, In(2R)NS, In(3L)OK, In(3R)K and In(1)A respectively
+         (data from \citep{lack2015drosophila}).
          In each ``INV'' denotes an inverted genotype, ``ST'' denotes the standard orientation,
          and ``N'' denotes unknown.
         \label{fig:pca_by_inversion}
@@ -398,18 +431,18 @@ however, each breakpoint visibly affects patterns in the MDS coordinates
 To see how patterns of relatedness vary in the absence of polymorphic inversions,
 we performed the same analyses after removing, for each chromosome arm,
 any samples carrying inversions on that arm.
-In the result, shown in Supplemental Figure \ref{sfig:mds_allchr_noinversions},
+In the result, shown in Supplemental \Figure \ref{sfig:mds_allchr_noinversions},
 the striking peaks associated with inversion breakpoints are gone,
 and previously smaller-scale variation now dominates the MDS visualization.
-For instance, the majority of the variation along 3L in Figure \ref{fig:mds_allchr}
+For instance, the majority of the variation along 3L in \Figure \ref{fig:mds_allchr}
 is on the left end of the arm, dominated by two large peaks around the inversion breakpoints;
 there is also a relatively small dip on the right end of the arm (near the centromere).
-In contrast, Supplemental Figure \ref{sfig:mds_allchr_noinversions} shows that after removing polymorphic inversions,
+In contrast, Supplemental \Figure \ref{sfig:mds_allchr_noinversions} shows that after removing polymorphic inversions,
 remaining structure is dominated by the dip near the centromere.
 Without inversions, variation in patterns of relatedness shown in the MDS plots
 follows similar patterns to that previously seen in \textit{D.~melanogaster} recombination rate and diversity \citep{langley2012genomic,mackay2012drosophila}.
 Indeed, correlations between the recombination rate in each window and the position on the first MDS coordinate are highly significant
-(Spearman's $\rho=0.54$, $p<2 \times 10^{-16}$; Figures \ref{fig:drosophila_recomb_rate} and \ref{sfig:drosophila_gene_density_correlations}).
+(Spearman's $\rho=0.54$, $p<2 \times 10^{-16}$; \Figures \ref{fig:drosophila_recomb_rate} and \ref{sfig:drosophila_gene_density_correlations}).
 This is consistent with the hypothesis that variation
 is due to selection, since the strength of linked selection increases with local gene density, 
 measured in units of recombination distance.
@@ -425,8 +458,8 @@ was not significantly correlated with MDS coordinate ($p=0.22$).
         The first plot (in red) shows the first MDS coordinate along the genome 
         for windows of 10,000 SNPs,
         obtained after removing samples with inversions.
-        (A plot analogous to Figure \ref{fig:mds_allchr} is shown
-        in Supplemental Figure \ref{sfig:mds_allchr_noinversions}.)
+        (A plot analogous to \Figure \ref{fig:mds_allchr} is shown
+        in Supplemental \Figure \ref{sfig:mds_allchr_noinversions}.)
         The second plot (in blue) shows
         local average recombination rates in cM/Mbp, obtained as midpoint estimates for 100Kbp windows 
         from the Drosophila recombination rate calculator \citep{fistonlavier2010drosophila} release 5,
@@ -447,12 +480,12 @@ On each, variation in patterns of relatedness was dominated by a small number of
 having similar patterns of relatedness to each other that differed dramatically from the rest of the chromosome.
 These may be primarily inversions: outlying windows coincide with
 three of the six large polymorphic inversions described in \citet{antonacci2009characterization},
-notably a particularly large, polymorphic inversion on 8p23 (Figure \ref{fig:mds_human}). 
-% for instance, the eleven windows that are outliers in the first MDS coordinate of chromosome 8 (Figure \ref{fig:mds_human}) 
+notably a particularly large, polymorphic inversion on 8p23 (\Figure \ref{fig:mds_human}). 
+% for instance, the eleven windows that are outliers in the first MDS coordinate of chromosome 8 (\Figure \ref{fig:mds_human}) 
 Similar plots for all chromosomes are shown
-in Supplementary Figures \ref{sfig:mds12_chr1_8_human}, \ref{sfig:mds12_chr9_16_human}, and \ref{sfig:mds12_chr17_22_human}.
+in Supplementary \Figures \ref{sfig:mds12_chr1_8_human}, \ref{sfig:mds12_chr9_16_human}, and \ref{sfig:mds12_chr17_22_human}.
 PCA plots of many outlying windows show a characteristic trimodal shape 
-(shown for chromosome 8 in Figure \ref{sfig:pca_chr8_outliers}),
+(shown for chromosome 8 in \Figure \ref{sfig:pca_chr8_outliers}),
 presumably distinguishing samples having each of the three diploid genotypes for each inversion orientation
 (although we do not have data on orientation status).
 This trimodal shape has been proposed as a method to identify inversions \citep{ma2012investigation},
@@ -462,7 +495,7 @@ would require additional data.
 
 We also applied the method on all 22 autosomes together, 
 and found that, remarkably, 
-the inversion on chromosome 8 is still the most striking outlying signal (Figure \ref{sfig:mds1_along_allchr_human}). 
+the inversion on chromosome 8 is still the most striking outlying signal (\Figure \ref{sfig:mds1_along_allchr_human}). 
 Further investigation with a denser set of SNPs,
 allowing a finer genomic resolution,
 may yield other patterns.
@@ -495,21 +528,21 @@ This consistency suggests that the factor affecting the population structure for
 as might be caused by varying strengths of linked selection.
 To verify that variation in the effects of population structure is shared across chromosomes,
 we applied the method to all chromosomes together.
-Results for chromosome 3 are shown in Figures \ref{fig:mds12_medicago} and \ref{fig:pca_medicago},
+Results for chromosome 3 are shown in \Figures \ref{fig:mds12_medicago} and \ref{fig:pca_medicago},
 and other chromosomes are similar:
 % the two types of population structure with higher gene density 
-% (colored green and purple in Figure \ref{fig:mds12_medicago})
+% (colored green and purple in \Figure \ref{fig:mds12_medicago})
 % are nearly identical across all chromosomes,
 % but population structure associated with low gene density (colored orange)
-% shows more chromsome-specific patterns (see Supplemental Figure \ref{sfig:pca_drosophila_allchr}).
+% shows more chromsome-specific patterns (see Supplemental \Figure \ref{sfig:pca_drosophila_allchr}).
 across chromosomes, the high values of the first MDS coordinate coincide with the position of the heterochromatic regions surrounding the centromere,
 which often have lower gene density and may therefore be less subject to linked selection.
 % Selection on genes in Medicago has been demonstrated by \citet{paape2013selection}. 
 To verify that this is a possible explanation,
 we counted the number of genes found in each window using gene models in Mt4.0 from \url{jcvi.org} \citep{tang2014improved},
 which are shown juxtaposed with
-the first MDS coordinate of each window in Figure \ref{fig:mds_medicago},
-and are significantly correlated, as shown in Supplemental Figure \ref{sfig:mds_gene_count}.
+the first MDS coordinate of each window in \Figure \ref{fig:mds_medicago},
+and are significantly correlated, as shown in Supplemental \Figure \ref{sfig:mds_gene_count}.
 (Values shown are the number of start and end positions of each predicted mRNA transcript,
 divided by two, assigned to the nearest window.)
 % that lie closer to SNPs  between the last SNP of each window and the first SNP in the next window.
@@ -536,11 +569,11 @@ when using weighted PCA to downweight the large group of Tunisian samples.
        with windows in the upper-right corner of the MDS plot (colored red) clustered around the centromere,
        windows in the upper-left corner (purple) furthest from the centromere,
        and the remaining corner (green) intermediate.
-       Plots for remaining chromosomes are shown in Supplemental Figure \ref{sfig:mds_medicago_allchr}.
+       Plots for remaining chromosomes are shown in Supplemental \Figure \ref{sfig:mds_medicago_allchr}.
        \textbf{(below)}
-        PCA plots for the sets of genomic windows colored (A) green, (B) orange, and (C) purple in Figure \ref{fig:mds12_medicago}. 
+        PCA plots for the sets of genomic windows colored (A) green, (B) orange, and (C) purple in \Figure \ref{fig:mds12_medicago}. 
         Each point corresponds to a sample, colored by country of origin.
-        Plots for remaining chromosomes are shown in Supplemental Figure \ref{sfig:pca_peaks_medicago_allchr}.
+        Plots for remaining chromosomes are shown in Supplemental \Figure \ref{sfig:pca_peaks_medicago_allchr}.
        \label{fig:mds12_medicago}
        \label{fig:pca_medicago}
     }
@@ -682,7 +715,7 @@ but downweighting may be a better option that does not discard data
 Next, the choice of window size may be important,
 although in our applications results were not sensitive to this,
 indicating that we can see variation on a sufficiently fine scale.
-Finally, which collections of genomic regions are compared to each other (steps 3 and 4 in Figure \ref{fig:diagram}),
+Finally, which collections of genomic regions are compared to each other (steps 3 and 4 in \Figure \ref{fig:diagram}),
 along with the method used to discover common structure,
 will affect results.
 We used MDS, applied to either each chromosome separately or to the entire genome;
@@ -925,7 +958,7 @@ regions with residual heterozygosity were marked as missing in the original data
 we also removed positions with more than 20\% missing data. 
 % (We chose these cutoffs as the tails of the relevant empirical distributions.)
 Each chromosome arm we investigated (X, 2L, 2R, 3L, and 3R) has 2--3 million SNPs;
-PCA plots for each arm are shown in Figure \ref{sfig:pca_drosophila_allchr}.
+PCA plots for each arm are shown in \Figure \ref{sfig:pca_drosophila_allchr}.
 
 \paragraph{Human:}
 We also used genomic data from the entire POPRES dataset \citep{nelson2008population},
@@ -934,7 +967,7 @@ of 3,965 samples in total: 346 African-Americans, 73 Asians, 3,187 Europeans and
 Since these data derive from genotyping arrays, the SNP density is much lower than the other datasets,
 which are each derived from whole genome sequencing.
 We excluded the sex chromosomes and the mitochondria.
-PCA plots for each chromosome, separately, are shown in Figure \ref{sfig:pca_human_allchr}.
+PCA plots for each chromosome, separately, are shown in \Figure \ref{sfig:pca_human_allchr}.
 % We use the allele that has highest frequency in the samples as the reference allele for each position. 
 
 % lack2015drosophila: describes the DGN, including the AGES samples.  reports diversity and mentions inversions but mostly a 'data' paper
@@ -945,7 +978,7 @@ Finally, we used whole-genome sequencing data from the \textit{Medicago truncatu
 which has 263 samples from 24 countries,
 primarily distributed around the Mediterranean basin.
 Each of the 8 chromosomes has 3--5 million SNPs;
-PCA plots for these are shown in Figure \ref{sfig:pca_medicago_allchr}.
+PCA plots for these are shown in \Figure \ref{sfig:pca_medicago_allchr}.
 We did not use the mitochondria or chloroplasts.
 
 \begin{table}[ht]
@@ -1004,13 +1037,28 @@ The authors declare no conflicts of interest.
 
 
 \bibliography{references}  
+\ifsubmission
+    \clearpage
+    \newcounter{bibend}
+    \setcounter{bibend}{\value{page}}
+\fi
+
+\ifsubmission\processdelayedfloats\fi
+
+\ifsubmission
+    \clearpage
+    \setcounter{page}{\thebibend}
+\fi
 
 \appendix
 \setcounter{table}{0}
 \renewcommand{\thetable}{S\arabic{table}}
 \setcounter{figure}{0}
 \renewcommand{\thefigure}{S\arabic{figure}}
-
+\ifsubmission
+    \setcounter{postfigure}{0}
+    \renewcommand{\thepostfigure}{S\arabic{postfigure}}
+\fi
 
 \section{Choosing window length}
 \label{apx:window_length}
@@ -1180,6 +1228,12 @@ but has the interpretation
 In our R implementation we use the Spectra library \citep{qiu2016rspectra}
 to find only the top $k$ eigenvectors.
 
+% put in list of figures here 
+\ifsubmission
+    \listoffigures
+    \clearpage
+\fi
+
 \section{Supplementary Figures}
 
 
@@ -1188,11 +1242,11 @@ to find only the top $k$ eigenvectors.
        \includegraphics[width=1\textwidth]{Fig2_pca_plots_allchr_3peaks_label_update}
     \end{center}
     \caption{      
-        PCA plots for the three sets of genomic windows colored in Figure \ref{fig:mds_allchr},
+        PCA plots for the three sets of genomic windows colored in \Figure \ref{fig:mds_allchr},
         on each chromosome arm of \textit{Drosophila melanogaster}.
         In all plots, each point represents a sample. 
         The first column shows the combined PCA plot for windows 
-        whose points are colored green in Figure \ref{fig:mds_allchr}; 
+        whose points are colored green in \Figure \ref{fig:mds_allchr}; 
         the second is for orange windows; 
         and third is for purple windows.
          \label{fig:pca_by_pop}
@@ -1236,7 +1290,7 @@ to find only the top $k$ eigenvectors.
     \caption{
         Variation in structure for windows of 1,000 SNPs 
         across \textit{Drosophila melanogaster} chromosome arms: without inversions.
-         As in Figure \ref{fig:mds_allchr}, but after omitting for each chromosome arm individuals carrying the less frequent orientation
+         As in \Figure \ref{fig:mds_allchr}, but after omitting for each chromosome arm individuals carrying the less frequent orientation
          of any inversions on that chromosome arm.
          The values differ from those in \ref{fig:drosophila_recomb_rate}
          in the window size used and that some MDS values were inverted
@@ -1258,9 +1312,9 @@ to find only the top $k$ eigenvectors.
     \end{center}
     \caption{
         Recombination rate, and the effects of population structure for \textit{Drosophila melanogaster}:
-        this shows the first MDS coordinate and recombination rate (in cM/Mbp), as in Supplementary Figure \ref{fig:drosophila_recomb_rate},
+        this shows the first MDS coordinate and recombination rate (in cM/Mbp), as in Supplementary \Figure \ref{fig:drosophila_recomb_rate},
         against each other.
-        Since the windows underlying estimates of Supplementary Figure \ref{fig:drosophila_recomb_rate} do not coincide,
+        Since the windows underlying estimates of Supplementary \Figure \ref{fig:drosophila_recomb_rate} do not coincide,
         to obtain correlations we divided the genome into 100Kbp bins, 
         and for each variable (recombination rate and MDS coordinate 1)
         averaged the values of each overlapping bin with weight proportional to the proportion of overlap.
@@ -1358,7 +1412,7 @@ to find only the top $k$ eigenvectors.
        \includegraphics[width=0.82\textwidth]{FigS_pca_plots_for_Medicago_allchr_3peaks_byMDS}
     \end{center}
     \caption{
-        PCA plots for regions colored in Figure \ref{sfig:mds_medicago_allchr}
+        PCA plots for regions colored in \Figure \ref{sfig:mds_medicago_allchr}
         on all 8 chromosomes of \textit{Medicago truncatula}:
         (A) green, (B) orange, and (C) purple.
         \label{sfig:pca_peaks_medicago_allchr}
@@ -1368,6 +1422,7 @@ to find only the top $k$ eigenvectors.
 
 
 
+\ifsubmission\processdelayedfloats\fi
 
 
 \end{document}  
