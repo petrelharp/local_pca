@@ -115,21 +115,6 @@ The visualization method provides a flexible new way to discover biological driv
 and its application to data highlights the strong effects that linked selection and chromosomal inversions
 can have on observed patterns of genetic variation.
 
-\section*{Author Summary}
-
-How individuals of a species in different parts of the world are related to
-each other is shaped by the history of migration and gene flow.  However,
-natural selection affects some parts of the genome in different ways than
-others: for instance, regions with more genes are more strongly affected by
-deleterious mutations. In this paper we develop a visualization method to see
-how patterns of mean relatedness vary along the genome, and aim to identify the
-underlying biological cause. In three species: Medicago truncatula, Drosophila
-melanogaster, and modern humans, we find significant heterogeneity in patterns
-of relatedness along the genome that is correlated with genome structure. For
-humans and Drosophila, this variation is closely connected to polymorphic
-chromosomal inversions, while for Medicago, and for Drosophila once inversions
-are removed, the variation is correlated with local gene density, and is
-perhaps due to linked selection.
 
 
 \section{Introduction}
@@ -288,11 +273,12 @@ but rather to describe larger-scale variation shared by many parts of the genome
 By doing this with three taxa with diverse population histories,
 we can compare relative contributions of different sorts of variation across taxa;
 since the method is an visualization method, 
-we allow ourselves to be suprised by unexpected signals in the data.
+we allow ourselves to be surprised by unexpected signals in the data.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Results}
+%%%%%%%%%%%%%%%%%
+\section{Materials and Methods}
+
 
 As depicted in \Figure \ref{fig:diagram}, the general steps to the method are:
 (1) divide the genome into windows,
@@ -300,8 +286,8 @@ As depicted in \Figure \ref{fig:diagram}, the general steps to the method are:
 (3) measure dissimilarity in relatedness between each pair of windows,
 (4) visualize the resulting dissimilarity matrix using multidimensional scaling (MDS),
 and (5) combine similar windows to more accurately visualize local effects of population structure using PCA.
-Details of how we carried out each step are given in the Methods,
-and code to run the analyses is provided as an R package at \url{https://github.com/petrelharp/local_pca}.
+% Details of how we carried out each step are given in the Methods,
+% and code to run the analyses is provided as an R package at \url{https://github.com/petrelharp/local_pca}.
 
 \begin{figure}
     \begin{center}
@@ -318,6 +304,179 @@ and code to run the analyses is provided as an R package at \url{https://github.
     }
 \end{figure}
 
+
+
+\subsection{PCA in genomic windows}
+
+To begin,
+we first recoded sampled genotypes as numeric matrices in the usual manner,
+by recording the number of nonreference alleles seen at each locus for each sample.
+We then divided the genome into contiguous segments 
+(``windows'')
+% recoded matrix into contiguous matrices that have the same columns but fewer rows than the original matrix, 
+and applied principal component analysis (PCA) as described in \citet{mcvean2009genealogical}
+separately to the submatrices that corresponded to each window.
+The choice of window length entails a tradeoff between signal and noise,
+since shorter windows allow better resolution along the genome but provide less precise estimates of relatedness.
+A method for choosing a window length to balance these considerations is given in Appendix \ref{apx:window_length}.
+% Specifically, we did PCA as follows:
+Precisely,
+denote by $Z$ the $L\times N$ recoded genotype matrix for a given window ($L$ is the number of SNPs and $N$ is the sample size), 
+and by $\overline{Z_{s}}$ the mean of non-missing entries for allele $s$, 
+so that $\overline{Z_{s}}=\frac{1}{n_s}\sum_j Z_{sj}$, 
+where the sum is over the $n_s$ nonmissing genotypes.
+We first compute the mean-centered matrix $X$, as $X_{si}=Z_{si}-\overline{Z_{s}}$,
+and preserving missingness.
+(This mean-centering makes the result not depend on the choice of reference allele,
+exactly if there is no missing data, and approximately otherwise.)
+Next, we find the covariance matrix of $X$, denoted $C$,
+as $C_{ij} = \frac{1}{m_{ij}-1} \sum_s X_{si} X_{sj} - \frac{1}{m_{ij}(m_{ij}-1)} (\sum_s X_{si})(\sum_s X_{sj})$,
+where all sums are over the $m_{ij}$ sites where both sample $i$ and sample $j$ have nonmissing genotypes.
+% We compute the covariance matrix using the R function cov() , with use=``pairwise",
+% which computes the covariance between each pair of individuals using all complete pairs of SNPs on those individuals.
+The principal components are the eigenvectors of $C$, 
+normalized to have Euclidean length equal to one,
+and ordered by magnitude of the eigenvalues.
+
+The top few principal components are generally good summaries of population structure; 
+we follow common practice and usually only use the first two (referred to as $\pcone$ and $\pctwo$).
+The above procedure can be performed on any subset of the data;
+for future reference, denote by $\pcone_j$ and $\pctwo_j$
+the result after applying to all SNPs in the $j^\text{th}$ window.
+
+Since the definition of eigenvectors does not specify their sign,
+when comparing between windows we choose signs to best match each other:
+after choosing $\pcone_1$, for instance, 
+if $u$ is the first eigenvector obtained from the covariance matrix
+for window $j$,
+then we next choose $\pcone_j = \pm u$,
+where the sign is chosen according to which of 
+$\| \pcone_{1} - u \|$ or
+$\| \pcone_{1} + u \|$ 
+is smaller.
+
+Several of the datasets we use have unbalanced representations of diverged populations,
+which can have a strong impact on the results of PCA.
+(The principal axes may describe variation \emph{within} an overrepresented group
+rather than more significant variation between groups.)
+Therefore, to check that sampling patterns do not affect our results,
+we compared to a variant of PCA that gives roughly equal weight to each group of samples,
+rather than to each sample.
+The rationale and implementation of this method are described in Appendix \ref{apx:weighted_pca}.
+
+
+\subsection{Similarity of patterns of relatedness between windows}
+
+We think of the local effects of population structure as being summarized by \emph{relative} position of the samples
+in the space defined by the top principal components.
+However, 
+we do not compare patterns of relatedness of different genomic regions by directly comparing the PCs,
+since rotations or reflections of these imply identical patterns of relatedness.
+Instead, we compare the low-dimensional approximations of the local covariance matrices
+obtained using the top $k$ PCs,
+which is invariant under reflections and rotations and yet contains all other information about the PCs.
+(For results shown here, we use $k=2$;
+results using larger numbers of PCs were nearly identical.)
+Furthermore, to remove the effect of artifacts such as mutation rate variation,
+we also rescale each approximate covariance matrix to be of similar size
+(precisely, so that the underlying data matrix has trace norm equal to one).
+
+To do this, define the $N \times k$ matrix $V(i)$ so that $V(i)_{\cdot \ell}$, 
+the $\ell^\text{th}$ column of $V(i)$,
+is equal to the $\ell^\text{th}$ princpal component of the $i^\text{th}$ window,
+multiplied by $( \lambda_{\ell i} / \sum_{m=1}^k \lambda_{m i} )^{1/2}$,
+where $\lambda_{\ell i}$ is the $\ell^\text{th}$ eigenvalue of the genetic covariance matrix.
+% \begin{equation}
+%     \begin{aligned}
+%         V_{i1}&=\sqrt{\frac{\lambda _{1i}}{\lambda _{1i}+\lambda _{2i}}}PC1_{i} ,
+%         \qquad
+%         V_{i2}&=\sqrt{\frac{\lambda _{2i}}{\lambda _{1i}+\lambda _{2i}}}PC2_{i} 
+%     \end{aligned}
+% \end{equation}
+Then, the rescaled, rank $k$ approximate covariance matrix for the $i^\text{th}$ window is
+\begin{align} \label{eqn:est_cov}
+    M(i) &= \sum_{\ell=1}^k V(i)_{\cdot \ell} V(i)_{\cdot \ell}^T .
+\end{align}
+% \begin{align}
+%     M_{i} &= \frac{\lambda_{1i}PC1_{i}PC1_{i}^{T}+\lambda_{2i}PC2_{i}PC2_{i}^{T}}{\lambda_{1i}+\lambda_{2i}} 
+% \end{align}
+
+To measure the similarity of patterns of relatedness for the $i^\text{th}$ window and $j^\text{th}$ window,
+we then use
+Euclidean distance $D_{ij}$ between the matrices $M(i)$ and $M(j)$:
+$D_{ij}^2 = \sum_{k\ell} ( M(i)_{k,\ell} - M(j)_{k,\ell} )^2$.
+
+
+The goal of comparing PC plots up to rotation and reflection 
+turned out to be equivalent to comparing rank-$k$ approximations to local covariance matrices.
+This suggests instead directly comparing entire local covariance matrices. 
+However, with thousands of samples and tens of thousands of windows,
+computing the distance matrix would take months of CPU time,
+while as defined above, $D$ can be computed in minutes using the following method.
+Since for square matrices $A$ and $B$,
+$\sum_{ij} (A_{ij}-B_{ij})^2 = \sum_{ij} (A^2_{ij} + B^2_{ij}) - 2 \tr(A^T B)$,
+then due to the orthogonality of eigenvectors and the cyclic invariance of trace,
+$D_{ij}$ can be computed efficiently as
+\begin{align}
+    D_{ij} 
+    = 
+    \frac{ \sum_{\ell=1}^k \lambda_{\ell i}^2 }{ (\sum_{\ell=1}^k \lambda_{\ell i})^2 }
+    + \frac{ \sum_{\ell=1}^k \lambda_{\ell j}^2 }{ (\sum_{\ell=1}^k \lambda_{\ell j})^2 }
+    - 2 \sum_{\ell, m=1}^k (V(i)^T V(j))^2_{\ell m} .
+\end{align}
+% from the code for pc_dist():
+% #' In the unweighted case, suppose that (u) and (v) are sets of vectors, and that 
+% #'    A = a_1 * u_1 u_1^T + ... + a_j * u_j u_j^T = U diag(a) U^T
+% #'    B = b_1 * v_1 v_1^T + ... + b_j * v_k v_k^T = V diag(b) V^T,
+% #' where U is the matrix whose columns are (u), and likewise for V.
+% #' Then 
+% #'    (A-B)^T (A-B) = A^T A + B^T B - A^T B - B^T A
+% #' and so
+% #'    ||A-B||^2 = ||A||^2 + ||B||^2 - 2 tr( A^T B )
+% #' By the cyclic invariance of trace, if X = U^T V then
+% #'    tr( A^T B ) = tr( U diag(a) U^T V diag(b) V^T ) = tr( diag(a) X diag(b) X^T ) .
+% \begin{align}
+%     \begin{split}
+%     D_{ij} &= 
+%         \left \{
+%                 \left ( 
+%                     V_{i1}\cdot V_{i1}^{} 
+%                 \right )^{2}
+%                 + \left ( V_{i2}\cdot V_{i2}^{} \right )^{2}
+%                 + \left ( V_{j1}\cdot V_{j1}^{} \right )^{2} 
+%                 +\left ( V_{j2}\cdot V_{j2}^{} \right )^{2} 
+%         \right. \\ 
+%         & \left. \qquad {}  
+%             -2\left [ 
+%                 \left ( V_{i1}\cdot V_{j1}^{} \right )^{2}
+%                 + \left ( V_{i1}\cdot V_{j2}^{} \right )^{2}
+%                 + \left ( V_{i2}\cdot V_{j1}^{} \right )^{2} 
+%                 + \left ( V_{i2}\cdot V_{j2}^{} \right )^{2}
+%             \right ]
+%         \right \}^{1/2}
+%     \end{split}
+% \end{align}
+
+
+\subsection{Visualization of results}
+
+We use multidimensional scaling (MDS) to visualize relationships between windows
+as summarized by the dissimilarity matrix $D$.
+MDS produces a set of $m$ coordinates for each window that
+give the arrangement in $m$-dimensional space that best recapitulates the original distance matrix.
+For results here, we use $m=2$ to produce one- or two-dimensional visualizations of relationships between windows' patterns of relatedness.
+
+We then locate variation in patterns of relatedness along the genome
+by choosing collections of windows that are nearby in MDS coordinates,
+and map their positions along the genome.
+A visualization of the effects of population structure across the entire collection is formed by extracting the corresponding genomic regions
+and performing PCA on all, aggregated, regions.
+
+
+
+\subsection{Datasets}
+% Recode the DNA sequence to a matrix consisting of 0,1,2 (and NA).
+
 We applied the method to genomic datasets with good geographic sampling:
 380 African \textit{Drosophila melanogaster} from the Drosophila Genome Nexus \citep{lack2015drosophila},
 a worldwide dataset of humans,
@@ -325,8 +484,92 @@ a worldwide dataset of humans,
 and 263 \textit{Medicago truncatula} from 24 countries around the Mediterranean basin 
 a range-wide dataset of the partially selfing weedy annual plant 
 from the \textit{Medicago truncatula} Hapmap Project \citep{tang2014improved},
+as summarized in Table \ref{tab:data_stats}.
 
-In all three species, PCA plots vary along the genome in a systematic way, showing strong chromosome-scale correlations.
+\paragraph{\textit{Drosophila melanogaster}:}
+We used whole-genome sequencing data 
+from the Drosophila Genome Nexus (\url{http://www.johnpool.net/genomes.html}, \citep{lack2015drosophila}),
+consisting of the Drosophila Population Genomics Project phases 1--3 \citep{langley2012genomic,pool2012population},
+and additional African genomes \citep{lack2015drosophila}.
+After removing 20 genomes with more than 8\% missing data,
+we were left with 380 samples from 16 countries across Africa and Europe.
+Since the \textit{Drosophila} samples are from inbred lines or haploid embryos, 
+we treat the samples as haploid when recoding;
+regions with residual heterozygosity were marked as missing in the original dataset;
+we also removed positions with more than 20\% missing data. 
+% (We chose these cutoffs as the tails of the relevant empirical distributions.)
+Each chromosome arm we investigated (X, 2L, 2R, 3L, and 3R) has 2--3 million SNPs;
+PCA plots for each arm are shown in \Figure \ref{sfig:pca_drosophila_allchr}.
+
+\paragraph{Human:}
+We also used genomic data from the entire POPRES dataset \citep{nelson2008population},
+which has array-derived genotype information for 447,267 SNPs across the 22 autosomes
+of 3,965 samples in total: 346 African-Americans, 73 Asians, 3,187 Europeans and 359 Indian Asians.
+Since these data derive from genotyping arrays, the SNP density is much lower than the other datasets,
+which are each derived from whole genome sequencing.
+We excluded the sex chromosomes and the mitochondria.
+PCA plots for each chromosome, separately, are shown in \Figure \ref{sfig:pca_human_allchr}.
+% We use the allele that has highest frequency in the samples as the reference allele for each position. 
+
+% lack2015drosophila: describes the DGN, including the AGES samples.  reports diversity and mentions inversions but mostly a 'data' paper
+% pool2012population: describes 129 subsaharan samples (DPGP3)
+
+\paragraph{\textit{Medicago truncatula}:}
+Finally, we used whole-genome sequencing data from the \textit{Medicago truncatula} Hapmap Project \citep{tang2014improved},
+which has 263 samples from 24 countries,
+primarily distributed around the Mediterranean basin.
+Each of the 8 chromosomes has 3--5 million SNPs;
+PCA plots for these are shown in \Figure \ref{sfig:pca_medicago_allchr}.
+We did not use the mitochondria or chloroplasts.
+
+\begin{table}[ht]
+\centering
+    \begin{tabular}{p{0.8in}rrrr}
+  \hline
+    species 
+    & \parbox[t]{.8in}{\# SNPs per \\ window} 
+    & \parbox[t]{1in}{mean window\\ length (bp)}
+    & \parbox[t]{1.2in}{mean \# windows \\ per chromosome} 
+    & \parbox[t]{1.4in}{mean \% variance ex-\\plained by top 2 PCs} \\ 
+  \hline
+  \textit{Drosophila melanogaster} & 1,000 & 9,019 & 2,674 & 0.53 \\ 
+  Human & 100 & 636,494 & 203 & 0.55 \\ 
+  \textit{Medicago truncatula} & 10,000 & 102,580 & 467 & 0.50 \\ 
+   \hline
+\end{tabular}
+\caption{
+    Descriptive statistics for each dataset used.
+    % with the chosen window sizes.
+    % See text for how window sizes were chosen;
+    Columns 2--4 give statistics describing the window sizes used for most analyses for each dataset
+    (windows had a fixed number of SNPs).
+    The final column gives the percent variance explained by the top two principal components,
+    averaged across independent PCA of each window.
+    \label{tab:data_stats}
+}
+\end{table}
+
+\subsection{Data access}
+
+The methods described here
+are implemented in an open-source R package
+available at \url{https://github.com/petrelharp/local_pca},
+as well as scripts to perform all analyses from VCF files
+at various parameter settings.
+
+Datasets are available as follows:
+human (POPRES) at dbGaP with accession number phs000145.v4.p2,
+\textit{Medicago} at the Medicago Hapmap \url{http://www.medicagohapmap.org/},
+and \textit{Drosophila} at the Drosophila Genome Nexus, \url{http://www.johnpool.net/genomes.html}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Results}
+
+In all three datasets:
+a worldwide sample of humans, African \textit{Drosophila melanogaster},
+and a rangewide sample of \textit{Medicago truncatula},
+PCA plots vary along the genome in a systematic way, showing strong chromosome-scale correlations.
 This implies that variation is due to meaningful heterogeneity in a biological process,
 since noise due to randomness in choice of local genealogical trees
 is not expected to show long distance correlations. 
@@ -778,264 +1021,6 @@ In the other species we examined, particularly \textit{Drosophila melanogaster},
 treating population structure as a single quantity would entail a substantial loss of power,
 and could potentially be misleading.
 
-%%%%%%%%%%%%%%%%%
-\section{Methods}
-
-
-
-\subsection{PCA in genomic windows}
-
-We first recoded sampled genotypes as numeric matrices in the usual manner,
-by recording the number of nonreference alleles seen at each locus for each sample.
-We then divided the genome into contiguous segments 
-(``windows'')
-% recoded matrix into contiguous matrices that have the same columns but fewer rows than the original matrix, 
-and applied principal component analysis (PCA) as described in \citet{mcvean2009genealogical}
-separately to the submatrices that corresponded to each window.
-The choice of window length entails a tradeoff between signal and noise,
-since shorter windows allow better resolution along the genome but provide less precise estimates of relatedness.
-A method for choosing a window length to balance these considerations is given in Appendix \ref{apx:window_length}.
-% Specifically, we did PCA as follows:
-Precisely,
-denote by $Z$ the $L\times N$ recoded genotype matrix for a given window ($L$ is the number of SNPs and $N$ is the sample size), 
-and by $\overline{Z_{s}}$ the mean of non-missing entries for allele $s$, 
-so that $\overline{Z_{s}}=\frac{1}{n_s}\sum_j Z_{sj}$, 
-where the sum is over the $n_s$ nonmissing genotypes.
-We first compute the mean-centered matrix $X$, as $X_{si}=Z_{si}-\overline{Z_{s}}$,
-and preserving missingness.
-(This mean-centering makes the result not depend on the choice of reference allele,
-exactly if there is no missing data, and approximately otherwise.)
-Next, we find the covariance matrix of $X$, denoted $C$,
-as $C_{ij} = \frac{1}{m_{ij}-1} \sum_s X_{si} X_{sj} - \frac{1}{m_{ij}(m_{ij}-1)} (\sum_s X_{si})(\sum_s X_{sj})$,
-where all sums are over the $m_{ij}$ sites where both sample $i$ and sample $j$ have nonmissing genotypes.
-% We compute the covariance matrix using the R function cov() , with use=``pairwise",
-% which computes the covariance between each pair of individuals using all complete pairs of SNPs on those individuals.
-The principal components are the eigenvectors of $C$, 
-normalized to have Euclidean length equal to one,
-and ordered by magnitude of the eigenvalues.
-
-The top few principal components are generally good summaries of population structure; 
-we follow common practice and usually only use the first two (referred to as $\pcone$ and $\pctwo$).
-The above procedure can be performed on any subset of the data;
-for future reference, denote by $\pcone_j$ and $\pctwo_j$
-the result after applying to all SNPs in the $j^\text{th}$ window.
-
-Since the definition of eigenvectors does not specify their sign,
-when comparing between windows we choose signs to best match each other:
-after choosing $\pcone_1$, for instance, 
-if $u$ is the first eigenvector obtained from the covariance matrix
-for window $j$,
-then we next choose $\pcone_j = \pm u$,
-where the sign is chosen according to which of 
-$\| \pcone_{1} - u \|$ or
-$\| \pcone_{1} + u \|$ 
-is smaller.
-
-Several of the datasets we use have unbalanced representations of diverged populations,
-which can have a strong impact on the results of PCA.
-(The principal axes may describe variation \emph{within} an overrepresented group
-rather than more significant variation between groups.)
-Therefore, to check that sampling patterns do not affect our results,
-we compared to a variant of PCA that gives roughly equal weight to each group of samples,
-rather than to each sample.
-The rationale and implementation of this method are described in Appendix \ref{apx:weighted_pca}.
-
-
-\subsection{Similarity of patterns of relatedness between windows}
-
-We think of the local effects of population structure as being summarized by \emph{relative} position of the samples
-in the space defined by the top principal components.
-However, 
-we do not compare patterns of relatedness of different genomic regions by directly comparing the PCs,
-since rotations or reflections of these imply identical patterns of relatedness.
-Instead, we compare the low-dimensional approximations of the local covariance matrices
-obtained using the top $k$ PCs,
-which is invariant under reflections and rotations and yet contains all other information about the PCs.
-(For results shown here, we use $k=2$;
-results using larger numbers of PCs were nearly identical.)
-Furthermore, to remove the effect of artifacts such as mutation rate variation,
-we also rescale each approximate covariance matrix 
-so that the underlying data matrix has trace norm equal to one.
-
-To do this, define the $N \times k$ matrix $V(i)$ so that $V(i)_{\cdot \ell}$, 
-the $\ell^\text{th}$ column of $V(i)$,
-is equal to the $\ell^\text{th}$ princpal component of the $i^\text{th}$ window,
-multiplied by $( \lambda_{\ell i} / \sum_{m=1}^k \lambda_{m i} )^{1/2}$,
-where $\lambda_{\ell i}$ is the $\ell^\text{th}$ eigenvalue of the genetic covariance matrix.
-% \begin{equation}
-%     \begin{aligned}
-%         V_{i1}&=\sqrt{\frac{\lambda _{1i}}{\lambda _{1i}+\lambda _{2i}}}PC1_{i} ,
-%         \qquad
-%         V_{i2}&=\sqrt{\frac{\lambda _{2i}}{\lambda _{1i}+\lambda _{2i}}}PC2_{i} 
-%     \end{aligned}
-% \end{equation}
-Then, the rescaled, rank $k$ approximate covariance matrix for the $i^\text{th}$ window is
-\begin{align} \label{eqn:est_cov}
-    M(i) &= \sum_{\ell=1}^k V(i)_{\cdot \ell} V(i)_{\cdot \ell}^T .
-\end{align}
-% \begin{align}
-%     M_{i} &= \frac{\lambda_{1i}PC1_{i}PC1_{i}^{T}+\lambda_{2i}PC2_{i}PC2_{i}^{T}}{\lambda_{1i}+\lambda_{2i}} 
-% \end{align}
-
-To measure the similarity of patterns of relatedness for the $i^\text{th}$ window and $j^\text{th}$ window,
-we then use
-Euclidean distance $D_{ij}$ between the matrices $M(i)$ and $M(j)$:
-$D_{ij}^2 = \sum_{k\ell} ( M(i)_{k,\ell} - M(j)_{k,\ell} )^2$.
-
-
-The goal of comparing PC plots up to rotation and reflection 
-turned out to be equivalent to comparing rank-$k$ approximations to local covariance matrices.
-This suggests instead directly comparing entire local covariance matrices. 
-However, with thousands of samples and tens of thousands of windows,
-computing the distance matrix would take months of CPU time,
-while as defined above, $D$ can be computed in minutes using the following method.
-Since for square matrices $A$ and $B$,
-$\sum_{ij} (A_{ij}-B_{ij})^2 = \sum_{ij} (A^2_{ij} + B^2_{ij}) - 2 \tr(A^T B)$,
-then due to the orthogonality of eigenvectors and the cyclic invariance of trace,
-$D_{ij}$ can be computed efficiently as
-\begin{align}
-    D_{ij} 
-    = 
-    \frac{ \sum_{\ell=1}^k \lambda_{\ell i}^2 }{ (\sum_{\ell=1}^k \lambda_{\ell i})^2 }
-    + \frac{ \sum_{\ell=1}^k \lambda_{\ell j}^2 }{ (\sum_{\ell=1}^k \lambda_{\ell j})^2 }
-    - 2 \sum_{\ell, m=1}^k (V(i)^T V(j))^2_{\ell m} .
-\end{align}
-% from the code for pc_dist():
-% #' In the unweighted case, suppose that (u) and (v) are sets of vectors, and that 
-% #'    A = a_1 * u_1 u_1^T + ... + a_j * u_j u_j^T = U diag(a) U^T
-% #'    B = b_1 * v_1 v_1^T + ... + b_j * v_k v_k^T = V diag(b) V^T,
-% #' where U is the matrix whose columns are (u), and likewise for V.
-% #' Then 
-% #'    (A-B)^T (A-B) = A^T A + B^T B - A^T B - B^T A
-% #' and so
-% #'    ||A-B||^2 = ||A||^2 + ||B||^2 - 2 tr( A^T B )
-% #' By the cyclic invariance of trace, if X = U^T V then
-% #'    tr( A^T B ) = tr( U diag(a) U^T V diag(b) V^T ) = tr( diag(a) X diag(b) X^T ) .
-% \begin{align}
-%     \begin{split}
-%     D_{ij} &= 
-%         \left \{
-%                 \left ( 
-%                     V_{i1}\cdot V_{i1}^{} 
-%                 \right )^{2}
-%                 + \left ( V_{i2}\cdot V_{i2}^{} \right )^{2}
-%                 + \left ( V_{j1}\cdot V_{j1}^{} \right )^{2} 
-%                 +\left ( V_{j2}\cdot V_{j2}^{} \right )^{2} 
-%         \right. \\ 
-%         & \left. \qquad {}  
-%             -2\left [ 
-%                 \left ( V_{i1}\cdot V_{j1}^{} \right )^{2}
-%                 + \left ( V_{i1}\cdot V_{j2}^{} \right )^{2}
-%                 + \left ( V_{i2}\cdot V_{j1}^{} \right )^{2} 
-%                 + \left ( V_{i2}\cdot V_{j2}^{} \right )^{2}
-%             \right ]
-%         \right \}^{1/2}
-%     \end{split}
-% \end{align}
-
-
-\subsection{Visualization of results}
-
-We use multidimensional scaling (MDS) to visualize relationships between windows
-as summarized by the dissimilarity matrix $D$.
-MDS produces a set of $m$ coordinates for each window that
-give the arrangement in $m$-dimensional space that best recapitulates the original distance matrix.
-For results here, we use $m=2$ to produce one- or two-dimensional visualizations of relationships between windows' patterns of relatedness.
-
-We then locate variation in patterns of relatedness along the genome
-by choosing collections of windows that are nearby in MDS coordinates,
-and map their positions along the genome.
-A visualization of the effects of population structure across the entire collection is formed by extracting the corresponding genomic regions
-and performing PCA on all, aggregated, regions.
-
-
-
-\subsection{Datasets}
-% Recode the DNA sequence to a matrix consisting of 0,1,2 (and NA).
-
-The three publicly available datasets we used are summarized in Table \ref{tab:data_stats}.
-We converted each to a numeric matrix
-(with one row per polymorphic variant and one column per sample)
-by replacing each genotype with the number of nonreference alleles
-(or NA for missing data).
-% A normalization step (see below) ensures the result does not depend on the choice of reference allele.
-
-\paragraph{\textit{Drosophila melanogaster}:}
-We used whole-genome sequencing data 
-from the Drosophila Genome Nexus (\url{http://www.johnpool.net/genomes.html}, \citep{lack2015drosophila}),
-consisting of the Drosophila Population Genomics Project phases 1--3 \citep{langley2012genomic,pool2012population},
-and additional African genomes \citep{lack2015drosophila}.
-After removing 20 genomes with more than 8\% missing data,
-we were left with 380 samples from 16 countries across Africa and Europe.
-Since the \textit{Drosophila} samples are from inbred lines or haploid embryos, 
-we treat the samples as haploid when recoding;
-regions with residual heterozygosity were marked as missing in the original dataset;
-we also removed positions with more than 20\% missing data. 
-% (We chose these cutoffs as the tails of the relevant empirical distributions.)
-Each chromosome arm we investigated (X, 2L, 2R, 3L, and 3R) has 2--3 million SNPs;
-PCA plots for each arm are shown in \Figure \ref{sfig:pca_drosophila_allchr}.
-
-\paragraph{Human:}
-We also used genomic data from the entire POPRES dataset \citep{nelson2008population},
-which has array-derived genotype information for 447,267 SNPs across the 22 autosomes
-of 3,965 samples in total: 346 African-Americans, 73 Asians, 3,187 Europeans and 359 Indian Asians.
-Since these data derive from genotyping arrays, the SNP density is much lower than the other datasets,
-which are each derived from whole genome sequencing.
-We excluded the sex chromosomes and the mitochondria.
-PCA plots for each chromosome, separately, are shown in \Figure \ref{sfig:pca_human_allchr}.
-% We use the allele that has highest frequency in the samples as the reference allele for each position. 
-
-% lack2015drosophila: describes the DGN, including the AGES samples.  reports diversity and mentions inversions but mostly a 'data' paper
-% pool2012population: describes 129 subsaharan samples (DPGP3)
-
-\paragraph{\textit{Medicago truncatula}:}
-Finally, we used whole-genome sequencing data from the \textit{Medicago truncatula} Hapmap Project \citep{tang2014improved},
-which has 263 samples from 24 countries,
-primarily distributed around the Mediterranean basin.
-Each of the 8 chromosomes has 3--5 million SNPs;
-PCA plots for these are shown in \Figure \ref{sfig:pca_medicago_allchr}.
-We did not use the mitochondria or chloroplasts.
-
-\begin{table}[ht]
-\centering
-    \begin{tabular}{p{0.8in}rrrr}
-  \hline
-    species 
-    & \parbox[t]{.8in}{\# SNPs per \\ window} 
-    & \parbox[t]{1in}{mean window\\ length (bp)}
-    & \parbox[t]{1.2in}{mean \# windows \\ per chromosome} 
-    & \parbox[t]{1.4in}{mean \% variance ex-\\plained by top 2 PCs} \\ 
-  \hline
-  \textit{Drosophila melanogaster} & 1,000 & 9,019 & 2,674 & 0.53 \\ 
-  Human & 100 & 636,494 & 203 & 0.55 \\ 
-  \textit{Medicago truncatula} & 10,000 & 102,580 & 467 & 0.50 \\ 
-   \hline
-\end{tabular}
-\caption{
-    Descriptive statistics for each dataset used.
-    % with the chosen window sizes.
-    % See text for how window sizes were chosen;
-    Columns 2--4 give statistics describing the window sizes used for most analyses for each dataset
-    (windows had a fixed number of SNPs).
-    The final column gives the percent variance explained by the top two principal components,
-    averaged across independent PCA of each window.
-    \label{tab:data_stats}
-}
-\end{table}
-
-\section{Data access}
-
-The methods described here
-are implemented in an open-source R package
-available at \url{https://github.com/petrelharp/local_pca},
-as well as scripts to perform all analyses from VCF files
-at various parameter settings.
-
-Datasets are available as follows:
-human (POPRES) at dbGaP with accession number phs000145.v4.p2,
-\textit{Medicago} at the Medicago Hapmap \url{http://www.medicagohapmap.org/},
-and \textit{Drosophila} at the Drosophila Genome Nexus, \url{http://www.johnpool.net/genomes.html}.
-
 %%%%%%%%
 \section*{Acknowledgements}
 
@@ -1283,7 +1268,7 @@ to find only the top $k$ eigenvectors.
        \includegraphics[width=0.9\textwidth]{FigS_pca_plot_allchr_human}
     \end{center}
     \caption{
-        PCA plots for all 22 huan autosomes from the POPRES data.
+        PCA plots for all 22 human autosomes from the POPRES data.
         \label{sfig:pca_human_allchr}
     }
 \end{figure}
@@ -1327,9 +1312,9 @@ to find only the top $k$ eigenvectors.
     \end{center}
     \caption{
         Recombination rate, and the effects of population structure for \textit{Drosophila melanogaster}:
-        this shows the first MDS coordinate and recombination rate (in cM/Mbp), as in Supplementary \Figure \ref{fig:drosophila_recomb_rate},
+        this shows the first MDS coordinate and recombination rate (in cM/Mbp), as in \Figure \ref{fig:drosophila_recomb_rate},
         against each other.
-        Since the windows underlying estimates of Supplementary \Figure \ref{fig:drosophila_recomb_rate} do not coincide,
+        Since the windows underlying estimates of \Figure \ref{fig:drosophila_recomb_rate} do not coincide,
         to obtain correlations we divided the genome into 100Kbp bins, 
         and for each variable (recombination rate and MDS coordinate 1)
         averaged the values of each overlapping bin with weight proportional to the proportion of overlap.
