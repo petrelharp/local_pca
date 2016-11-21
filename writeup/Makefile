@@ -21,6 +21,7 @@ $(DISPLAYDIR)/%.eps : %.pdf
 	inkscape $< --export-eps=$@
 
 figs :
+	echo "This doesn't make Figure 6 correctly yet (FIXME)."
 	for x in $$(cat local_pca_paper.tex | grep includegr | tr '{}' ',,' | cut -f 2 -d ','); do make $$x.eps; done
 	rm -f eps_figs/*
 	readarray FIGS < <(head -n $$(grep -n '\\appendix' local_pca_paper.tex|cut -f 1 -d:) local_pca_paper.tex | grep includegr | tr '{}' ',,' | cut -f 2 -d ','| sed -e 's/ //g' ); for index in "$${!FIGS[@]}"; do x=$$(echo $${FIGS[index]} | tr -d ' '); ln -s $$x.eps Fig_$$((1+index)).eps; done
