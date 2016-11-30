@@ -4,7 +4,7 @@ Local PCA/population structure (lostruct)
 To install the package, make sure you have `devtools` (by doing `install.packages("devtools")`),
 and then running 
 ```
-devtools::install_github("petrelharp/lostruct/package")
+devtools::install_github("petrelharp/local_pca/package")
 ```
 
 ## Using the R package
