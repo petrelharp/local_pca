@@ -247,3 +247,22 @@ for (k in 1:nrow(corner.pcs)) {
 legend('topright', col=country.cols, pch=country.pch, legend=country.names)
 ```
 
+## Weights
+
+To check the effect of subsampling,
+here's a way to make a file of weights:
+```{r make_weights}
+samples$nsamples <- table(samples$Country.of.Origin)[samples$Country.of.Origin]
+samples$weight <- 1/pmax(10,samples$nsamples)
+
+bcf.samples <- vcf_samples("data/chr1-filtered-set-2014Apr15.bcf")
+bcf.samples[bcf.samples=="HM020-I"] <- "HM020"
+
+weights <- data.frame( ID=bcf.samples, weight=samples$weight[match(bcf.samples,samples$ID)] )
+
+write.table(weights, sep="\t", file="data/inverse-samplesize-weights.tsv", row.names=FALSE)
+```
+
+## Gene location information
+
+Non-TE related gene data downloaded from [jcvi.org's JBrowse](http://jcvi.org/medicago/jbrowse/?data=data%2Fjson%2Fmedicago&loc=chr1%3A9010377..51403300&tracks=gene_models&highlight=) on 4 September 2015.
