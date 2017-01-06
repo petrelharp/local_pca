@@ -1,0 +1,34 @@
+Things to address in simulation:
+
+- compare with background selection to neutral
+- variation in recombination rate - still finds background selection?
+
+Things to describe in simulation results:
+
+- PC switching
+- number of PCs chosen
+- what weighting fixes
+- what trace normalization fixes 
+    (mutation density - choose windows with different numbers of snps)
+
+Simulations:
+
+All on a 8x8 grid (square to induce PC switching),
+subpopulation size 100, for 32K generations.
+Neutral mutation rate 1e-5 (so divergence will be 0.1).
+
+Sexual, one chromosome of length 1 morgan.
+
+- Neutral, flat recombination.
+- Neutral, with recombination rate increasing linearly from 0 to 2.
+- Neutral, with recombination hot spots.
+- Recombination as above, with selection against mutants with s=.01 at 1,000 uniformly distributed sites.
+
+
+Other points to discuss:
+
+- relate to PCAdmix
+- show different window choice results we reference
+- clarify we checked for variation in missingness, provide plot of MDS against missingness
+- could neutrality + admixture explain drosophila? reference recent Neanderthal papers.
+
