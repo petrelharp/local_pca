@@ -5,7 +5,6 @@ Things to address in simulation:
 
 Things to describe in simulation results:
 
-- PC switching
 - number of PCs chosen
 - what weighting fixes
 - what trace normalization fixes 
@@ -27,8 +26,24 @@ Sexual, one chromosome of length 1 morgan.
 
 Other points to discuss:
 
-- relate to PCAdmix
+- relate to PCAdmix, explain difference in introduction
 - show different window choice results we reference
 - clarify we checked for variation in missingness, provide plot of MDS against missingness
-- could neutrality + admixture explain drosophila? reference recent Neanderthal papers.
+- could neutrality + admixture explain drosophila and medicago? reference recent Neanderthal papers.
+- make simple description of "weighted PCA" and decide what to do about it 
+- clarify that block jackknife is approximately OK even though adjacent blocks are correlated
+- clarify why didn't use recomb rates in medicago
+
+To do on the data:
+
+- Re-run with k=5, and add plots to supplement
+- Include plots for different size windows
+- Include plots for Medicago with window size in bp
+- Include a plot about missing data 
+    (maybe density of missing sites or correlation of missingness with genome-wide PC1?)
+- PC switching
+
+
+    * PC1/2 switching: make more clear in the paper that we take care of this with the math
+    * PC2/3 switching: re-run with more PCs to check things don't change
 
