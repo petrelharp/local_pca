@@ -22,6 +22,8 @@ To start using the code on your own data, have a look at these files:
 * [Script for medicago analysis](medicago/run_on_medicago.R) : an Rscript to run the same analysis on medicago data,
     varying various parameters by command-line options: run `Rscript run_on_medicago.R --help` for a list.
 
+* [Report summarizing an analysis](medicago/summarize_run.Rmd) : an Rmarkdown file that can be compiled with [templater](https://github.com/petrelharp/templater) to produce visualizations of the results of the above.
+
 ## Standalone code
 
 Also included is code we used to analyze the datasets in the paper (before the R package was written).
@@ -68,3 +70,14 @@ For Medicago, it calculates the pairwise distance for all 8 chromosome together 
 - [Medicago_PCA_win104.R](medicago/Medicago_PCA_win104.R) : computes local PCs for chromosome 1
 - [Medicago_distance_all_chr.R](medicago/Medicago_distance_all_chr.R) : computes a distance matrix from PC information
 - [Medicago_MDS.R](medicago/Medicago_MDS.R) : computes and plots MDS plots from the distance matrix
+
+
+# A note on implementation:
+
+This method works through the genome doing something (PCA on the covariance matrix)
+one window at a time.  Because of this, it can be frustratingly slow to first load
+the entire dataset into memory.  There are several methods implemented here to avoid this;
+for instance, `vcf_windower()` which is used to [compute PCs for the medicago data](medicago/run_on_medicago.R).
+The interface is via a function that takes an integer, `n`,
+and returns a data frame of the genomic data in the `n`th window.
+
