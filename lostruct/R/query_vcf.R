@@ -39,7 +39,7 @@ vcf_query <- function (file, regions, samples, verbose=FALSE, recode=TRUE) {
     bcf.call <- paste(bcf.args, collapse=" ")
     if (verbose) cat(bcf.call, "\n")
     gt.text <- tryCatch( as.matrix(data.table::fread( bcf.call, header=FALSE, sep=' ', data.table=FALSE )),
-                   error=function (e) { if ( grepl("File is empty", e$message) ) { NULL } else { stop(e) } } )
+                   error=function (e) { if ( grepl("File is empty", e$message) ) { NULL } else { stop(paste("Error. Is bcftools installed?\n",e)) } } )
     if (is.null(gt.text) || !recode) { return(gt.text) }
     if (length(grepl("[0-9]\\|[0-9]", gt.text[seq_len(min(nrow(gt.text),100)),seq_len(min(ncol(gt.text),100))]))>0) {
         gt <- c(0L,1L,1L,2L)[match( unlist(gt.text), c("0|0","0|1","1|0","1|1") )]

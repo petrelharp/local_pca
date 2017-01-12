@@ -4,6 +4,7 @@ Local PCA/population structure (lostruct)
 To install the package, make sure you have `devtools` (by doing `install.packages("devtools")`),
 and then running 
 ```
+install.packages("data.table")
 devtools::install_github("petrelharp/local_pca/lostruct")
 library(lostruct)
 ```
@@ -23,6 +24,13 @@ To start using the code on your own data, have a look at these files:
     varying various parameters by command-line options: run `Rscript run_on_medicago.R --help` for a list.
 
 * [Report summarizing an analysis](medicago/summarize_run.Rmd) : an Rmarkdown file that can be compiled with [templater](https://github.com/petrelharp/templater) to produce visualizations of the results of the above.
+
+## Prerequisites
+
+- To use the functions to read in windows out of BCF file,
+    you will need [bcftools](http://www.htslib.org/doc/bcftools.html).
+- To compile the example report, you probably want 
+    [templater](https://github.com/petrelharp/templater).
 
 ## Standalone code
 
