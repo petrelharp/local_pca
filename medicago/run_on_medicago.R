@@ -51,7 +51,7 @@ dir.create( opt$outdir, showWarnings=FALSE, recursive=TRUE )
 cat( jsonlite::toJSON( opt, pretty=TRUE ), file=file.path( opt$outdir, "config.json" ) )
 
 # setup
-devtools::load_all("../package")
+library(lostruct)
 
 # VCF files
 chroms <- paste0("chr",1:8)

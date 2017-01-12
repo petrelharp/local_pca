@@ -131,7 +131,7 @@ discussed in Appendix B) . This could distort the PCs, so that variation reflect
 variation in missingness. Would be good to discuss this potential issue and provide simulations.
 
 Appendix A: when using jackknife to estimate variance, each window is being divided in 10
-“independent” resampling units. Due to LD, these 10 blocks are likely correlated, which would
+"independent" resampling units. Due to LD, these 10 blocks are likely correlated, which would
 bias the estimates of variance. This is probably not a problem because both signal and noise
 could be equally biased, but the authors may want to consider this potential issue. I wonder if
 the correlation with recombination rate may be partially explained by this.
@@ -143,9 +143,9 @@ detect local ancestry blocks, e.g. see the PCAdmix approach by Brisbin et al. Th
 discuss the possibility that admixture is driving the differentiation, but do not test whether their
 observations agree with neutrality.
 
-“to remove the effect of artifacts such as mutation rate variation, we also rescale each
+"to remove the effect of artifacts such as mutation rate variation, we also rescale each
 approximate covariance matrix to be of similar size (precisely, so that the underlying data
-matrix has trace norm equal to one”. This potential issue is a bit unclear to me, since I would
+matrix has trace norm equal to one". This potential issue is a bit unclear to me, since I would
 expect that scaling the volume of local trees would not result in changed distances in PC
 space. Perhaps the authors could show via simulations that this creates a problem, and that the
 normalization addresses it.
@@ -159,30 +159,30 @@ could be dropped.
 
 Some comments on the text, typos and other minor style-related points
 
-Introduction: “it is not necessarily clear what aspects of demography should be included in the
-concept.” I find it a bit weird to describe selection as an “aspect of demography”. Although it
+Introduction: "it is not necessarily clear what aspects of demography should be included in the
+concept." I find it a bit weird to describe selection as an "aspect of demography". Although it
 could be seen as such within a coalescent framework, that seems to be just a useful
 representation. The authors may consider rewording`.
 
-Paragraph starting in “Since the definition… ”. The notation is a bit unclear. Please check that it
+Paragraph starting in "Since the definition...". The notation is a bit unclear. Please check that it
 is clear which PC the text refers to.
 
 Would the authors be able to provide a sense for the directionality of effects in Figure 4? It
 would be interesting if the authors tried to further characterize regions that are similar due to
 higher recombination rates. E.g. is there more/less density of polymorphisms in these regions?
 
-Page 13: typo: “figures 6 and 6”.
+Page 13: typo: "figures 6 and 6".
 
-Typo in abstract, line 6 “, We show” &#8594; “. We show”.
+Typo in abstract, line 6 ", We show" -> ". We show".
 
-Typo: end of introduction “an visualization”. The whole sentence is a bit weird. The authors just
-stated focus is on clustering, not on looking for outliers, but what does it mean that “we allow
-ourselves to be surprised by unexpected signals in the data”?
+Typo: end of introduction "an visualization". The whole sentence is a bit weird. The authors just
+stated focus is on clustering, not on looking for outliers, but what does it mean that "we allow
+ourselves to be surprised by unexpected signals in the data"?
 
-“There has been substantial debate over the relative impacts of different forms of selection.”
+"There has been substantial debate over the relative impacts of different forms of selection."
 Citation needed.
 
-“Results using larger numbers of PCs were nearly identical”. It would be interesting to have a
+"Results using larger numbers of PCs were nearly identical". It would be interesting to have a
 supplementary table.
 
 Table 1 legend seems a bit redundant. Columns are self-explanatory.

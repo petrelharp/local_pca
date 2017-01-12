@@ -5,7 +5,6 @@ Things to address in simulation:
 
 Things to describe in simulation results:
 
-- number of PCs chosen
 - what weighting fixes
 - what trace normalization fixes 
     (mutation density - choose windows with different numbers of snps)
@@ -13,15 +12,29 @@ Things to describe in simulation results:
 Simulations:
 
 All on a 8x8 grid (square to induce PC switching),
-subpopulation size 100, for 32K generations.
-Neutral mutation rate 1e-5 (so divergence will be 0.1).
+subpopulation size N at least 100, for 32K generations.
+Chromosome length 1 morgan, 3e7 bp, neutral mutation rate 1e-6 (to get diversity like 0.01).
 
-Sexual, one chromosome of length 1 morgan.
+Output SNPs, for 1,000 individuals.
+
+Scenarios:
 
 - Neutral, flat recombination.
 - Neutral, with recombination rate increasing linearly from 0 to 2.
 - Neutral, with recombination hot spots.
-- Recombination as above, with selection against mutants with s=.01 at 1,000 uniformly distributed sites.
+- Flat recombination, with selection against mutants with s=.01 at 1,000 sites
+    distributed with decreasing density linearly along the chromosome.
+
+
+To do on the data:
+
+- Re-run with k=5, and add plots to supplement
+- Include plots for different size windows
+- Add Figure 2 equivalent to supplement for Drosophila, window length=10,000.
+- Add Figure 6 equivalent to supplement for Medicago, window length=10,000. (maybe switch?)
+- Include plots for Medicago with window size in bp
+- Include a plot about missing data 
+    (maybe density of missing sites or correlation of missingness with genome-wide PC1?)
 
 
 Other points to discuss:
@@ -33,17 +46,14 @@ Other points to discuss:
 - make simple description of "weighted PCA" and decide what to do about it 
 - clarify that block jackknife is approximately OK even though adjacent blocks are correlated
 - clarify why didn't use recomb rates in medicago
-
-To do on the data:
-
-- Re-run with k=5, and add plots to supplement
-- Include plots for different size windows
-- Include plots for Medicago with window size in bp
-- Include a plot about missing data 
-    (maybe density of missing sites or correlation of missingness with genome-wide PC1?)
+- say something about the need to check for patterns in missingness
 - PC switching
-
 
     * PC1/2 switching: make more clear in the paper that we take care of this with the math
     * PC2/3 switching: re-run with more PCs to check things don't change
+
+- Reviewer suggests comparing Drosophila MDS also to diversity, etcetera;
+    looking at Langley et al it looks like expected heterozygosity is pretty well correlated too;
+    we think we want to maybe say something about this but not include this in the figure
+    (which will make it too busy)
 

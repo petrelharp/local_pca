@@ -1,5 +1,4 @@
-library(devtools)
-load_all("../package")
+library(lostruct)
 
 # as in POPRES_SNPdata_recode12.R
 chr22 <- read_tped("POPRES_Genotypes_QC2_v2_TXT.tped.gz", chrom=22)

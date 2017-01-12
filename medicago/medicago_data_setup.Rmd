@@ -1,7 +1,7 @@
 # Local PCA on *Medicago truncatula* Hapmap
 
 ```{r setup}
-devtools::load_all("../package")
+library(lostruct)
 library(Matrix)
 library(colorspace)
 options(width=100)
