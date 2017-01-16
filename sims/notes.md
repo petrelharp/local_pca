@@ -10,13 +10,13 @@ In all cases we sample 1000 individuals.
 
 1. Flat recombination:
 ```
-./neutral-sim.py -k 36 -N 10 -w 3 -L 4e7 -m 4e-3 -r 2.5e-8 -R 2.5e-8 -u 1e-7 -o flat_recomb_short.vcf -g flat_recomb_short.log
+./neutral-sim.py -k 36   -N 100  -w 3  -L 4e7 -m 4e-3 -r 2.5e-8 -R 2.5e-8 -u 1e-7 -o flat_recomb_short.vcf -g flat_recomb_short.log
 ./neutral-sim.py -k 1000 -N 1000 -w 10 -L 4e7 -m 4e-3 -r 2.5e-8 -R 2.5e-8 -u 1e-7 -o flat_recomb.vcf -g flat_recomb.log
 ```
 
 2. Linearly increasing recombination rate from 0.5e-8 to 4.5e-8 (same total length):
 ```
-./neutral-sim.py -k 36 -N 10 -w 3 -L 4e7 -m 4e-3 -r 0.5e-8 -R 4.5e-8 -u 1e-7 -o linear_recomb_short.vcf -g linear_recomb_short.log
+./neutral-sim.py -k 36   -N 100  -w 3  -L 4e7 -m 4e-3 -r 0.5e-8 -R 4.5e-8 -u 1e-7 -o linear_recomb_short.vcf -g linear_recomb_short.log
 ./neutral-sim.py -k 1000 -N 1000 -w 10 -L 4e7 -m 4e-3 -r 0.5e-8 -R 4.5e-8 -u 1e-7 -o linear_recomb.vcf -g linear_recomb.log
 ```
 
@@ -43,7 +43,7 @@ write.table(map, file="decode_female_chr7.gmap", row.names=FALSE)
 # chr1        82571   2.082414        0.080572
 ```
 ```
-./neutral-sim.py -k 36 -N 10 -w 3 -L 4e7 -m 4e-3 -p decode_female_chr7.gmap -u 1e-7 -o hot_recomb_short.vcf -g hot_recomb_short.log
+./neutral-sim.py -k 36   -N 100  -w 3  -L 4e7 -m 4e-3 -p decode_female_chr7.gmap -u 1e-7 -o hot_recomb_short.vcf -g hot_recomb_short.log
 ./neutral-sim.py -k 1000 -N 1000 -w 10 -L 4e7 -m 4e-3 -p decode_female_chr7.gmap -u 1e-7 -o hot_recomb.vcf -g hot_recomb.log
 ```
 
@@ -51,3 +51,19 @@ Note: the deCode map is obtained from http://www.decode.com/addendum/ ; should c
     Kong, A et al.  Fine scale recombination rate differences between sexes, populations and individuals. Nature  467 , 1099–1103 (28 October 2010) doi:10.1038/nature09525.
 This file lists the position and the cM in the *previous* window, 
 while msprime wants the cM/bp over the *next* window.
+
+
+# Simulation of background selection:
+
+For these we want to simulate a spatial population as above,
+with flat recombination rate,
+except in forwrds time, 
+and with 10,000 slightly deleterious loci 
+(effect sizes drawn from an Exponential distribution with mean .001)
+arranged with increasing density moving along the chromosome
+(to mimic decreasing recombination rate).
+Concretely, we let the inter-locus spacing be independent Exponentials, with the mean of the $k$th spacing
+equal to $(1+9k/n)$, where $n$ is the number of loci;
+and then we renormalize these positions to lie on the chromosome.
+This implies density of selected loci will be ten times greater at the beginning of the chromosome than at the end.
+

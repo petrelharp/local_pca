@@ -130,3 +130,6 @@ logfile.write("Number of mutations: {}\n".format(tree_sequence.get_num_mutations
 
 tree_sequence.write_vcf(outfile,ploidy=1)
 
+outfile.close()
+logfile.close()
+
