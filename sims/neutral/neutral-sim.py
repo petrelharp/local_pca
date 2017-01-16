@@ -79,6 +79,7 @@ else:
 
 logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("Beginning simulation:\n")
+logfile.flush()
 
 # population setup
 per_samples = math.ceil(nsamples/width/width)
@@ -127,8 +128,10 @@ logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("Mean pairwise diversity: {}\n".format(tree_sequence.get_pairwise_diversity()/length))
 logfile.write("Number of trees: {}\n".format(tree_sequence.get_num_trees()))
 logfile.write("Number of mutations: {}\n".format(tree_sequence.get_num_mutations()))
+logfile.flush()
 
 tree_sequence.write_vcf(outfile,ploidy=1)
+logfile.close()
 
 outfile.close()
 logfile.close()
