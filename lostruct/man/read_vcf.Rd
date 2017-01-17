@@ -4,7 +4,7 @@
 \alias{read_vcf}
 \title{Read Chromosome(s) From a VCF File}
 \usage{
-read_vcf(file, phased = FALSE, triallelic = TRUE, ...)
+read_vcf(file, phased = FALSE, triallelic = TRUE)
 }
 \arguments{
 \item{file}{Input .vcf file, possibly gzip'ped.}
@@ -12,8 +12,6 @@ read_vcf(file, phased = FALSE, triallelic = TRUE, ...)
 \item{phased}{Are the data phased? (i.e., should return one column per individual or two?)}
 
 \item{triallelic}{Include triallelic sites? Defaults to TRUE.}
-
-\item{...}{More parameters passed to \code{vcfR::read.vcfR( )}, like \code{skip} and \code{nrows}.}
 }
 \value{
 An integer matrix with one row per site and one column per individual.

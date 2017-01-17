@@ -79,10 +79,9 @@ read_tped <- function (file, chrom="[^ \t]*", triallelic=TRUE, phased=FALSE) {
 #' @param file Input .vcf file, possibly gzip'ped.
 #' @param phased Are the data phased? (i.e., should return one column per individual or two?)
 #' @param triallelic Include triallelic sites? Defaults to TRUE.
-#' @param ... More parameters passed to \code{vcfR::read.vcfR( )}, like \code{skip} and \code{nrows}.
 #' @return An integer matrix with one row per site and one column per individual.
 #' @export
-read_vcf <- function (file, phased=FALSE, triallelic=TRUE, ...) {
+read_vcf <- function (file, phased=FALSE, triallelic=TRUE) {
     # # bare-bones style if all entries are GT format
     # vcf.header <- scan( pipe(paste0("zcat ", file, " | grep -v '^##' | head -n 1")), what='char')
     # thecat <- if (grepl(".gz$",file)) { "zcat" } else { "cat" }
