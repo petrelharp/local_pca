@@ -58,21 +58,25 @@ nloci=int(options.nloci)
 width=int(options.width)
 alpha=float(options.gamma_alpha)
 beta=float(options.gamma_beta)
-length=int(options.length)
+length=float(options.length)
 recomb_rate=float(options.recomb_rate)
 mut_rate=float(options.mut_rate)
 
-npops=width*width
+if length < nloci:
+    raise ValueError("nloci cannot be larger than length")
 
-outfile.write("# generations:" + str(generations) + "\n")
-outfile.write("# length:" + str(length) + "\n")
-outfile.write("# N:" + str(popsize*npops) + "\n")
+npops=width*width
 
 # increase spacing between loci as we go along the chromosome
 spacing_fac=9
 rel_positions=list(accumulate([random.expovariate(1)*(1+spacing_fac*k/nloci) for k in range(nloci)]))
 pos_fac=length/(rel_positions[-1]+random.expovariate(1)*(1+spacing_fac))
 locus_position=[x*pos_fac for x in rel_positions]
+
+outfile.write("# generations:" + str(generations) + "\n")
+outfile.write("# length:" + str(length) + "\n")
+outfile.write("# N:" + str(popsize*npops) + "\n")
+outfile.write("# loci:" + " ".join(map(str,locus_position)) + "\n")
 
 # initially polymorphic alleles
 init_freqs=[[k/100,1-k/100,0,0] for k in range(1,11)]

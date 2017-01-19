@@ -3,6 +3,10 @@ description = '''
 Convert simulations to msprime and VCF.
 '''
 
+# TO DO:
+#  - record locus locations and use this
+#  - put the simulation on a grid
+
 import gzip
 import sys
 from optparse import OptionParser
@@ -57,12 +61,14 @@ if name != "# generations":
     raise ValueError("Bad file format.")
 else:
     generations = int(val.strip())
+print("generations: ",generations)
 
 name,val = infile.readline().split(":")
 if name != "# length":
     raise ValueError("Bad file format.")
 else:
-    length = int(val.strip())
+    length = float(val.strip())
+print("length: ",length)
 
 # total number of individuals; needed for translating indiv id to time
 name,val = infile.readline().split(":")
@@ -70,64 +76,87 @@ if name != "# N":
     raise ValueError("Bad file format.")
 else:
     N = int(val.strip())
+print("N: ",N)
+
+# locus positions
+name,val = infile.readline().split(":")
+if name != "# loci":
+    raise ValueError("Bad file format.")
+else:
+    locus_position = [0.0] + [float(x) for x in val.split()] + [length]
+print("locus_position: ",locus_position)
+
 
 def ind_to_time(k):
-    return 1+generations-math.floor(k/N)
+    return 1+generations-math.floor((k-1)/N)
+
+def i2c(k,p):
+    return nsamples+ftprime.ind_to_chrom(k,ftprime.mapa_labels[p])
 
 # Input is of this form:
 # offspringID parentID startingPloidy rec1 rec2 ....
 # ... coming in *pairs*
 
 args=ftprime.ARGrecorder()
-for k in range(N):
-    for mapa in ftprime.mapa_labels:
-        print("Adding"+str(ftprime.ind_to_chrom(k,mapa))+"\n")
-        args.add_individual(ftprime.ind_to_chrom(k,mapa),ind_to_time(k))
+for k in range(1,N+1):
+    for p in [0,1]:
+        args.add_individual(i2c(k,p),ind_to_time(k))
 
 while True:
     line=infile.readline()
     if not line:
         break
-    print("A: "+line)
+    # print("A: "+line)
     child,parent,ploid,*rec = [int(x) for x in line.split()]
-    for mapa in ftprime.mapa_labels:
-        if mapa==ftprime.mapa_labels[1]:
+    for child_p in [0,1]:
+        if child_p==1:
             line=infile.readline()
-            print(" : "+line)
+            # print(" : "+line)
             prev_child=child
             child,parent,ploid,*rec = [int(x) for x in line.split()]
             if child != prev_child:
                 raise ValueError("Recombs not in pairs:"+str(child)+"=="+str(prev_child))
-        start=0
-        child_chrom=ftprime.ind_to_chrom(child,mapa)
+        print(child,child_p,parent,ploid)
+        if ind_to_time(child)>=ind_to_time(parent):
+            raise ValueError(str(child)+" at "+str(ind_to_time(child))+" does not come after " + str(parent)+" at "+str(ind_to_time(parent)))
+        start=0.0
+        child_chrom=i2c(child,child_p)
+        print(".. Adding",child_chrom)
         args.add_individual(child_chrom,ind_to_time(child))
         for r in rec:
+            breakpoint=random.uniform(locus_position[r],locus_position[r+1])
+            print("--- ",start,breakpoint)
             args.add_record(
                     left=start,
-                    right=r,
-                    parent=ftprime.ind_to_chrom(parent,ftprime.mapa_labels[ploid]),
+                    right=breakpoint,
+                    parent=i2c(parent,ploid),
                     children=(child_chrom,))
-            start=r
+            start=breakpoint
             ploid=((ploid+1)%2)
+        print("--- ",start,length," |")
         args.add_record(
                 left=start,
                 right=length,
-                parent=ftprime.ind_to_chrom(parent,ftprime.mapa_labels[ploid]),
+                parent=i2c(parent,ploid),
                 children=(child_chrom,))
 
 
 #######
 
 # final pop IDs
-pop_ids = range((generations-1)*N,generations*N)
+pop_ids = range(1+generations*N,1+(1+generations)*N)
 
 samples=random.sample(pop_ids,nsamples)
+print("Samples:",samples)
 # need chromosome ids
 chrom_samples = [ ftprime.ind_to_chrom(x,a) for x in samples for a in ftprime.mapa_labels ]
-meioser.records.add_samples(samples=chrom_samples)
+args.add_samples(samples=chrom_samples,length=length)
+
+for x in args.dump_records():
+    print(x)
 
 print("msprime trees:")
-ts=meioser.records.tree_sequence()
+ts=args.tree_sequence()
 # ts.simplify()
 ts.dump("sims.ts")
 
