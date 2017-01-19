@@ -11,6 +11,7 @@ import time
 import simuOpt
 simuOpt.setOptions(alleleType='mutant')
 import simuPOP as sim
+from simuPOP.demography import migr2DSteppingStoneRates
 import random
 from itertools import accumulate
 
@@ -44,10 +45,12 @@ parser.add_option("-a","--gamma_alpha",dest="gamma_alpha",help="alpha parameter 
 parser.add_option("-b","--gamma_beta",dest="gamma_beta",help="beta parameter in gamma distributed selection coefficients",default=.001)
 parser.add_option("-o","--outfile",dest="outfile",help="name of output file (or '-' for stdout)",default="-")
 parser.add_option("-g","--logfile",dest="logfile",help="name of log file (or '-' for stdout)",default="-")
+parser.add_option("-s","--selloci_file",dest="selloci_file",help="name of file to output selected locus information",default="sel_loci.txt")
 (options,args) =  parser.parse_args()
 
 outfile = fileopt(options.outfile, "w")
 logfile = fileopt(options.logfile, "w")
+selloci_file = options.selloci_file
 
 logfile.write("Options:\n")
 logfile.write(str(options)+"\n")
@@ -61,6 +64,7 @@ beta=float(options.gamma_beta)
 length=float(options.length)
 recomb_rate=float(options.recomb_rate)
 mut_rate=float(options.mut_rate)
+migr=float(options.migr)
 
 if length < nloci:
     raise ValueError("nloci cannot be larger than length")
@@ -115,7 +119,7 @@ pop = sim.Population(
         size=[popsize]*npops, 
         loci=[nloci], 
         lociPos=locus_position,
-        infoFields=['ind_id','fitness'])
+        infoFields=['ind_id','fitness','migrate_to'])
 
 pop.evolve(
     initOps=[
@@ -123,9 +127,13 @@ pop.evolve(
         sim.IdTagger(),
     ]+init_geno,
     preOps=[
+        sim.Migrator(
+            rate=migr2DSteppingStoneRates(
+                migr, m=width, n=width, diagonal=False, circular=False),
+            mode=sim.BY_PROBABILITY),
         sim.AcgtMutator(rate=[mut_rate], model='JC69'),
         sim.PyMlSelector(GammaDistributedFitness(alpha, beta),
-            output='>>sel_loci.txt'),
+            output='>>'+selloci_file),
     ],
     matingScheme=sim.RandomMating(
         ops=[

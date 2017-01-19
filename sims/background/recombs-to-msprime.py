@@ -3,10 +3,6 @@ description = '''
 Convert simulations to msprime and VCF.
 '''
 
-# TO DO:
-#  - record locus locations and use this
-#  - put the simulation on a grid
-
 import gzip
 import sys
 from optparse import OptionParser
@@ -38,6 +34,7 @@ parser.add_option("-i","--infile",dest="infile",help="input file (output by back
 parser.add_option("-k","--nsamples",dest="nsamples",help="number of *diploid* samples, total")
 parser.add_option("-u","--mut_rate",dest="mut_rate",help="mutation rate",default=1e-7)
 parser.add_option("-o","--outfile",dest="outfile",help="name of output file (or '-' for stdout)",default="-")
+parser.add_option("-t","--treefile",dest="treefile",help="name of output file for trees (or '-' for stdout)")
 parser.add_option("-g","--logfile",dest="logfile",help="name of log file (or '-' for stdout)",default="-")
 (options,args) =  parser.parse_args()
 
@@ -116,16 +113,16 @@ while True:
             child,parent,ploid,*rec = [int(x) for x in line.split()]
             if child != prev_child:
                 raise ValueError("Recombs not in pairs:"+str(child)+"=="+str(prev_child))
-        print(child,child_p,parent,ploid)
+        # print(child,child_p,parent,ploid)
         if ind_to_time(child)>=ind_to_time(parent):
             raise ValueError(str(child)+" at "+str(ind_to_time(child))+" does not come after " + str(parent)+" at "+str(ind_to_time(parent)))
         start=0.0
         child_chrom=i2c(child,child_p)
-        print(".. Adding",child_chrom)
+        # print(".. Adding",child_chrom)
         args.add_individual(child_chrom,ind_to_time(child))
         for r in rec:
             breakpoint=random.uniform(locus_position[r],locus_position[r+1])
-            print("--- ",start,breakpoint)
+            # print("--- ",start,breakpoint)
             args.add_record(
                     left=start,
                     right=breakpoint,
@@ -133,7 +130,7 @@ while True:
                     children=(child_chrom,))
             start=breakpoint
             ploid=((ploid+1)%2)
-        print("--- ",start,length," |")
+        # print("--- ",start,length," |")
         args.add_record(
                 left=start,
                 right=length,
@@ -147,18 +144,16 @@ while True:
 pop_ids = range(1+generations*N,1+(1+generations)*N)
 
 samples=random.sample(pop_ids,nsamples)
-print("Samples:",samples)
+# print("Samples:",samples)
 # need chromosome ids
 chrom_samples = [ ftprime.ind_to_chrom(x,a) for x in samples for a in ftprime.mapa_labels ]
 args.add_samples(samples=chrom_samples,length=length)
 
-for x in args.dump_records():
-    print(x)
-
 print("msprime trees:")
 ts=args.tree_sequence()
 # ts.simplify()
-ts.dump("sims.ts")
+if options.treefile is not None:
+    ts.dump(options.treefile)
 
 mut_seed=random.randrange(1,1000)
 logfile.write("Generating mutations with seed "+str(mut_seed)+"\n")
