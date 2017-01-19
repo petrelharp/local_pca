@@ -8,10 +8,12 @@ import sys
 from optparse import OptionParser
 import math
 import time
+import msprime
 import simuOpt
 simuOpt.setOptions(alleleType='mutant')
 import simuPOP as sim
 import random
+import ftprime
 from itertools import accumulate
 
 def fileopt(fname,opts):
@@ -33,12 +35,13 @@ def fileopt(fname,opts):
 
 parser = OptionParser(description=description)
 parser.add_option("-T","--generations",dest="generations",help="number of generations to run for")
+parser.add_option("-k","--nsamples",dest="nsamples",help="number of *diploid* samples, total")
 parser.add_option("-N","--popsize",dest="popsize",help="size of each subpopulation",default=100)
 parser.add_option("-w","--width",dest="width",help="width of square grid, in populations",default=3)
 parser.add_option("-L","--length",dest="length",help="number of bp in the chromosome",default=1e4)
 parser.add_option("-l","--nloci",dest="nloci",help="number of selected loci",default=20)
 parser.add_option("-m","--migr",dest="migr",help="migration proportion between adjacent populations",default=.01)
-parser.add_option("-u","--mut_rate",dest="mut_rate",help="mutation rate of selected alleles",default=1e-7)
+parser.add_option("-u","--mut_rate",dest="mut_rate",help="mutation rate",default=1e-7)
 parser.add_option("-r","--recomb_rate",dest="recomb_rate",help="recombination rate",default=2.5e-8)
 parser.add_option("-a","--gamma_alpha",dest="gamma_alpha",help="alpha parameter in gamma distributed selection coefficients",default=1)
 parser.add_option("-b","--gamma_beta",dest="gamma_beta",help="beta parameter in gamma distributed selection coefficients",default=.001)
@@ -53,20 +56,14 @@ logfile.write("Options:\n")
 logfile.write(str(options)+"\n")
 
 generations=int(options.generations)
+nsamples=int(options.nsamples)
 popsize=int(options.popsize)
 nloci=int(options.nloci)
-width=int(options.width)
 alpha=float(options.gamma_alpha)
 beta=float(options.gamma_beta)
-length=int(options.length)
+length=float(options.length)
 recomb_rate=float(options.recomb_rate)
 mut_rate=float(options.mut_rate)
-
-npops=width*width
-
-outfile.write("# generations:" + str(generations) + "\n")
-outfile.write("# length:" + str(length) + "\n")
-outfile.write("# N:" + str(popsize*npops) + "\n")
 
 # increase spacing between loci as we go along the chromosome
 spacing_fac=9
@@ -83,6 +80,29 @@ init_geno=[sim.InitGenotype(freq=init_freqs[k],loci=init_classes[k]) for k in ra
 
 ###
 # modified from http://simupop.sourceforge.net/manual_svn/build/userGuide_ch5_sec9.html
+
+pop = sim.Population(
+        size=[popsize]*50, 
+        loci=[nloci], 
+        lociPos=locus_position,
+        infoFields=['ind_id','fitness'])
+simu = sim.Simulator(pop)
+
+meioser=ftprime.MeiosisTagger(nsamples,ngens=1+generations)
+def step_gen(pop,param):
+    # function to increment internal clock in MeiosisTagger
+    # as in http://simupop.sourceforge.net/manual_svn/build/userGuide_ch5_sec14.html#python-operator-pyoperator
+    dt,=param
+    print("Time was", meioser.gen," and now is ",meioser.gen+dt)
+    meioser.gen+=dt
+    return True
+
+reproduction = sim.RandomMating(
+    ops=[
+        sim.PyTagger(func=meioser.new_offspring),
+        sim.Recombinator(intensity=recomb_rate),
+    ]
+)
 
 class GammaDistributedFitness:
     def __init__(self, alpha, beta):
@@ -107,29 +127,19 @@ class GammaDistributedFitness:
         else:
             return 1. - 2.*s
 
-pop = sim.Population(
-        size=[popsize]*npops, 
-        loci=[nloci], 
-        lociPos=locus_position,
-        infoFields=['ind_id','fitness'])
 
-pop.evolve(
+simu.evolve(
     initOps=[
         sim.InitSex(),
-        sim.IdTagger(),
+        meioser
     ]+init_geno,
     preOps=[
-        sim.AcgtMutator(rate=[mut_rate], model='JC69'),
+        sim.AcgtMutator(rate=[0.0001], model='JC69'),
         sim.PyMlSelector(GammaDistributedFitness(alpha, beta),
             output='>>sel_loci.txt'),
+        sim.PyOperator(func=step_gen,param=(1,)),
     ],
-    matingScheme=sim.RandomMating(
-        ops=[
-            sim.IdTagger(),
-            sim.Recombinator(intensity=recomb_rate,
-                output=outfile,
-                infoFields="ind_id"),
-        ] ),
+    matingScheme=reproduction,
     postOps=[
         sim.Stat(numOfSegSites=sim.ALL_AVAIL, step=50),
         sim.PyEval(r"'Gen: %2d #seg sites: %d\n' % (gen, numOfSegSites)", step=50)
@@ -137,10 +147,33 @@ pop.evolve(
     gen = generations
 )
 
-logfile.write("Done simulating!\n")
-logfile.write(time.strftime('%X %x %Z')+"\n")
+pop = simu.population(0)
 
-# writes out events in this form:
-# offspringID parentID startingPloidy rec1 rec2 ....
+pop_ids = [ ind.info('ind_id') for ind in pop.individuals() ]
+
+samples=random.sample(pop_ids,nsamples)
+# need chromosome ids
+chrom_samples = [ ftprime.ind_to_chrom(x,a) for x in samples for a in ftprime.mapa_labels ]
+times=[ meioser.time[x] for x in samples for a in ftprime.mapa_labels ]
+meioser.records.add_samples(samples=chrom_samples,times=times,populations=[0 for x in chrom_samples])
+
+print("msprime trees:")
+ts=meioser.records.tree_sequence()
+# ts.simplify()
+ts.dump("sims.ts")
+
+mut_seed=random.randrange(1,1000)
+logfile.write("Generating mutations with seed "+str(mut_seed)+"\n")
+rng = msprime.RandomGenerator(mut_seed)
+ts.generate_mutations(mut_rate,rng)
+
+logfile.write("Done!\n")
+logfile.write(time.strftime('%X %x %Z')+"\n")
+logfile.write("Mean pairwise diversity: {}\n".format(ts.get_pairwise_diversity()/ts.get_sequence_length()))
+logfile.write("Sequence length: {}\n".format(ts.get_sequence_length()))
+logfile.write("Number of trees: {}\n".format(ts.get_num_trees()))
+logfile.write("Number of mutations: {}\n".format(ts.get_num_mutations()))
+
+ts.write_vcf(outfile,ploidy=1)
 
 
