@@ -10,7 +10,8 @@
 #' @return A numeric vector: 
 #' the first entry gives the total sum of squared values of the covariance matrix 
 #' (i.e., the sum of the eigenvectors, for computing the proportion of variance explained);
-#' the next k entires give eigenvalues and each subsequent group of ncol(data) columns give the corresponding eigenvector.
+#' the next k entries give eigenvalues and each subsequent group of ncol(data) columns give the corresponding eigenvector.
+#  So, the result has 1 + k*(ncol(x)+1) entries.
 #'
 #' If C is the covariance matrix, the columns of U are the eigenvectors, and W and Lambda are diagonal matrices with w and the eigenvalues on the diagonals respectively,
 #' then the output is the minimizer of
@@ -22,7 +23,7 @@ cov_pca <- function (x,k,w=1,
                      covmat=cov(sweep(x,1,rowMeans(x,na.rm=TRUE),"-"),use='pairwise') ) {
     sqrt.w <- rep_len(sqrt(w),ncol(covmat))
     covmat <- sweep( sweep( covmat, 1, sqrt.w, "*" ), 2, sqrt.w, "*" )
-    if(any(is.na(covmat))) {return(rep(NA,2*(nrow(covmat)+1)))}
+    if(any(is.na(covmat))) { return(rep(NA,1+k*(nrow(covmat)+1))) }
     # PCA <- eigen(covmat)
     # return( c( sum(covmat^2), PCA$values[1:k], PCA$vectors[,1:k] ) )
     PCA <- if (k==ncol(covmat)) { eigen(covmat) } else { RSpectra::eigs_sym(covmat,k=k) }
