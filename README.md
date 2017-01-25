@@ -32,9 +32,10 @@ To start using the code on your own data, have a look at these files:
 - To compile the example report, you probably want 
     [templater](https://github.com/petrelharp/templater).
 
-## Standalone code
 
-Also included is code we used to analyze the datasets in the paper (before the R package was written).
+# Standalone code
+
+Also included in this repository is code we used to analyze the datasets in the paper (before the R package was written).
 The general order to see the code in each directory is 
 
 1. recode : turn bases into numbers

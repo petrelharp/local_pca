@@ -1,6 +1,10 @@
 
 context("Testing pc_dist")
 
+expect_almost_equal <- function (object,expected,tol=10*sqrt(.Machine$double.eps),...) {
+    expect_true( all(abs(object-expected)<tol), ... )
+}
+
 set.seed(42)
 n <- 10
 
@@ -34,17 +38,17 @@ g2 <- function (k,eig) {
 kk <- c(1,5,10)
 for (k in kk) {
     # non-normalized
-    ff <- sum( (f(k,x.eig) - f(k,y.eig))^2 )
+    ff <- sqrt(sum( (f(k,x.eig) - f(k,y.eig))^2 ))
     fm <- matrix(c(0,ff,ff,0),nrow=2)
-    expect_equal( fm, pc_dist(elist(k),npc=k,normalize=FALSE) )
+    expect_almost_equal( fm, pc_dist(elist(k),npc=k,normalize=FALSE) )
     # normalized, L1
-    gg <- sum( (g1(k,x.eig) - g1(k,y.eig))^2 )
+    gg <- sqrt(sum( (g1(k,x.eig) - g1(k,y.eig))^2 ))
     gm <- matrix(c(0,gg,gg,0),nrow=2)
-    expect_equal( gm, pc_dist(elist(k),npc=k,normalize="L1") )
+    expect_almost_equal( gm, pc_dist(elist(k),npc=k,normalize="L1") )
     # normalized, L2
-    gg <- sum( (g2(k,x.eig) - g2(k,y.eig))^2 )
+    gg <- sqrt(sum( (g2(k,x.eig) - g2(k,y.eig))^2 ))
     gm <- matrix(c(0,gg,gg,0),nrow=2)
-    expect_equal( gm, pc_dist(elist(k),npc=k,normalize="L2") )
+    expect_almost_equal( gm, pc_dist(elist(k),npc=k,normalize="L2") )
 }
 
 ## weighted
@@ -68,16 +72,16 @@ expect_equal( sum( w * (y^2 %*% diag(w)) ), sum( y.eig$values^2 ) )
 kk <- c(1,5,10)
 for (k in kk) {
     # non-normalized
-    ff <- sum(  w * sweep( (f(k,x.eig) - f(k,y.eig))^2, 2, w, "*" ) )
+    ff <- sqrt( sum(  w * sweep( (f(k,x.eig) - f(k,y.eig))^2, 2, w, "*" ) ) )
     fm <- matrix(c(0,ff,ff,0),nrow=2)
-    expect_equal( fm, pc_dist(elist(k),npc=k,w=w,normalize=FALSE) )
+    expect_almost_equal( fm, pc_dist(elist(k),npc=k,w=w,normalize=FALSE) )
     # normalized, L1
-    gg <- sum( w * sweep( (g1(k,x.eig) - g1(k,y.eig))^2, 2, w, "*" ) )
+    gg <- sqrt( sum( w * sweep( (g1(k,x.eig) - g1(k,y.eig))^2, 2, w, "*" ) ) )
     gm <- matrix(c(0,gg,gg,0),nrow=2)
-    expect_equal( gm, pc_dist(elist(k),npc=k,w=w,normalize="L1") )
+    expect_almost_equal( gm, pc_dist(elist(k),npc=k,w=w,normalize="L1") )
     # normalized, L2
-    gg <- sum( w * sweep( (g2(k,x.eig) - g2(k,y.eig))^2, 2, w, "*" ) )
+    gg <- sqrt( sum( w * sweep( (g2(k,x.eig) - g2(k,y.eig))^2, 2, w, "*" ) ) )
     gm <- matrix(c(0,gg,gg,0),nrow=2)
-    expect_equal( gm, pc_dist(elist(k),npc=k,w=w,normalize="L2") )
+    expect_almost_equal( gm, pc_dist(elist(k),npc=k,w=w,normalize="L2") )
 }
 

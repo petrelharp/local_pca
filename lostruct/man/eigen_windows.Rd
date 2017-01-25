@@ -24,7 +24,8 @@ eigen_windows(data, k, do.windows = NULL, win, w = 1, mc.cores = 1, ...)
 \value{
 A numeric matrix with one row for each window; the first column is the sum of squared values of the covariance matrix;
 the next k columns are the eigenvalues, and each subsequent group of ncol(data) columns give the corresponding eigenvector.
-The result has an attribute, "npc", which is equal to the number of eigenvalues computed (k).
+The result has an attribute, "npc", which is equal to the number of eigenvalues computed (k), and so the result will have
+1 + k + k*ncol(data) columns.
 
 The work of finding eigenvalues/vectors is done by \code{cov_pca()}; see there for details.
 }

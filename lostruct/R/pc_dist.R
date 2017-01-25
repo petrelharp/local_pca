@@ -8,7 +8,7 @@
 #' \code{values} is replaced by \code{values/sqrt(sum(values))}.
 #'
 #' The norm is also weighted by the weights \code{w}:
-#'   dist(A,B) = sum_{i,j}  w[i] * w[j] * ( A[i,j] - B[i,j] )^2
+#'   dist(A,B) = sqrt( sum_{i,j}  w[i] * w[j] * ( A[i,j] - B[i,j] )^2 )
 #'
 #' @param x Matrix as output by eigen_windows(): one row per window, with entries (sum squares), (eigenvalues), (eigenvectors).
 #' @param npc Number of pcas computed.
@@ -28,11 +28,11 @@ pc_dist <- function( x, npc=attr(x,"npc"), w=1, normalize="L1", mc.cores=1 ) {
     emat <- function (u) { matrix(u,ncol=npc) }
     out <- do.call( rbind, this.lapply( 1:n, function (i) {
                 sapply( 1:n, function (j) {
-                    dist_from_pcs( values[i,], emat(vectors[i,]), values[j,], emat(vectors[j,]) )
+                    dist_sq_from_pcs( values[i,], emat(vectors[i,]), values[j,], emat(vectors[j,]) )
                 } )
             } ) )
-    # symmetrize
-    return( (out + t(out))/2 )
+    # symmetrize and truncate negative nubmers (which are machine error)
+    return( sqrt(pmax(0,(out + t(out))/2)) )
 }
 
 
@@ -51,7 +51,7 @@ pc_dist <- function( x, npc=attr(x,"npc"), w=1, normalize="L1", mc.cores=1 ) {
 #' which means premultiplying U and V by sqrt(w); assume this has been done already.
 #'
 #' The code does not check that vectors1 and vectors2 are each orthonormal.
-dist_from_pcs <- function (values1,vectors1,values2,vectors2) {
+dist_sq_from_pcs <- function (values1,vectors1,values2,vectors2) {
     # this is X^T
     Xt <- crossprod(vectors2,vectors1)
     return( sum(values1^2) + sum(values2^2) - 2 * sum( values1 * colSums(Xt*(values2*Xt)) ) )

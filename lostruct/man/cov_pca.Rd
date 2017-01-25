@@ -20,7 +20,7 @@ cov_pca(x, k, w = 1, covmat = cov(sweep(x, 1, rowMeans(x, na.rm = TRUE),
 A numeric vector: 
 the first entry gives the total sum of squared values of the covariance matrix 
 (i.e., the sum of the eigenvectors, for computing the proportion of variance explained);
-the next k entires give eigenvalues and each subsequent group of ncol(data) columns give the corresponding eigenvector.
+the next k entries give eigenvalues and each subsequent group of ncol(data) columns give the corresponding eigenvector.
 
 If C is the covariance matrix, the columns of U are the eigenvectors, and W and Lambda are diagonal matrices with w and the eigenvalues on the diagonals respectively,
 then the output is the minimizer of

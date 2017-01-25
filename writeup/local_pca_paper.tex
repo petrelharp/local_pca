@@ -420,9 +420,11 @@ $D_{ij}$ can be computed efficiently as
 \begin{align}
     D_{ij} 
     = 
+    \left(
     \frac{ \sum_{\ell=1}^k \lambda_{\ell i}^2 }{ (\sum_{\ell=1}^k \lambda_{\ell i})^2 }
     + \frac{ \sum_{\ell=1}^k \lambda_{\ell j}^2 }{ (\sum_{\ell=1}^k \lambda_{\ell j})^2 }
-    - 2 \sum_{\ell, m=1}^k (V(i)^T V(j))^2_{\ell m} .
+    - 2 \sum_{\ell, m=1}^k (V(i)^T V(j))^2_{\ell m} 
+    \right)^{1/2}.
 \end{align}
 % from the code for pc_dist():
 % #' In the unweighted case, suppose that (u) and (v) are sets of vectors, and that 

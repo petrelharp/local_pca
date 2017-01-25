@@ -30,6 +30,6 @@ If \code{normalize} is set, then the the matrices are normalized to have norm 1,
 }
 \details{
 The norm is also weighted by the weights \code{w}:
-  dist(A,B) = sum_{i,j}  w[i] * w[j] * ( A[i,j] - B[i,j] )^2
+  dist(A,B) = sqrt( sum_{i,j}  w[i] * w[j] * ( A[i,j] - B[i,j] )^2 )
 }
 
