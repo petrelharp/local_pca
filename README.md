@@ -32,6 +32,44 @@ To start using the code on your own data, have a look at these files:
 - To compile the example report, you probably want 
     [templater](https://github.com/petrelharp/templater).
 
+## Quick start
+
+The three steps are:
+
+1. Compute the local PCA coordinates - done with `eigen_windows()`.
+2. Compute the distance matrix between windows - done with `pc_dist()` on the output of `eigen_windows()`.
+3. Visualize - whatever you want; MDS is implemented in R with `cmdscale()`.
+
+**Data formats:**
+
+The function `eigen_windows()` basically wants
+your data in a numeric matrix,
+with one row per variant and one column per sample
+(so that `x[i,j]` is the number of alleles that sample `j` has at site `i`).
+If your data are already in this form, then you can use it directly.
+
+We also have two methods to get data in from standard formats,
+`tped` and `vcf`.  Neither are extensively tested: 
+**double-check** what you are getting out of them.
+
+- *TPED*: the `read_tped()` function will read in a tped file and output a numeric matrix like the above.
+- *VCF, in memory*: the `read_vcf()` function does the same. 
+- *VCF, not in memory*: `eigen_windows()` instead of a matrix can take a function that when called returns the submatrix
+    corresponding to the appropriate window. (see documentation)
+    Since we only need one window in memory at a time, this reduces the memory footprint.
+    The function `vcf_windower()` will create such a function.  For instance,
+    ```
+    f <- vcf_windower("my_data.vcf",size=1e3,type='snp')
+    f(10)
+    ```
+    will return the 10th window of 1,000 SNPs in the file `my_data.vcf`; then
+    ```
+    pcs <- eigen_windows(f,k=2)
+    pcdist <- pc_dist(pcs,npc=2)
+    ```
+    will find `pcs`, a matrix whose rows give the first two eigenvalues and eigenvectors for each window,
+    and `pcdist`, the pairwise distance matrix between those windows.
+
 
 # Standalone code
 

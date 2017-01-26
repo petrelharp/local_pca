@@ -29,7 +29,14 @@ region_string <- function (regions) {
 #' For instance, "0/0", "0|0", and "0" are coded as 0, while "0/1", "2|0", or "1" are coded as 1,
 #' and "1/1", "1/2" or "1|4" are all coded as 2.
 #'
-#' The format is determiend by looking at the first 100 loci in the first 100 individuals.
+#' The format is determined by looking at the first 100 loci in the first 100 individuals.
+#'
+#' bcftools requires that vcf files are bgzipped, and both bcf and vcf files must be indexed,
+#' so if you have a (plain text) vcf file "my_data.vcf", run
+#'   bgzip my_data.vcf
+#'   bcftools index my_data.vcf.gz
+#' and then use file="my_data.vcf.gz".
+#'
 #' @export
 vcf_query <- function (file, regions, samples, verbose=FALSE, recode=TRUE) {
 	bcf.args <- c("bcftools", "query", "-f", "'[ %GT]\\n'")
@@ -41,6 +48,9 @@ vcf_query <- function (file, regions, samples, verbose=FALSE, recode=TRUE) {
     gt.text <- tryCatch( as.matrix(data.table::fread( bcf.call, header=FALSE, sep=' ', data.table=FALSE )),
                    error=function (e) { if ( grepl("File is empty", e$message) ) { NULL } else { stop(paste("Error. Is bcftools installed?\n",e)) } } )
     if (is.null(gt.text) || !recode) { return(gt.text) }
+    if (is.numeric(gt.text)) {  # haploid
+        gt <- pmin(1L,gt.text)
+    }
     if (length(grepl("[0-9]\\|[0-9]", gt.text[seq_len(min(nrow(gt.text),100)),seq_len(min(ncol(gt.text),100))]))>0) {
         gt <- c(0L,1L,1L,2L)[match( unlist(gt.text), c("0|0","0|1","1|0","1|1") )]
         gt[ grep( "([2-9]\\|0)|(0\\|[2-9])", gt.text ) ] <- 1L
@@ -139,10 +149,13 @@ vcf_samples <- function (file) {
 #' @param type The units of the window: 'bp' or 'snp'?
 #' @param sites The positions in the VCF file, as returned by \code{vcf_positions}.
 #' @param samples A character vector of sample names to be extracted.
-#' @return A class "winfun" window extractor function that returns an integer matrix, giving the number of alternate alleles for each sample.
+#' @return A class "winfun" window extractor function.  If 'f' is the output (e.g., f <- vcf_windower("my.vcf",size=100,type='snp')),
+#' then 'f(k)' will return the integer matrix corresponding to the 'k'th window, whose rows give the number of alternate alleles for each sample.
 #' Such functions also have three attributes: \code{max.n}, giving the index of the largest window,
 #' \code{samples}, the sample IDs that are extracted (corresponding to the columns of the matrix that is returned),
 #' and \code{region}, which is a function that takes an integer vector and returns a data frame giving chromosome, start, and end of the corresponding windows.
+#'
+#' The resulting function can also be passed additional options through to 'query_vcf()', e.g., 'recode=FALSE'.
 #' @export
 vcf_windower <- function (
 			file, 
@@ -228,6 +241,7 @@ vcf_windower_snp <- function (file, sites, size, samples=vcf_samples(file)) {
 #' @param max.n Index of the largest window.
 #' @param samples Character vector of sample IDs corresponding to columns of extracted data.
 #' @param region A function taking an integer vector returning the chromosome, start, and end of the corresponding windows.
+#' @export
 as.winfun <- function (f,max.n,samples,region) {
     attr(f,"max.n") <- max.n
     attr(f,"samples") <- samples
