@@ -81,7 +81,7 @@ if name != "# loci":
     raise ValueError("Bad file format.")
 else:
     locus_position = [0.0] + [float(x) for x in val.split()] + [length]
-print("locus_position: ",locus_position)
+# print("locus_position: ",locus_position)
 
 
 def ind_to_time(k):
