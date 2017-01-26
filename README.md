@@ -54,12 +54,14 @@ We also have two methods to get data in from standard formats,
 
 - *TPED*: the `read_tped()` function will read in a tped file and output a numeric matrix like the above.
 - *VCF, in memory*: the `read_vcf()` function does the same. 
-- *VCF, not in memory*: `eigen_windows()` instead of a matrix can take a function that when called returns the submatrix
+- *BCF, not in memory*: `eigen_windows()` instead of a matrix can take a function that when called returns the submatrix
     corresponding to the appropriate window. (see documentation)
     Since we only need one window in memory at a time, this reduces the memory footprint.
+    We use `bcftools` to extract the windows, so you need [bcftools](https://samtools.github.io/bcftools/),
+    and your vcf file must be bgzipped and indexed (see `?query_vcf`).
     The function `vcf_windower()` will create such a function.  For instance,
     ```
-    f <- vcf_windower("my_data.vcf",size=1e3,type='snp')
+    f <- vcf_windower("my_data.bcf",size=1e3,type='snp')
     f(10)
     ```
     will return the 10th window of 1,000 SNPs in the file `my_data.vcf`; then

@@ -22,7 +22,13 @@ An integer matrix, giving the number of nonreference alleles for each sample.
 For instance, "0/0", "0|0", and "0" are coded as 0, while "0/1", "2|0", or "1" are coded as 1,
 and "1/1", "1/2" or "1|4" are all coded as 2.
 
-The format is determiend by looking at the first 100 loci in the first 100 individuals.
+The format is determined by looking at the first 100 loci in the first 100 individuals.
+
+bcftools requires that vcf files are bgzipped, and both bcf and vcf files must be indexed,
+so if you have a (plain text) vcf file "my_data.vcf", run
+  bgzip my_data.vcf
+  bcftools index my_data.vcf.gz
+and then use file="my_data.vcf.gz".
 }
 \description{
 Uses bcftools to query vcf or bcf files for genotypes in a collection of regions,
