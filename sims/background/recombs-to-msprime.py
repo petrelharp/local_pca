@@ -87,8 +87,14 @@ else:
 def ind_to_time(k):
     return 1+generations-math.floor((k-1)/N)
 
+# keep track of index of smallest-indexed individual seen
+# as msprime needs to have samples up 'til that point
+first_chrom=[1e20]
+
 def i2c(k,p):
-    return nsamples+ftprime.ind_to_chrom(k,ftprime.mapa_labels[p])
+    out=nsamples+ftprime.ind_to_chrom(k,ftprime.mapa_labels[p])
+    first_chrom[0]=min(first_chrom[0],out)
+    return out
 
 # Input is of this form:
 # offspringID parentID startingPloidy rec1 rec2 ....
@@ -114,7 +120,7 @@ while True:
             if child != prev_child:
                 raise ValueError("Recombs not in pairs:"+str(child)+"=="+str(prev_child))
         # print(child,child_p,parent,ploid)
-        if ind_to_time(child)>=ind_to_time(parent):
+        if ind_to_time(child)>ind_to_time(parent):
             raise ValueError(str(child)+" at "+str(ind_to_time(child))+" does not come after " + str(parent)+" at "+str(ind_to_time(parent)))
         start=0.0
         child_chrom=i2c(child,child_p)
@@ -143,22 +149,25 @@ while True:
 # final pop IDs
 pop_ids = range(1+generations*N,1+(1+generations)*N)
 
-samples=random.sample(pop_ids,nsamples)
-logfile.write("Samples:"+str(samples)+"\n")
+# some messing around to fill up the required samples
+actual_nsamples=int((first_chrom[0]/2) + (first_chrom[0]%2 > 0))  # haploid!
+diploid_samples=random.sample(pop_ids,actual_nsamples)
+logfile.write("Samples ("+str(actual_nsamples)+" of them): "+str(diploid_samples)+"\n")
 # need chromosome ids
-chrom_samples = [ ftprime.ind_to_chrom(x,a) for x in samples for a in ftprime.mapa_labels ]
-args.add_samples(samples=chrom_samples,length=length)
+chrom_samples = [ ftprime.ind_to_chrom(x,a) for x in diploid_samples for a in ftprime.mapa_labels ]
+args.add_samples(samples=chrom_samples[:first_chrom[0]],length=length)
 
 # not really the sample locs, but we don't care about that
 sample_locs = [ (0,0) for _ in chrom_samples ]
 
 print("msprime trees:")
+# ts=args.tree_sequence(samples=sample_locs)
 ts=args.tree_sequence(samples=sample_locs)
 
-for x in ts.records():
-    print(x)
+# for x in ts.records():
+#     print(x)
 
-ts.simplify()
+ts.simplify(samples=list(range(nsamples)))
 
 if options.treefile is not None:
     ts.dump(options.treefile)

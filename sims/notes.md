@@ -77,6 +77,6 @@ where `a1` and `a2` are alleles.
 
 Short version:
 ```
-./background-sim.py -T 1000 -N 40 -w 2 -L 1e6 -l 1000 -m .01 -u .001 -r .00001 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
-./recombs-to-msprime.py -i bground_sim_short.recomb -k 10 -u .0001 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.msprime.log
+./background-sim.py -T 10000 -N 100 -w 2 -L 100 -l 1000 -m .01 -u .001 -r .0001 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
+./recombs-to-msprime.py -i bground_sim_short.recomb -k 20 -u .01 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.msprime.log
 ```

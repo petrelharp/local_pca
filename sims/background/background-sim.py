@@ -66,9 +66,6 @@ recomb_rate=float(options.recomb_rate)
 mut_rate=float(options.mut_rate)
 migr=float(options.migr)
 
-if length < nloci:
-    raise ValueError("nloci cannot be larger than length")
-
 npops=width*width
 
 # increase spacing between loci as we go along the chromosome
