@@ -144,14 +144,22 @@ while True:
 pop_ids = range(1+generations*N,1+(1+generations)*N)
 
 samples=random.sample(pop_ids,nsamples)
-# print("Samples:",samples)
+logfile.write("Samples:"+str(samples)+"\n")
 # need chromosome ids
 chrom_samples = [ ftprime.ind_to_chrom(x,a) for x in samples for a in ftprime.mapa_labels ]
 args.add_samples(samples=chrom_samples,length=length)
 
+# not really the sample locs, but we don't care about that
+sample_locs = [ (0,0) for _ in chrom_samples ]
+
 print("msprime trees:")
-ts=args.tree_sequence()
-# ts.simplify()
+ts=args.tree_sequence(samples=sample_locs)
+
+for x in ts.records():
+    print(x)
+
+ts.simplify()
+
 if options.treefile is not None:
     ts.dump(options.treefile)
 
