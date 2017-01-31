@@ -49,6 +49,9 @@ write.table(map, file="decode_female_chr7.gmap", row.names=FALSE)
 ./neutral-sim.py -k 1000 -N 1000 -w 10 -L 4e7 -m 4e-3 -p decode_female_chr7.gmap -u 1e-7 -o hot_recomb.vcf -g hot_recomb.log
 bcftools convert -O b -o hot_recomb.bcf hot_recomb.vcf
 ```
+But this includes the centromere!  So, we're removing the windows overlapping with
+anything on either side of the centromere out to the first segment in the genetic map having recombination rate at least 8cM/Mb,
+which is from 13710990 to 16775980.
 
 Note: the deCode map is obtained from http://www.decode.com/addendum/ ; should cite:
     Kong, A et al.  Fine scale recombination rate differences between sexes, populations and individuals. Nature  467 , 1099–1103 (28 October 2010) doi:10.1038/nature09525.
