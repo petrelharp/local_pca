@@ -1,5 +1,5 @@
 context("reading windows from VCF files")
-## FIX: Test.vcf has '0|0' genotypes; but query_vcf assumes '0/0'.
+context("with '0|1' genotypes")
 
 # has 7 individuals at 71 loci across 4334 bases
 # need to run
@@ -113,4 +113,48 @@ expect_warning( eigen_windows( win.fn, k=4 ) )
 expect_equivalent( pca.stuff[1,2:3],  eigen( cov(sweep( win.fn(1), 1, rowMeans(win.fn(1),na.rm=TRUE), "-" ), use='pairwise') )$values[1:2] )
 expect_equivalent( pca.stuff[2,2],  eigen( cov(sweep( win.fn(2), 1, rowMeans(win.fn(2),na.rm=TRUE), "-" ), use='pairwise') )$values[1] )
 expect_true( all( is.na( pca.stuff[3,] ) ) )
+
+###############
+context("with '0/1' genotypes")
+
+# has 9 rows of header
+# and individuals
+nheader <- 9
+samples <- c("jmc1", "jmc10", "jmc11", "jmc12", "jmc13", "jmc16", "jmc17", 
+            "jmc19", "jmc2", "jmc20", "jmc21", "jmc23", "jmc4", "jmc5", "jmc7", 
+            "jmc8", "jmc9", "ucsd_a1", "ucsd_a10", "ucsd_a13", "ucsd_a2", 
+            "ucsd_a5", "ucsd_a6", "ucsd_b1", "ucsd_b2", "ucsd_b7", "ucsd_b8", 
+            "ucsd_b9", "T101")
+
+bcf.file <- "small_test.vcf.gz"
+
+vcf.text <- read.table(bcf.file, sep="\t", skip=nheader, header=TRUE, comment.char="", stringsAsFactors=FALSE )
+vcf.geno <- do.call( cbind, lapply( 10:(10+length(samples)-1), function(k) {
+                gsub(":.*","",vcf.text[,k]) } ))
+vcf.mat <- c(0L,1L,1L,2L)[match(vcf.geno,c("0/0","0/1","1/0","1/1"))]
+dim(vcf.mat) <- dim(vcf.geno)
+
+# read in data
+#  (will warn about truncated SNP)
+expect_warning( 
+                 win.fn <- vcf_windower(bcf.file, size=7, type='snp' ) 
+         )
+expect_equal( attr(win.fn,"max.n"), 2 )
+
+# get regions
+expect_equal( region(win.fn)(),
+        structure(list(chrom = structure(1:2, .Label = c("LG1", "LG2"
+        ), class = "factor"), start = c(7945842L, 1031678L), end = c(16550984L, 
+        12045447L)), .Names = c("chrom", "start", "end"), row.names = c(NA, 
+        -2L), class = "data.frame") )
+
+expect_equal( samples, samples(win.fn) )
+
+# get the first window
+expect_equivalent( win.fn(1,recode=FALSE), vcf.geno[1:7,] )
+
+expect_equal( win.fn(1), vcf.mat[1:7,] )
+
+expect_equal( win.fn(2), vcf.mat[7+(1:7),] )
+
 
