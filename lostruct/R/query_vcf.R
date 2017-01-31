@@ -51,11 +51,11 @@ vcf_query <- function (file, regions, samples, verbose=FALSE, recode=TRUE) {
     if (is.numeric(gt.text)) {  # haploid
         gt <- pmin(1L,gt.text)
     }
-    if (length(grepl("[0-9]\\|[0-9]", gt.text[seq_len(min(nrow(gt.text),100)),seq_len(min(ncol(gt.text),100))]))>0) {
+    if (sum(grepl("[0-9]\\|[0-9]", gt.text[seq_len(min(nrow(gt.text),100)),seq_len(min(ncol(gt.text),100))]))>0) {
         gt <- c(0L,1L,1L,2L)[match( unlist(gt.text), c("0|0","0|1","1|0","1|1") )]
         gt[ grep( "([2-9]\\|0)|(0\\|[2-9])", gt.text ) ] <- 1L
         gt[ grep( "([2-9]\\|1)|(1\\|[2-9])|([2-9]\\|[2-9])", gt.text ) ] <- 2L
-    } else if (length(grepl("[0-9]\\/[0-9]", gt.text[seq_len(min(nrow(gt.text),100)),seq_len(min(ncol(gt.text),100))]))>0) {
+    } else if (sum(grepl("[0-9]\\/[0-9]", gt.text[seq_len(min(nrow(gt.text),100)),seq_len(min(ncol(gt.text),100))]))>0) {
         gt <- c(0L,1L,1L,2L)[match( unlist(gt.text), c("0/0","0/1","1/0","1/1") )]
         gt[ grep( "([2-9]\\/0)|(0\\/[2-9])", gt.text ) ] <- 1L
         gt[ grep( "([2-9]\\/1)|(1\\/[2-9])|([2-9]\\/[2-9])", gt.text ) ] <- 2L
