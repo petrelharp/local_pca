@@ -31,8 +31,10 @@ pc_dist <- function( x, npc=attr(x,"npc"), w=1, normalize="L1", mc.cores=1 ) {
                     dist_sq_from_pcs( values[i,], emat(vectors[i,]), values[j,], emat(vectors[j,]) )
                 } )
             } ) )
-    # symmetrize and truncate negative nubmers (which are machine error)
-    return( sqrt(pmax(0,(out + t(out))/2)) )
+    # symmetrize and truncate negative numbers (which are machine error)
+    out <- sqrt(pmax(0,(out+t(out))/2))
+    dim(out) <- c(n,n)
+    return(out)
 }
 
 

@@ -37,6 +37,9 @@ g2 <- function (k,eig) {
 
 kk <- c(1,5,10)
 for (k in kk) {
+    context(sprintf("k=%d",k))
+    # dimensions
+    expect_equal( dim(pc_dist(elist(k),npc=k)), c(2L,2L) )
     # non-normalized
     ff <- sqrt(sum( (f(k,x.eig) - f(k,y.eig))^2 ))
     fm <- matrix(c(0,ff,ff,0),nrow=2)
@@ -51,7 +54,8 @@ for (k in kk) {
     expect_almost_equal( gm, pc_dist(elist(k),npc=k,normalize="L2") )
 }
 
-## weighted
+## 
+context("weighted PCs")
 
 w <- rexp( n )
 x.eig <- eigen(sqrt(w) * x %*% diag(sqrt(w)))
@@ -71,6 +75,7 @@ expect_equal( sum( w * (y^2 %*% diag(w)) ), sum( y.eig$values^2 ) )
 
 kk <- c(1,5,10)
 for (k in kk) {
+    context(sprintf("k=%d",k))
     # non-normalized
     ff <- sqrt( sum(  w * sweep( (f(k,x.eig) - f(k,y.eig))^2, 2, w, "*" ) ) )
     fm <- matrix(c(0,ff,ff,0),nrow=2)

@@ -80,6 +80,34 @@ where `a1` and `a2` are alleles.
 
 Short version:
 ```
-./background-sim.py -T 10000 -N 100 -w 2 -L 100 -l 1000 -m .01 -u .001 -r .0001 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
+./background-sim.py -T 10 -N 100 -w 2 -L 100 -l 1000 -m .01 -u .001 -r .0001 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
 ./recombs-to-msprime.py -i bground_sim_short.recomb -k 20 -u .01 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.msprime.log
 ```
+
+Recall from above:
+all simulations on an 10x10 grid, with 2Ne=1000 per population,
+simulating a chromosome of length 4e7bp, mean recombination rate 2.5e-8, mutation rate 1e-7. 
+Total population is 1e5, so we expect divergence of 0.01, and a tree every 400bp.
+To have lineages mix over this time, but not instantly,
+migration rate 4e-3 (in proportion of a population replaced by a given neighbor each generation).
+
+Furthermore, we want to have some deleterious loci segregating:
+the human exome is 30Mb; divided into 10,000 loci this is 3Kb per locus;
+if we assume that roughly 1/2 of these are deleterious
+then we want a deleterious mutation rate of 1.5e-4.
+
+Timing results:
+```
+# 0.2s:
+time ./background-sim.py -T 10 -N 100 -w 2 -L 100 -l 10 -m 4e-3 -u 1.5e-4 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
+# 1s with 10x10 instead of 2x2 grid:  
+time ./background-sim.py -T 10 -N 100 -w 10 -L 100 -l 10 -m .01 -u 1.5e-4 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
+# 1.1s also with 4e6 bp chromosome
+time ./background-sim.py -T 10 -N 100 -w 10 -L 4e6 -l 10 -m .01 -u 1.5e-4 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
+# also with 10,000 loci
+time ./background-sim.py -T 10 -N 100 -w 10 -L 4e6 -l 10000 -m .01 -u 1.5e-4 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
+# also with N=1000 per population
+time ./background-sim.py -T 10 -N 1000 -w 10 -L 4e6 -l 10000 -m .01 -u 1.5e-4 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
+
+```
+
