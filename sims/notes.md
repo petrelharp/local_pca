@@ -122,3 +122,18 @@ time ./background-sim.py -T 100 -N 1000 -w 10 -L 25e6 -l 100 -m 4e-3 -u 5e-3 -r 
 ```
 It looks like the time scales linearly with generations $\times$ selected loci $\times$ individuals, as expected.
 Doing $N=100$ with 1,000 loci for 10,000 generations should take 20 hours according to the above estimate.
+```
+time ./background-sim.py -T 10000 -N 100 -w 10 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
+```
+
+Multiple threads:
+```
+# 260s instead of 72s
+time ./background-sim.py -t 4 -T 10 -N 100 -w 10 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
+# 1766s
+# and 1052s
+time ./background-sim.py -t 4 -T 40 -N 100 -w 10 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
+# 290s : quicker without multithreading!!
+time ./background-sim.py -T 40 -N 100 -w 10 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
+```
+
