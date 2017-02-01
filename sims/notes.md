@@ -135,5 +135,7 @@ time ./background-sim.py -t 4 -T 10 -N 100 -w 10 -L 25e6 -l 1000 -m 4e-3 -u 5e-3
 time ./background-sim.py -t 4 -T 40 -N 100 -w 10 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
 # 290s : quicker without multithreading!!
 time ./background-sim.py -T 40 -N 100 -w 10 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
+# 4139s
+time ./background-sim.py -t 4 -T 160 -N 100 -w 10 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
 ```
 

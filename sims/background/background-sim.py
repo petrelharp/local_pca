@@ -8,10 +8,6 @@ import sys
 from optparse import OptionParser
 import math
 import time
-import simuOpt
-simuOpt.setOptions(alleleType='mutant')
-import simuPOP as sim
-from simuPOP.demography import migr2DSteppingStoneRates
 import random
 from itertools import accumulate
 
@@ -46,7 +42,14 @@ parser.add_option("-b","--gamma_beta",dest="gamma_beta",help="beta parameter in 
 parser.add_option("-o","--outfile",dest="outfile",help="name of output file (or '-' for stdout)",default="-")
 parser.add_option("-g","--logfile",dest="logfile",help="name of log file (or '-' for stdout)",default="-")
 parser.add_option("-s","--selloci_file",dest="selloci_file",help="name of file to output selected locus information",default="sel_loci.txt")
+parser.add_option("-t","--num_threads",dest="num_threads",help="Number of threads.",default=1)
 (options,args) =  parser.parse_args()
+
+import simuOpt
+simuOpt.setOptions(alleleType='mutant')
+simuOpt.setOptions(numThreads = int(options.num_threads))
+import simuPOP as sim
+from simuPOP.demography import migr2DSteppingStoneRates
 
 outfile = fileopt(options.outfile, "w")
 logfile = fileopt(options.logfile, "w")
