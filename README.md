@@ -27,7 +27,7 @@ To start using the code on your own data, have a look at these files:
 
 ## Prerequisites
 
-- To use the functions to read in windows out of BCF file,
+- To use the functions to read in windows from a VCF or BCF file,
     you will need [bcftools](http://www.htslib.org/doc/bcftools.html).
 - To compile the example report, you probably want 
     [templater](https://github.com/petrelharp/templater).
@@ -53,24 +53,50 @@ We also have two methods to get data in from standard formats,
 **double-check** what you are getting out of them.
 
 - *TPED*: the `read_tped()` function will read in a tped file and output a numeric matrix like the above.
+    For instance:
+ 
+    ```
+    snps <- read_tped("mydata.tped")
+    ```
+
 - *VCF, in memory*: the `read_vcf()` function does the same. 
+    For instance:
+ 
+    ```
+    snps <- read_vcf("mydata.vcf")
+    ```
+
 - *BCF, not in memory*: `eigen_windows()` instead of a matrix can take a function that when called returns the submatrix
     corresponding to the appropriate window. (see documentation)
     Since we only need one window in memory at a time, this reduces the memory footprint.
     We use `bcftools` to extract the windows, so you need [bcftools](https://samtools.github.io/bcftools/),
-    and your vcf file must be bgzipped and indexed (see `?query_vcf`).
-    The function `vcf_windower()` will create such a function.  For instance,
+    and your vcf file must be converted to bcf (or bgzipped) and indexed.
+    To do this, for instance, run:
+
     ```
-    f <- vcf_windower("my_data.bcf",size=1e3,type='snp')
-    f(10)
+    bcftools convert -O b mydata.vcf > mydata.bcf
+    bcftools index mydata.bcf
     ```
-    will return the 10th window of 1,000 SNPs in the file `my_data.vcf`; then
+
+    Once you have this, 
+    the function `vcf_windower()` will create the window extractor function.  For instance,
+
     ```
-    pcs <- eigen_windows(f,k=2)
-    pcdist <- pc_dist(pcs,npc=2)
+    snps <- vcf_windower("my_data.bcf",size=1e3,type='snp')
+    snps(10)
     ```
-    will find `pcs`, a matrix whose rows give the first two eigenvalues and eigenvectors for each window,
-    and `pcdist`, the pairwise distance matrix between those windows.
+
+    will return the 10th window of 1,000 SNPs in the file `my_data.vcf`.
+
+In any case, the next step is:
+
+```
+pcs <- eigen_windows(snps,k=2)
+pcdist <- pc_dist(pcs,npc=2)
+```
+
+which gives you `pcs`, a matrix whose rows give the first two eigenvalues and eigenvectors for each window,
+and `pcdist`, the pairwise distance matrix between those windows.
 
 
 # Standalone code

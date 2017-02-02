@@ -32,9 +32,11 @@ region_string <- function (regions) {
 #' The format is determined by looking at the first 100 loci in the first 100 individuals.
 #'
 #' bcftools requires that vcf files are bgzipped, and both bcf and vcf files must be indexed,
-#' so if you have a (plain text) vcf file "my_data.vcf", run
-#'   bgzip my_data.vcf
-#'   bcftools index my_data.vcf.gz
+#' so if you have a (plain text) vcf file "my_data.vcf", run:\cr
+#' \cr  
+#'   bgzip my_data.vcf\cr
+#'   bcftools index my_data.vcf.gz\cr
+#' \cr  
 #' and then use file="my_data.vcf.gz".
 #'
 #' @export
@@ -149,13 +151,21 @@ vcf_samples <- function (file) {
 #' @param type The units of the window: 'bp' or 'snp'?
 #' @param sites The positions in the VCF file, as returned by \code{vcf_positions}.
 #' @param samples A character vector of sample names to be extracted.
-#' @return A class "winfun" window extractor function.  If 'f' is the output (e.g., f <- vcf_windower("my.vcf",size=100,type='snp')),
-#' then 'f(k)' will return the integer matrix corresponding to the 'k'th window, whose rows give the number of alternate alleles for each sample.
+#' @return A class "winfun" window extractor function.  If 'f' is the output (e.g., \code{f <- vcf_windower("my.vcf",size=100,type='snp')}),
+#' then \code{f(k)} will return the integer matrix corresponding to the 'k'th window, whose rows give the number of alternate alleles for each sample.
 #' Such functions also have three attributes: \code{max.n}, giving the index of the largest window,
 #' \code{samples}, the sample IDs that are extracted (corresponding to the columns of the matrix that is returned),
 #' and \code{region}, which is a function that takes an integer vector and returns a data frame giving chromosome, start, and end of the corresponding windows.
 #'
-#' The resulting function can also be passed additional options through to 'query_vcf()', e.g., 'recode=FALSE'.
+#' This uses \code{bcftools} to extract windows from the vcf file.  Therefore, it needs to be:
+#'
+#' \itemize{
+#'   \item either bgzipped or converted to bcf (e.g., with \code{bcftools convert})
+#'   \item and indexed (with \code{bcftools index}).
+#' }
+#'
+#' See \code{vcf_query} for more details.
+#' The resulting function can also be passed additional options through to \code{vcf_query}.
 #' @export
 vcf_windower <- function (
 			file, 

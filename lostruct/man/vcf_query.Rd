@@ -25,9 +25,11 @@ and "1/1", "1/2" or "1|4" are all coded as 2.
 The format is determined by looking at the first 100 loci in the first 100 individuals.
 
 bcftools requires that vcf files are bgzipped, and both bcf and vcf files must be indexed,
-so if you have a (plain text) vcf file "my_data.vcf", run
-  bgzip my_data.vcf
-  bcftools index my_data.vcf.gz
+so if you have a (plain text) vcf file "my_data.vcf", run:\cr
+\cr  
+  bgzip my_data.vcf\cr
+  bcftools index my_data.vcf.gz\cr
+\cr  
 and then use file="my_data.vcf.gz".
 }
 \description{
