@@ -78,10 +78,15 @@ which translates to $\alpha=.23$ and $\beta=5.34$.
 Output of .selloci is `loc a1 a2 fitness gen` (but appears not to have `gen`),
 where `a1` and `a2` are alleles.
 
-Short version:
+Very short version:
 ```
-./background-sim.py -T 10 -N 100 -w 2 -L 100 -l 1000 -m .01 -u .001 -r .0001 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
-./recombs-to-msprime.py -i bground_sim_short.recomb -k 20 -u .01 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.msprime.log
+./background-sim.py -T 4 -N 8 -w 2 -L 100 -l 10 -m .01 -u .001 -r .0001 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
+./recombs-to-msprime.py -i bground_sim_short.recomb -A 10 -k 3 -u .01 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.msprime.log
+```
+Longer version:
+```
+./background-sim.py -T 10 -N 100 -w 10 -L 25e6 -l 10 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
+./recombs-to-msprime.py -i bground_sim_short.recomb -A 100 -k 3 -u 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.msprime.log
 ```
 
 Modifying the above towards Drosophila:

@@ -32,6 +32,7 @@ def fileopt(fname,opts):
 parser = OptionParser(description=description)
 parser.add_option("-i","--infile",dest="infile",help="input file (output by background-sim.py)")
 parser.add_option("-k","--nsamples",dest="nsamples",help="number of *diploid* samples, total")
+parser.add_option("-A","--ancestor_age",dest="ancestor_age",help="time to ancestor above beginning of sim")
 parser.add_option("-u","--mut_rate",dest="mut_rate",help="mutation rate",default=1e-7)
 parser.add_option("-o","--outfile",dest="outfile",help="name of output file (or '-' for stdout)",default="-")
 parser.add_option("-t","--treefile",dest="treefile",help="name of output file for trees (or '-' for stdout)")
@@ -47,6 +48,7 @@ logfile.write(str(options)+"\n")
 
 nsamples=int(options.nsamples)
 mut_rate=float(options.mut_rate)
+ancestor_age=float(options.ancestor_age)
 
 # Read in from the file::
 #   generations
@@ -87,13 +89,10 @@ else:
 def ind_to_time(k):
     return 1+generations-math.floor((k-1)/N)
 
-# keep track of index of smallest-indexed individual seen
-# as msprime needs to have samples up 'til that point
-first_chrom=[1e20]
-
 def i2c(k,p):
-    out=nsamples+ftprime.ind_to_chrom(k,ftprime.mapa_labels[p])
-    first_chrom[0]=min(first_chrom[0],out)
+    # individual ID to chromsome
+    # "1+" is for the universal common ancestor added below
+    out=1+2*nsamples+ftprime.ind_to_chrom(k,ftprime.mapa_labels[p])
     return out
 
 # Input is of this form:
@@ -101,7 +100,14 @@ def i2c(k,p):
 # ... coming in *pairs*
 
 args=ftprime.ARGrecorder()
-for k in range(1,N+1):
+# Add the ancestor of everyone, labeled nsamples
+universal_ancestor=2*nsamples
+args.add_individual(name=universal_ancestor,time=float(1+generations+ancestor_age))
+# add initial generation
+first_gen = [i2c(k,p) for k in range(1,N+1) for p in [0,1]]
+first_gen.sort()
+args.add_record(0.0,length,universal_ancestor,tuple(first_gen))
+for k in range(1,N+1): 
     for p in [0,1]:
         args.add_individual(i2c(k,p),ind_to_time(k))
 
@@ -150,20 +156,21 @@ while True:
 pop_ids = range(1+generations*N,1+(1+generations)*N)
 
 # some messing around to fill up the required samples
-actual_nsamples=int((first_chrom[0]/2) + (first_chrom[0]%2 > 0))  # haploid!
-diploid_samples=random.sample(pop_ids,actual_nsamples)
-logfile.write("Samples ("+str(actual_nsamples)+" of them): "+str(diploid_samples)+"\n")
+diploid_samples=random.sample(pop_ids,nsamples)
+logfile.write("Samples ("+str(nsamples)+" of them): "+str(diploid_samples)+"\n")
 # need chromosome ids
 chrom_samples = [ ftprime.ind_to_chrom(x,a) for x in diploid_samples for a in ftprime.mapa_labels ]
-args.add_samples(samples=chrom_samples[:first_chrom[0]],length=length)
+args.add_samples(samples=chrom_samples,length=length)
 
 # not really the sample locs, but we don't care about that
 sample_locs = [ (0,0) for _ in chrom_samples ]
 
-print("msprime trees:")
-# ts=args.tree_sequence(samples=sample_locs)
+# for x in args.dump_records():
+#     print(x)
+
 ts=args.tree_sequence(samples=sample_locs)
 
+# print("msprime trees:")
 # for x in ts.records():
 #     print(x)
 
@@ -184,6 +191,7 @@ logfile.write("Sequence length: {}\n".format(ts.get_sequence_length()))
 logfile.write("Number of trees: {}\n".format(ts.get_num_trees()))
 logfile.write("Number of mutations: {}\n".format(ts.get_num_mutations()))
 
+print("Writing out vcf to",outfile)
 ts.write_vcf(outfile,ploidy=1)
 
 
