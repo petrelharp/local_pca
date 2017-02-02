@@ -17,13 +17,11 @@ To start using the code on your own data, have a look at these files:
 
 * [A quick example](popres/popres_example.R) : in four lines of code, reads in chromosome 22 from a TPED, and does local PCA.
 
-* [Setting up the medicago data](medicago/medicago_data_setup.html) : after documenting where the data are from,
+* [Setting up data](medicago/medicago_data_setup.html) : after documenting where the data are from,
     does local PCA on a small subset of the whole dataset, to establish how the functions work.
 
-* [Script for medicago analysis](medicago/run_on_medicago.R) : an Rscript to run the same analysis on medicago data,
-    varying various parameters by command-line options: run `Rscript run_on_medicago.R --help` for a list.
-
-* [Report summarizing an analysis](medicago/summarize_run.Rmd) : an Rmarkdown file that can be compiled with [templater](https://github.com/petrelharp/templater) to produce visualizations of the results of the above.
+* [Drop in your own data and make a report](templated/README.md) with the scripts provided in the `templated/` directory,
+    modified from the Medicago analysis.
 
 ## Prerequisites
 
@@ -31,13 +29,6 @@ To start using the code on your own data, have a look at these files:
     you will need [bcftools](http://www.htslib.org/doc/bcftools.html).
 - To compile the example report, you probably want 
     [templater](https://github.com/petrelharp/templater).
-
-## Templated reports
-
-There is an easy drop-in-your-data-and-go set-up in the `templated/` directory,
-that does everything from computing PCs to producing a report,
-with options for changing the parameters -
-see `templated/README.md` for how to use it.
 
 ## Quick start
 
