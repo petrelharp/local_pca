@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.5
+#!/usr/bin/env python2.7.8
 description = '''
 Simulate AND write to msprime/vcf.
 '''
