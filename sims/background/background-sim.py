@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7.8
+#!/usr/bin/env python
 description = '''
 Simulate AND write to msprime/vcf.
 '''
@@ -110,7 +110,6 @@ class GammaDistributedFitness:
         self.coefMap = {}
         self.alpha = alpha
         self.beta = beta
-     
     def __call__(self, loc, alleles):
         # because s is assigned for each locus, we need to make sure the
         # same s is used for fitness of genotypes 01 (1-s) and 11 (1-2s)
