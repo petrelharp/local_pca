@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7.8
+#!/usr/bin/env python
 description = '''
 Simulate.
 '''
@@ -9,7 +9,6 @@ from optparse import OptionParser
 import math
 import time
 import random
-from itertools import accumulate
 
 def fileopt(fname,opts):
     '''Return the file referred to by fname, open with options opts;
@@ -47,7 +46,8 @@ parser.add_option("-t","--num_threads",dest="num_threads",help="Number of thread
 
 import simuOpt
 simuOpt.setOptions(alleleType='mutant')
-simuOpt.setOptions(numThreads = int(options.num_threads))
+if int(options.num_threads)>1:
+    simuOpt.setOptions(numThreads = int(options.num_threads))
 import simuPOP as sim
 from simuPOP.demography import migr2DSteppingStoneRates
 
@@ -73,7 +73,9 @@ npops=width*width
 
 # increase spacing between loci as we go along the chromosome
 spacing_fac=9
-rel_positions=list(accumulate([random.expovariate(1)*(1+spacing_fac*k/nloci) for k in range(nloci)]))
+rel_positions=[0.0 for k in range(nloci)]
+for k in range(nloci):
+    rel_positions[k] = rel_positions[k-1] + random.expovariate(1)*(1+spacing_fac*k/nloci)
 pos_fac=length/(rel_positions[-1]+random.expovariate(1)*(1+spacing_fac))
 locus_position=[x*pos_fac for x in rel_positions]
 
@@ -98,7 +100,6 @@ class GammaDistributedFitness:
         self.coefMap = {}
         self.alpha = alpha
         self.beta = beta
-     
     def __call__(self, loc, alleles):
         # because s is assigned for each locus, we need to make sure the
         # same s is used for fitness of genotypes 01 (1-s) and 11 (1-2s)

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.5
+#!/usr/bin/env python
 description = '''
 Convert simulations to msprime and VCF.
 '''
@@ -116,13 +116,23 @@ while True:
     if not line:
         break
     # print("A: "+line)
-    child,parent,ploid,*rec = [int(x) for x in line.split()]
+    # child,parent,ploid,*rec = [int(x) for x in line.split()]
+    linex = [int(x) for x in line.split()]
+    child=linex[0]
+    parent=linex[1]
+    ploid=linex[2]
+    rec=linex[3:]
     for child_p in [0,1]:
         if child_p==1:
             line=infile.readline()
             # print(" : "+line)
             prev_child=child
-            child,parent,ploid,*rec = [int(x) for x in line.split()]
+            # child,parent,ploid,*rec = [int(x) for x in line.split()]
+            linex = [int(x) for x in line.split()]
+            child=linex[0]
+            parent=linex[1]
+            ploid=linex[2]
+            rec=linex[3:]
             if child != prev_child:
                 raise ValueError("Recombs not in pairs:"+str(child)+"=="+str(prev_child))
         # print(child,child_p,parent,ploid)

@@ -7,13 +7,13 @@
 #PBS -l pmem=3750mb
 
 source /usr/usc/python/2.7.8/setup.sh
+source /usr/usc/hdf5/1.8.12/setup.sh
 
 cd $PBS_O_WORKDIR
 
-OUTBASE="bground_sim_10000loci_run$RANDOM"
+OUTBASE="bground_sim_10000_loci_run_$RANDOM"
 
 time ./background-sim.py -t 15 -T 10000 -N 100 -w 10 -L 25e6 -l 10000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o ${OUTBASE}.recomb -g ${OUTBASE}.simupop.log -s ${OUTBASE}.selloci
+./recombs-to-msprime.py -i ${OUTBASE}.recomb -A 10000 -k 1000 -u 1e-7 -o ${OUTBASE}.vcf -t ${OUTBASE}.trees -g ${OUTBASE}.msprime.log
 
 exit
-
-
