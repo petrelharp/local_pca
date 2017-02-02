@@ -32,6 +32,13 @@ To start using the code on your own data, have a look at these files:
 - To compile the example report, you probably want 
     [templater](https://github.com/petrelharp/templater).
 
+## Templated reports
+
+There is an easy drop-in-your-data-and-go set-up in the `templated/` directory,
+that does everything from computing PCs to producing a report,
+with options for changing the parameters -
+see `templated/README.md` for how to use it.
+
 ## Quick start
 
 The three steps are:
