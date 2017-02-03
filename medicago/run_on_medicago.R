@@ -28,8 +28,8 @@ option_list <- list(
         make_option( c("-j","--jobid"),  type="character", default=formatC(1e6*runif(1),width=6,format="d",flag="0"),   help="Unique job id. [default random]")
     )
 opt <- parse_args(OptionParser(option_list=option_list,description=usage))
-if (is.null(opt$outdir)) { opt$outdir <- file.path("lostruct", 
-                                   sprintf( "results_type_%s_size_%d_weights_%s_jobid_%s", 
+if (is.null(opt$outdir)) { opt$outdir <- file.path("lostruct_results", 
+                                   sprintf( "type_%s_size_%d_weights_%s_jobid_%s", 
                                            opt$type, 
                                            opt$size, 
                                            if (is.null(opt$weightfile)) { "none" } else { gsub("[.].*","",basename(opt$weightfile)) }, 

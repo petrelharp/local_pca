@@ -14,7 +14,7 @@ knitr::opts_chunk$set(fig.width=2*fig.dim,fig.height=fig.dim,fig.align='center')
 
 Render this, for instance, like:
 ```
-templater::render_template("summarize_run.Rmd",output="lostruct/results_type_snp_size_10000_jobid_324902/run_summary.html",change.rootdir=TRUE)
+templater::render_template("summarize_run.Rmd",output="lostruct_results/type_snp_size_10000_jobid_324902/run_summary.html",change.rootdir=TRUE)
 ```
 
 ```{r data_setup, include=FALSE}
@@ -30,6 +30,7 @@ sample.ids <- vcf_samples(bcf.files[1])
 samp.file <- file.path( "..", "..", "data", "sample_info.tsv" )
 samps <- read.table(samp.file,sep="\t",header=TRUE)
 samps <- droplevels( samps[match(gsub("-I$","",sample.ids),samps$ID),] )
+samps$population <- samps$Country.of.Origin
 
 # data files, precomputed
 pca.files <- list.files(".",".*.pca.csv")
@@ -142,9 +143,9 @@ corner.pca <- lapply( corner.covmats, function (covmat) {
 
 Here is the color scheme:
 ```{r pop_colors, fig.height=2*fig.dim}
-pop.names <- levels(samps$Country.of.Origin)
-pop.cols <- rainbow_hcl(nlevels(samps$Country.of.Origin))
-pop.pch <- seq_len(nlevels(samps$Country.of.Origin))
+pop.names <- levels(samps$population)
+pop.cols <- rainbow_hcl(nlevels(samps$population))
+pop.pch <- seq_len(nlevels(samps$population))
 plot( rep(1,length(pop.names)), seq_along(pop.names), pch=pop.pch, col=pop.cols, xlim=c(0,length(pop.names)),
        xlab='', ylab='', xaxt='n', yaxt='n' )
 text( rep(1,length(pop.names)), seq_along(pop.names), labels=pop.names, pos=4 )
@@ -159,8 +160,8 @@ for (i in 1:(corner.npc-1)) {
         for (k in 1:ncol(mds.corners)) {
             vectors <- matrix( corner.pca[[k]][-(1:(1+corner.npc))], ncol=corner.npc )[,c(i,j)]
             colnames(vectors) <- paste("PC", c(i,j))
-            plot(vectors, pch=pop.pch[samps$Country.of.Origin], 
-                    col=pop.cols[samps$Country.of.Origin] )
+            plot(vectors, pch=pop.pch[samps$population], 
+                    col=pop.cols[samps$population] )
             if (i==1 && j==2) {
                 mtext(paste("corner",k),side=3,cex=2)
             }
