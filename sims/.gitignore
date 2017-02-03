@@ -1,0 +1,7 @@
+*.recomb
+*.selloci
+*.trees
+*.vcf
+*.bcf
+*.csi
+*.vcf.gz

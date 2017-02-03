@@ -100,3 +100,11 @@ render_template(
 Now, you'll be able to see everything that is computed while parsing the Rmd file.
 This makes it easy for you to add things to the report
 or modify it to output figures as pdf for publication.
+
+## Want pdfs?
+
+The report will make pdf versions of the figures, also -- just edit `summarize_run.Rmd`
+and change `do.pdfs <- FALSE` to `do.pdfs <- TRUE`.
+The pdfs will show up in the figure subdirectory for the report
+(also listed in the report under the figure if you turn this on.
+In the example above it is `lostruct_results/type_snp_size_20_weights_none_jobid_589131/figure/run_summary/`.
