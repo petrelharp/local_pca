@@ -1,4 +1,4 @@
-#!/usr/bin/Rscript --vanilla
+#!/usr/bin/env R
 library(optparse)
 
 invocation <- commandArgs()
