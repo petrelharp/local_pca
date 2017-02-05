@@ -1,1 +1,3 @@
 data
+*.pbs.o*
+*.pbs.e*

@@ -1,10 +1,10 @@
 #PBS -S /bin/bash
 #PBS -q cmb
-#PBS -l nodes=1:ppn=16
+#PBS -l nodes=1:ppn=1
 #PBS -l walltime=120:00:00
-#PBS -l mem=64000mb
-#PBS -l vmem=64000mb
-#PBS -l pmem=4000mb
+#PBS -l mem=16000mb
+#PBS -l vmem=16000mb
+#PBS -l pmem=16000mb
 # #PBS -e qsub-logs
 # #PBS -o qsub-logs
 
