@@ -103,6 +103,8 @@ divided into 1,000 loci this is 1Kb per locus;
 if we assume that roughly 1/2 of these are deleterious
 then we want a deleterious mutation rate of 5e-3.
 
+Then, we want the universal ancestor to be maybe another 10,000 generations above the start of the simulation.
+
 Timing results:
 ```
 # 0.2s:
@@ -125,11 +127,6 @@ time ./background-sim.py -T 10 -N 1000 -w 10 -L 25e6 -l 100 -m 4e-3 -u 5e-3 -r 2
 time ./background-sim.py -T 100 -N 1000 -w 10 -L 25e6 -l 100 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
 
 ```
-It looks like the time scales linearly with generations $\times$ selected loci $\times$ individuals, as expected.
-Doing $N=100$ with 1,000 loci for 10,000 generations should take 20 hours according to the above estimate.
-```
-time ./background-sim.py -T 10000 -N 100 -w 10 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
-```
 
 Multiple threads:
 ```
@@ -144,3 +141,10 @@ time ./background-sim.py -T 40 -N 100 -w 10 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2
 time ./background-sim.py -t 4 -T 160 -N 100 -w 10 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
 ```
 
+
+It looks like the time scales linearly with generations $\times$ selected loci $\times$ individuals, as expected.
+Doing $N=100$ with 1,000 loci for 10,000 generations should take 20 hours according to the above estimate.
+```
+./background-sim.py -T 10000 -N 100 -w 10 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim.recomb -g bground_sim.simupop.log -s bground_sim.selloci
+./recombs-to-msprime.py -i bground_sim.recomb -A 10000 -k 1000 -u 1e-7 -o bground_sim.vcf -t bground_sim.trees -g bground_sim.msprime.log
+```

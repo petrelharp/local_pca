@@ -42,7 +42,7 @@ To do on the data:
 
 Other points to discuss:
 
-- quantify percent variation explained
+- quantify percent variation explained: ratio of eigenvalues, same as in PCA (cite Cox & Cox)
 - relate to PCAdmix, explain difference in introduction
 - show different window choice results we reference
 - clarify we checked for variation in missingness, provide plot of MDS against missingness

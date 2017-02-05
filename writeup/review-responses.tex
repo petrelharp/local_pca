@@ -1,0 +1,266 @@
+%%%%%%
+%%
+%%  Don't reorder the reviewer points; that'll mess up the automatic referencing!
+%%
+%%%%%
+
+\begin{minipage}[b]{2.5in}
+  Resubmission Cover Letter \\
+  {\it Genetics}
+\end{minipage}
+\hfill
+\begin{minipage}[b]{2.5in}
+    Han Li \\
+    \emph{and} Peter Ralph \\
+  \today
+\end{minipage}
+ 
+\vskip 2em
+ 
+\noindent
+{\bf To the Editor(s) -- }
+ 
+\vskip 1em
+
+We are pleased to submit a revision of our manuscript, 
+
+\noindent \hspace{4em}
+\begin{minipage}{3in}
+\noindent
+{\bf Sincerely,}
+
+\vskip 2em
+
+{\bf 
+Han Li and
+Peter Ralph
+}\\
+\end{minipage}
+
+\vskip 4em
+
+\pagebreak
+
+%%%%%%%%%%%%%%
+\reviewersection{AE}
+
+\begin{quote}
+    Please understand that incremental changes will not be sufficient.  Adding
+    simulations to strengthen key claims will be necessary, particularly addressing
+    the impacts of mutation rate and recombination rate variation with more depth,
+    the concern regarding PC switching (Reviewer 1), and the concern regarding the
+    impacts of variation in missingness by sub-population (Reviewer 2).
+\end{quote}
+
+
+%%%%%%%%%%%%%%
+\reviewersection{1}
+
+\begin{quote}
+    The paper is generally well written and clear; it addresses an important
+    problem, and clearly makes some progress on it. However, it suffers from having
+    no grounding in either theory or empirical demonstration that it really can find
+    the structures that are claimed. I find the arguments that it finds inversions
+    compelling, though not watertight, and I am not yet convinced that it is finding
+    ubiquitous background selection.  To make this claim, significant extra work is
+    required.
+\end{quote}
+
+\begin{quote}
+    In short, the approach is interesting but not sufficiently explored to produce
+    compelling evidence for the implications that are claimed.  Putting a large
+    amount of effort into simulations may alleviate these concerns somewhat.
+
+    Specific points: What does this method find? I'm concerned about:
+    (a) variation in the recombination rate
+    and (b) variation in the mutation rate, creating spurious structure.
+
+    The first possibility is that massively varying information quantity
+    within windows could lead to a small number of such windows having their
+    orientation reversed: that is, PC1 becomes PC2 and vice versa. (Or PC2 and PC3
+    could switch). This would lead to such windows having unusual properties and
+    hence appearing as evidence of an inversion.
+
+    I do agree with the authors that significant outliers would be found at
+    inversions. However, even if the PC switching does not occur, or the model could
+    handle it, the evidence for selection is weaker.  If the two types of variation
+    described above exist, with no selection, I would still expect a ``continuous
+    triangle'' of results (as seen left of Fig 2, top left of Fig 6) with extrema
+    described by windows with the most information, and points placed at different
+    extremum having low recombination rate (because by chance, these will get an
+    approximately fixed local tree, corresponding on average to the genome-wide
+    population structure).
+
+    Addressing this is likely quite hard, though the authors may be able to think of
+    something that separates these effects from selection.
+\end{quote}
+
+
+\begin{point}{}
+\ldots variation in the recombination rate \ldots 
+\end{point}
+
+\begin{point}{}
+\ldots and variation in the mutation rate, creating spurious structure.
+\end{point}
+
+\begin{point}{PC switching}
+\ldots could lead to a small number of such windows having their
+orientation reversed: that is, PC1 becomes PC2 and vice versa. (Or PC2 and PC3
+could switch).
+\end{point}
+
+
+\begin{point}{p6}
+``here, we use k=2...''  - you have to show that $k>2$ is the same.
+\end{point}
+
+\begin{point}{p15}
+``We also found nearly identical results when choosing shorter windows of 1,000 SNPs'' - again, show this.
+\end{point}
+
+\begin{point}{p15}
+ ``or choosing windows of equal length in base pairs rather than SNPs'' - once again.
+\end{point}
+
+\begin{point}{}
+Using 2 PCs is common practice: only if this is the end of an analysis and the
+PCA was done for visualisation. Here you are using it for something so should
+keep all the relavant PCs.
+\end{point}
+
+\begin{point}{}
+I'm surprised that PCAdmix isn't referenced. It is using a very similar
+method, albeit with different goals. In particular, the approach of placing all
+points into a single, genome-wide PC space solves many of the problems that this
+approach has (though I agree there may be benefits to the approach described here)
+\end{point}
+
+
+%%%%%%%%%%%%%%
+\reviewersection{2}
+
+\begin{quote}
+    This is an interesting and well written paper. It was a pleasant read. I have three main general
+    comments:
+\end{quote}
+
+
+\begin{point}{Related work:} 
+The authors provide an introduction of the main concepts, as well as some
+intuition of what the method is doing and how, but I found comparison to previous approaches
+to be somewhat missing. To some extent, this is due to the fact that the main goal of their
+analysis is somewhat vaguely ``finding heterogeneity'', which leads to the applications of
+detecting chromosomal inversions and evidence for background selection. It would help to
+have a well defined set of hypotheses, test the method’s accuracy  using simulation (see next
+comment), and compare to previous efforts in similar domains.
+\end{point}
+
+\begin{point}{Validation:}
+In several occasions, the authors seem to introduce a potential problem in their
+approach, and provide a solution to it. This is generally rather intuitive, but it would really help
+to have simulations of some sort to show that the issue arises and leads to a problem, and that
+their approach does address the specific problem.
+\end{point}
+
+
+
+\begin{point}{}
+The use of weighted PCA to cope with unbalanced sample size could be better demonstrated.
+Although the current explanation makes intuitive sense, this approach does not seem to be
+used in previous work. The authors could design a simulation that supports their approach.
+\end{point}
+
+\begin{point}{}
+It is conceivable that some subpopulations will have more missingness in some windows. That
+may skew the resulting PCs by selecting different sample sizes for the different windows (as
+discussed in Appendix B) . This could distort the PCs, so that variation reflects underlying
+variation in missingness. Would be good to discuss this potential issue and provide simulations.
+\end{point}
+
+\begin{point}{Appendix A:}
+when using jackknife to estimate variance, each window is being divided in 10
+``independent'' resampling units. Due to LD, these 10 blocks are likely correlated, which would
+bias the estimates of variance. This is probably not a problem because both signal and noise
+could be equally biased, but the authors may want to consider this potential issue. I wonder if
+the correlation with recombination rate may be partially explained by this.
+\end{point}
+
+\begin{point}{}
+Is it possible to explain the results of Figure 6 just considering neutral variation in local
+ancestry due to recent admixture? This may explain why ancestry seems to explain a fair
+amount of variance in the lower plots of Fig 6. Local PCA has been previously used by others to
+detect local ancestry blocks, e.g. see the PCAdmix approach by Brisbin et al. The authors
+discuss the possibility that admixture is driving the differentiation, but do not test whether their
+observations agree with neutrality.
+\end{point}
+
+\begin{point}{}
+``to remove the effect of artifacts such as mutation rate variation, we also rescale each
+approximate covariance matrix to be of similar size (precisely, so that the underlying data
+matrix has trace norm equal to one''. This potential issue is a bit unclear to me, since I would
+expect that scaling the volume of local trees would not result in changed distances in PC
+space. Perhaps the authors could show via simulations that this creates a problem, and that the
+normalization addresses it.
+\end{point}
+
+\begin{point}{Figure 7:}
+are MDS coordinates correlated with recombination rates in this case?
+\end{point}
+
+\begin{point}{Application:}
+ is what the authors seem to be proposing not already accounted for by linear
+mixed model association approaches? If not, this should be clarified. Either way, this paragraph
+could be dropped.
+\end{point}
+
+\begin{point}{Introduction:}
+ ``it is not necessarily clear what aspects of demography should be included in the
+concept.'' I find it a bit weird to describe selection as an ``aspect of demography''. Although it
+could be seen as such within a coalescent framework, that seems to be just a useful
+representation. The authors may consider rewording`.
+\end{point}
+
+\begin{point}{}
+Paragraph starting in ``Since the definition...''. The notation is a bit unclear. Please check that it
+is clear which PC the text refers to.
+\end{point}
+
+\begin{point}{}
+Would the authors be able to provide a sense for the directionality of effects in Figure 4? It
+would be interesting if the authors tried to further characterize regions that are similar due to
+higher recombination rates. E.g. is there more/less density of polymorphisms in these regions?
+\end{point}
+
+\begin{point}{Page 13:}
+typo: ``figures 6 and 6''.
+\end{point}
+
+\begin{point}{}
+Typo in abstract, line 6 ``, We show'' -> ``. We show''.
+\end{point}
+
+\begin{point}{}
+Typo: end of introduction ``an visualization''. The whole sentence is a bit weird. The authors just
+stated focus is on clustering, not on looking for outliers, but what does it mean that ``we allow
+ourselves to be surprised by unexpected signals in the data''?
+\end{point}
+
+\begin{point}{}
+``There has been substantial debate over the relative impacts of different forms of selection.''
+Citation needed.
+\end{point}
+
+\begin{point}{}
+``Results using larger numbers of PCs were nearly identical''. It would be interesting to have a
+supplementary table.
+\end{point}
+
+\begin{point}{}
+Table 1 legend seems a bit redundant. Columns are self-explanatory.
+\end{point}
+
+\begin{point}{}
+It would help to have numbered lines and references.
+\end{point}
+

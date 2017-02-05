@@ -3,7 +3,7 @@
 \geometry{letterpaper}                   		% ... or a4paper or a5paper or ... 
 %\geometry{landscape}                		% Activate for for rotated page geometry
 %\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
-\usepackage{graphicx}				% Use pdf, png, jpg, or epsÂ§ with pdflatex; use eps in DVI mode
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps with pdflatex; use eps in DVI mode
 								% TeX will automatically convert eps --> pdf in pdflatex		
 \usepackage{amssymb}
 \usepackage{amsmath}
@@ -54,6 +54,36 @@
 \DeclareMathOperator{\var}{Var}
 \DeclareMathOperator{\cov}{Cov}
 \DeclareMathOperator{\tr}{tr}
+
+%% for submitting with responses to reviews
+\usepackage{lineno}
+
+% from http://tex.stackexchange.com/questions/43648/why-doesnt-lineno-number-a-paragraph-when-it-is-followed-by-an-align-equation/55297#55297
+\newcommand*\patchAmsMathEnvironmentForLineno[1]{%
+  \expandafter\let\csname old#1\expandafter\endcsname\csname #1\endcsname
+  \expandafter\let\csname oldend#1\expandafter\endcsname\csname end#1\endcsname
+  \renewenvironment{#1}%
+     {\linenomath\csname old#1\endcsname}%
+     {\csname oldend#1\endcsname\endlinenomath}}% 
+\newcommand*\patchBothAmsMathEnvironmentsForLineno[1]{%
+  \patchAmsMathEnvironmentForLineno{#1}%
+  \patchAmsMathEnvironmentForLineno{#1*}}%
+\AtBeginDocument{%
+\patchBothAmsMathEnvironmentsForLineno{equation}%
+\patchBothAmsMathEnvironmentsForLineno{align}%
+\patchBothAmsMathEnvironmentsForLineno{flalign}%
+\patchBothAmsMathEnvironmentsForLineno{alignat}%
+\patchBothAmsMathEnvironmentsForLineno{gather}%
+\patchBothAmsMathEnvironmentsForLineno{multline}%
+}
+
+% Responses to reviews
+\input{review-response-commands}
+% set this to show line numbers and include responses to reviews or not
+\newif\ifreviewresponses
+\reviewresponsestrue  % include them
+% \reviewresponsesfalse  % don't include them
+\newcommand{\responsefile}{review-responses.tex}  % name of the review reponses file
 
 
 \begin{document}
@@ -1428,6 +1458,9 @@ to find only the top $k$ eigenvectors.
 
 
 \ifsubmission\processdelayedfloats\fi
+
+% reviews here if toggled above
+\includereviews
 
 
 \end{document}  

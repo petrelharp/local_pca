@@ -1,0 +1,88 @@
+\usepackage{lineno}
+% \usepackage[hypertexnames=false]{hyperref}   % not working correctly
+% \usepackage{latexml}
+
+\linenumbers
+
+
+%%%%%  PUT THIS IN HEADER OF FILE
+% % Responses to reviews:
+% \input{review-response-commands}
+% % set this to show line numbers and include responses to reviews or not
+% \newif\ifreviewresponses
+% \reviewresponsestrue  % include them
+% % \reviewresponsesfalse  % don't include them
+% \newcommand{\responsefile}{pbio-reviews-19sept12-responses.tex}  % name of the review reponses file
+
+% counters for reviewer points
+%% instead do reviewer labels
+% \newcounter{reviewer}
+% \setcounter{reviewer}{0}
+\newcommand{\thereviewer}{}
+\newcounter{point}
+\setcounter{point}{0}
+
+% pass in to \reviewersection the label for this reviewer (i.e. \reviewersection{1} or \reviewersection{AE})
+\newcommand{\reviewersection}[1]{\renewcommand{\thereviewer}{#1}
+                  \setcounter{point}{0}
+                  \section*{Reviewer \thereviewer:}}
+% drawing from from http://tex.stackexchange.com/questions/2317/latex-style-or-macro-for-detailed-response-to-referee-report
+%% arguments to \point are (name of the point, optional) and (content)
+\newenvironment{point}[1]
+        { \refstepcounter{point} \bigskip \hrule \medskip \noindent 
+                \slshape {\fontseries{b}\selectfont (\thereviewer.\thepoint) #1} }
+        { }
+\newcommand{\reply}{\normalfont \medskip \noindent \textbf{Reply}:\ }   
+
+% use this command in the text where a change addressing a reviewer point has occurred
+% e.g. \revpoint{1}{3} for reviewer 1, point 3
+\newcommand{\revpoint}[2]{\linelabel{rr:rev#1:#2}}
+% and this one to refer to such a location, e.g. \revreffull{1}{3}
+\newcommand{\revreffull}[2]{{(p.\ \pageref{rr:rev#1:#2}, l.\ \lineref{rr:rev#1:#2})}}
+% but this version fills in reviewer and point automatically if called in the appropriate part of the reviews
+\newcommand{\revref}{\revreffull{\thereviewer}{\thepoint}}
+% NOTE: should call \revref{} with empty brackets after to get a space afterwards if desired: http://tex.stackexchange.com/questions/31091/space-after-latex-commands
+
+% or, this one to refer to a named linelabel
+% e.g. if in the text there is a \linelabel{approx_eqn_point}
+% refer to it with \llname{approx_eqn_point}
+\newcommand{\llname}[1]{{(p.\ \pageref{#1}, l.\ \lineref{#1})}}
+
+% put \includereviews() where the reviews are to appear (at the end?)
+\newcommand{\includereviews}{
+    \ifreviewresponses
+    \clearpage
+    \setcounter{page}{1}
+    \setcounter{section}{0}
+    \setcounter{subsection}{0}
+    \nolinenumbers
+    % \begin{center}
+    %   {\LARGE \bf Response to Reviews}
+    % \end{center}
+    \input{\responsefile}
+    \fi
+}
+
+% Useful shortcuts ;) that demonstrate how to use the macros.
+\newcommand{\rollover}{ \reply{The reviewer makes an excellent point that we have missed out entirely.  We have made all the changes suggested, down to the minutiae \revref.} }
+\newcommand{\playdead}{ \reply{The reviewer makes an excellent point.  We have made an utterly trivial change {\revref} that we think deals entirely with the concern raised.} }
+                                                                                                         
+% from http://tex.stackexchange.com/questions/43648/why-doesnt-lineno-number-a-paragraph-when-it-is-followed-by-an-align-equation/55297#55297
+\ifcsname{patchAmsMathEnvironmentForLineno}\endcsname
+    \newcommand*\patchAmsMathEnvironmentForLineno[1]{%                                                       
+      \expandafter\let\csname old#1\expandafter\endcsname\csname #1\endcsname                                
+      \expandafter\let\csname oldend#1\expandafter\endcsname\csname end#1\endcsname                          
+      \renewenvironment{#1}%                                                                                 
+         {\linenomath\csname old#1\endcsname}%                                                               
+         {\csname oldend#1\endcsname\endlinenomath}}%                                                        
+    \newcommand*\patchBothAmsMathEnvironmentsForLineno[1]{%                                                  
+      \patchAmsMathEnvironmentForLineno{#1}%                                                                 
+      \patchAmsMathEnvironmentForLineno{#1*}}%                                                               
+    \AtBeginDocument{%                                                                                       
+    \patchBothAmsMathEnvironmentsForLineno{equation}%                                                        
+    \patchBothAmsMathEnvironmentsForLineno{align}%                                                           
+    \patchBothAmsMathEnvironmentsForLineno{flalign}%                                                         
+    \patchBothAmsMathEnvironmentsForLineno{alignat}%                                                         
+    \patchBothAmsMathEnvironmentsForLineno{gather}%                                                          
+    \patchBothAmsMathEnvironmentsForLineno{multline}%                                                        
+\fi
