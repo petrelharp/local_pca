@@ -19,10 +19,10 @@ for options.\
 
 option_list <- list(
     # input/output
-        make_option( c("-i","--input_dir"),   type="character",        help="Directory with input: indexed .bcf or .vcf.bgz files."),
-        make_option( c("-I","--sample_info"),   type="character",        help="File with ID and population of the samples."),
-        make_option( c("-t","--type"),   type="character",             help="Window by SNP or by bp?"),
-        make_option( c("-s","--size"),   type="integer",               help="Size of the window, in units of type."),
+        make_option( c("-i","--input_dir"),   type="character",        help="Directory with input: indexed .bcf or .vcf.bgz files. (REQUIRED)"),
+        make_option( c("-I","--sample_info"),   type="character",        help="File with ID and population of the samples. (required to run summarize_run.Rmd from the results))"),
+        make_option( c("-t","--type"),   type="character",             help="Window by SNP or by bp? (REQUIRED)"),
+        make_option( c("-s","--size"),   type="integer",               help="Size of the window, in units of type. (REQUIRED)"),
         make_option( c("-k","--npc"),   type="integer",   default=2L,  help="Number of principal components to compute for each window. [default: %default]"),
         make_option( c("-w","--weightfile"), type="character",            help="File name containing weights to apply to PCA."),
         make_option( c("-m","--nmds"),   type="integer",   default=2L, help="Number of principal coordinates (MDS variables) to compute. [default: %default]"),
@@ -36,25 +36,36 @@ if (is.null(opt$outdir)) { opt$outdir <- file.path("lostruct_results",
                                            opt$size, 
                                            if (is.null(opt$weightfile)) { "none" } else { gsub("[.].*","",basename(opt$weightfile)) }, 
                                            opt$jobid ) ) }
-if (is.null(opt$type) || is.null(opt$size)) { stop(usage) }
+if (is.null(opt$input_dir) || is.null(opt$type) || is.null(opt$size)) { stop(usage) }
 
 opt$start.time <- Sys.time()
 opt$run.dir <- normalizePath(".")
-opt$sample_info <- normalizePath(opt$sample_info)
 
-if (!file.exists(opt$sample_info)) {
-    warning(sprintf("Sample info file %s does not exist.",opt$sample_info))
+if (is.null(opt$sample_info) || !file.exists(opt$sample_info)) {
+    stop(sprintf("Sample info file %s does not exist - won't be able to produce report afterwards.",opt$sample_info))
+} else {
+    opt$sample_info <- normalizePath(opt$sample_info)
 }
 
 # weights
 if (is.null(opt$weightfile)) {
     opt$weights <- 1
 } else {
+    if (!file.exists(opt$weightfile)){
+        stop(sprintf("Weight file %s does not exist.",opt$weightfile))
+    }
     opt$weights <- read.table(opt$weightfile,sep='\t',header=TRUE)$weight
 }
 
 # VCF files
-bcf.files <- normalizePath(list.files(opt$input_dir,".*.(bcf|vcf)$",full.names=TRUE))
+if (!dir.exists(opt$input_dir)) {
+    stop(sprintf("Input directory %s does not exist.",opt$input_dir))
+}
+bcf.files <- list.files(opt$input_dir,".*.(bcf|vcf.gz)$",full.names=TRUE)
+if (length(bcf.files)==0) {
+    stop(sprintf("No bcf or vcf.gz files found in input directory %s",opt$input.dir))
+}
+bcf.files <- normalizePath(bcf.files)
 chroms <- make.names(gsub(".[bv]cf$","",basename(bcf.files)))
 names(bcf.files) <- chroms
 
