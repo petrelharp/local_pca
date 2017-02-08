@@ -148,3 +148,9 @@ Doing $N=100$ with 1,000 loci for 10,000 generations should take 20 hours accord
 ./background-sim.py -T 10000 -N 100 -w 10 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim.recomb -g bground_sim.simupop.log -s bground_sim.selloci
 ./recombs-to-msprime.py -i bground_sim.recomb -A 10000 -k 1000 -u 1e-7 -o bground_sim.vcf -t bground_sim.trees -g bground_sim.msprime.log
 ```
+
+Timing for the `msprime` part:
+```
+time ./background-sim.py -T 100 -N 8 -w 2 -L 100 -l 10 -m .01 -u .001 -r .0001 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
+time ./recombs-to-msprime.py -i bground_sim_short.recomb -A 10 -k 3 -u .01 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.msprime.log
+```

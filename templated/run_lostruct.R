@@ -19,7 +19,7 @@ for options.\
 
 option_list <- list(
     # input/output
-        make_option( c("-i","--input_dir"),   type="character",        help="Directory with input: indexed .bcf or .vcf.bgz files. (REQUIRED)"),
+        make_option( c("-i","--input_dir"),   type="character",        help="Directory with input: indexed .bcf or .vcf.gz files. (REQUIRED)"),
         make_option( c("-I","--sample_info"),   type="character",        help="File with ID and population of the samples. (required to run summarize_run.Rmd from the results))"),
         make_option( c("-t","--type"),   type="character",             help="Window by SNP or by bp? (REQUIRED)"),
         make_option( c("-s","--size"),   type="integer",               help="Size of the window, in units of type. (REQUIRED)"),
@@ -61,12 +61,12 @@ if (is.null(opt$weightfile)) {
 if (!dir.exists(opt$input_dir)) {
     stop(sprintf("Input directory %s does not exist.",opt$input_dir))
 }
-bcf.files <- list.files(opt$input_dir,".*.(bcf|vcf.gz)$",full.names=TRUE)
+bcf.files <- list.files(opt$input_dir,".*.(bcf|vcf.gz|vcf.bgz)$",full.names=TRUE)
 if (length(bcf.files)==0) {
     stop(sprintf("No bcf or vcf.gz files found in input directory %s",opt$input.dir))
 }
 bcf.files <- normalizePath(bcf.files)
-chroms <- make.names(gsub(".[bv]cf$","",basename(bcf.files)))
+chroms <- make.names(gsub("[.](bcf|vcf.gz|vcf.bgz)$","",basename(bcf.files)))
 names(bcf.files) <- chroms
 
 opt$bcf_files <- bcf.files
@@ -83,9 +83,10 @@ all.lengths <- numeric(0)    # will be a numeric vector of numbers of windows pe
 all.regions <- data.frame()  # will be a data.frame of the chromsome, start, stop for each window
 
 # local PCA, by chromosome
-for (bcf.file in bcf.files) {
-    pca.file <- file.path( opt$outdir, sprintf(gsub(".bcf",".pca.csv",basename(bcf.file))) )
-    regions.file <- file.path( opt$outdir, sprintf(gsub(".bcf",".regions.csv",basename(bcf.file))) )
+for (k in seq_along(bcf.files)) {
+    bcf.file <- bcf.files[k]
+    pca.file <- file.path( opt$outdir, paste0(chroms[k],".pca.csv") )
+    regions.file <- file.path( opt$outdir, paste0(chroms[k],".regions.csv") )
     if (file.exists(pca.file)) { 
         warning(paste("File",pca.file,"already exists! Not recomputing.")) 
         pca.stuff <- as.matrix( data.table::fread(pca.file,header=TRUE) )
