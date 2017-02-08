@@ -111,10 +111,18 @@ for k in range(1,N+1):
     for p in [0,1]:
         args.add_individual(i2c(k,p),ind_to_time(k))
 
+
+nlines=0
+log_lines=10000
+
 while True:
     line=infile.readline()
     if not line:
         break
+    if (nlines%log_lines==0):
+        logfile.write("Reading line "+str(nlines)+"\n")
+        logfile.flush()
+    nlines+=1
     # print("A: "+line)
     # child,parent,ploid,*rec = [int(x) for x in line.split()]
     linex = [int(x) for x in line.split()]
@@ -168,6 +176,7 @@ pop_ids = range(1+generations*N,1+(1+generations)*N)
 # some messing around to fill up the required samples
 diploid_samples=random.sample(pop_ids,nsamples)
 logfile.write("Samples ("+str(nsamples)+" of them): "+str(diploid_samples)+"\n")
+logfile.flush()
 # need chromosome ids
 chrom_samples = [ ftprime.ind_to_chrom(x,a) for x in diploid_samples for a in ftprime.mapa_labels ]
 args.add_samples(samples=chrom_samples,length=length)
@@ -178,19 +187,28 @@ sample_locs = [ (0,0) for _ in chrom_samples ]
 # for x in args.dump_records():
 #     print(x)
 
+logfile.write("Constructing tree sequence.\n")
+logfile.flush()
+
 ts=args.tree_sequence(samples=sample_locs)
 
 # print("msprime trees:")
 # for x in ts.records():
 #     print(x)
 
+logfile.write("Simplifying tree sequence.\n")
+logfile.flush()
+
 ts.simplify(samples=list(range(nsamples)))
 
 if options.treefile is not None:
+    logfile.write("Dumping trees to"+options.treefile+"\n")
+    logfile.flush()
     ts.dump(options.treefile)
 
 mut_seed=random.randrange(1,1000)
 logfile.write("Generating mutations with seed "+str(mut_seed)+"\n")
+logfile.flush()
 rng = msprime.RandomGenerator(mut_seed)
 ts.generate_mutations(mut_rate,rng)
 
