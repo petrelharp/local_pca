@@ -1,0 +1,12 @@
+{
+  "type": ["snp"],
+  "size": [10000],
+  "npc": [2],
+  "nmds": [2],
+  "jobid": ["278544"],
+  "help": [false],
+  "outdir": ["lostruct_results/type_snp_size_10000_weights_none_jobid_278544"],
+  "start.time": ["2017-02-03 10:54:36"],
+  "run.dir": ["/panfs/cmb-panasas2/pralph/local_pca/medicago"],
+  "weights": [1]
+}

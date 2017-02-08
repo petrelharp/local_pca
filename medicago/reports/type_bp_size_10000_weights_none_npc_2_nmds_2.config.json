@@ -1,0 +1,12 @@
+{
+  "type": ["bp"],
+  "size": [10000],
+  "npc": [2],
+  "nmds": [2],
+  "outdir": ["lostruct_results/type_bp_size_10000_weights_none_jobid_519007"],
+  "jobid": ["081432"],
+  "help": [false],
+  "start.time": ["2017-02-04 21:56:45"],
+  "run.dir": ["/panfs/cmb-panasas2/pralph/local_pca/medicago"],
+  "weights": [1]
+}
