@@ -106,51 +106,26 @@ then we want a deleterious mutation rate of 5e-3.
 Then, we want the universal ancestor to be maybe another 10,000 generations above the start of the simulation.
 
 Timing results:
+Here's the goal:
 ```
-# 0.2s:
-time ./background-sim.py -T 10 -N 100 -w 2 -L 100 -l 10 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
-# 1.1s with 10x10 instead of 2x2 grid:  
-time ./background-sim.py -T 10 -N 100 -w 10 -L 100 -l 10 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
-# 1.1s also with 25e6 bp chromosome
-time ./background-sim.py -T 10 -N 100 -w 10 -L 25e6 -l 10 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
-
-## 72s as above AND with 1,000 loci
-time ./background-sim.py -T 10 -N 100 -w 10 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
-
-## 315s as above AND with 4,000 loci
-time ./background-sim.py -T 10 -N 100 -w 10 -L 25e6 -l 4000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
-
-## as above and WITH ONLY 100 loci:
-# 65s also with N=1000 per population
-time ./background-sim.py -T 10 -N 1000 -w 10 -L 25e6 -l 100 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
-# for 100 generations
-time ./background-sim.py -T 100 -N 1000 -w 10 -L 25e6 -l 100 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
-
+time ./background-sim.py -T 10000 -N 100 -w 10 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log
 ```
 
-Multiple threads:
 ```
-# 260s instead of 72s
-time ./background-sim.py -t 4 -T 10 -N 100 -w 10 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
-# 1766s
-# and 1052s
-time ./background-sim.py -t 4 -T 40 -N 100 -w 10 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
-# 290s : quicker without multithreading!!
-time ./background-sim.py -T 40 -N 100 -w 10 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
-# 4139s
-time ./background-sim.py -t 4 -T 160 -N 100 -w 10 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
-```
+# 32s : 100 gens, 2x2 grid, 10 samples, 100x smaller chromosome
+time ./background-sim.py -T 100 -N 100 -w 2 -L .25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
+            -A 10000 -k 10 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log
 
+# 32s also : 100 gens, 2x2 grid, 100 samples, 100x smaller chromosome
+time ./background-sim.py -T 100 -N 100 -w 2 -L .25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
+            -A 10000 -k 100 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log
 
-It looks like the time scales linearly with generations $\times$ selected loci $\times$ individuals, as expected.
-Doing $N=100$ with 1,000 loci for 10,000 generations should take 20 hours according to the above estimate.
-```
-./background-sim.py -T 10000 -N 100 -w 10 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim.recomb -g bground_sim.simupop.log -s bground_sim.selloci
-./recombs-to-msprime.py -i bground_sim.recomb -A 10000 -k 1000 -u 1e-7 -o bground_sim.vcf -t bground_sim.trees -g bground_sim.msprime.log
-```
+# 150s : 100 gens, 4x4 grid, 100 samples, 100x smaller chromosome
+time ./background-sim.py -T 100 -N 100 -w 4 -L .25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
+            -A 10000 -k 100 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log
 
-Timing for the `msprime` part:
-```
-time ./background-sim.py -T 100 -N 8 -w 2 -L 100 -l 10 -m .01 -u .001 -r .0001 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
-time ./recombs-to-msprime.py -i bground_sim_short.recomb -A 10 -k 3 -u .01 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.msprime.log
+# : 100 gens, 4x4 grid, 1000 samples, 100x smaller chromosome
+time ./background-sim.py -T 100 -N 100 -w 4 -L .25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log
 ```
