@@ -67,20 +67,54 @@ compare_mds <- function (d1,d2,k) {
 }
 
 # Produces a matrix with upper triangle correlations in MDS1, and lower triangle in MDS2
-mds.cors <- matrix(NA,nrow=nrow(params),ncol=ncol(params))
-for (i in 1:(nrow(params)-1)) {
-    for (j in (i+1):nrow(params)) {
-        mds.cors[i,j] <- compare_mds(params$outdir[i],params$outdir[j],1)
-        mds.cors[j,i] <- compare_mds(params$outdir[i],params$outdir[j],2)
+mds.cors <- list( matrix(NA,nrow=nrow(params),ncol=ncol(params)) )[c(1,1)]
+for (i in 1:nrow(params)) {
+    for (j in 1:nrow(params)) {
+        mds.cors[[1]][i,j] <- compare_mds(params$outdir[i],params$outdir[j],1)
+        mds.cors[[2]][j,i] <- compare_mds(params$outdir[i],params$outdir[j],2)
     }
 }
-rownames(mds.cors) <- sprintf("window=%d%s, %d PCs", params$size, params$type, params$npc)
-mds.cors
+for (k in 1:2) {
+    colnames(mds.cors[[k]]) <- rownames(mds.cors[[k]]) <- sprintf("%d%s, %d PCs", params$size, params$type, params$npc)
+}
 
-#                             [,1]      [,2]      [,3]      [,4]      [,5]
-# window=10000snp, 2 PCs        NA 0.8701600 0.9593167 0.9024207 0.8765862
-# window=1000snp, 2 PCs  0.8195672        NA 0.7253759 0.6820970 0.9355702
-# window=10000snp, 5 PCs 0.9319838 0.5027238        NA 0.8831645 0.9284340
-# window=100000bp, 2 PCs 0.8724878 0.5896812 0.8378923        NA 0.8724009
-# window=10000bp, 2 PCs  0.8279086 0.9172536 0.7738415 0.8373688        NA
+library(xtable)
 
+options(digits=2)
+lapply(mds.cors,xtable)
+
+# % latex table generated in R 3.3.1 by xtable 1.8-2 package
+# % Wed Feb  8 16:17:12 2017
+# \begin{table}[ht]
+# \centering
+# \begin{tabular}{rrrrrr}
+#   \hline
+#  & 10000snp, 2 PCs & 1000snp, 2 PCs & 10000snp, 5 PCs & 100000bp, 2 PCs & 10000bp, 2 PCs \\ 
+#   \hline
+# 10000snp, 2 PCs & 1.00 & 0.87 & 0.96 & 0.90 & 0.88 \\ 
+#   1000snp, 2 PCs & 0.68 & 1.00 & 0.73 & 0.68 & 0.94 \\ 
+#   10000snp, 5 PCs & 0.96 & 0.92 & 1.00 & 0.88 & 0.93 \\ 
+#   100000bp, 2 PCs & 0.90 & 0.87 & 0.88 & 1.00 & 0.87 \\ 
+#   10000bp, 2 PCs & 0.68 & 0.93 & 0.72 & 0.67 & 1.00 \\ 
+#    \hline
+# \end{tabular}
+# \end{table}
+# 
+# [[2]]
+# % latex table generated in R 3.3.1 by xtable 1.8-2 package
+# % Wed Feb  8 16:17:12 2017
+# \begin{table}[ht]
+# \centering
+# \begin{tabular}{rrrrrr}
+#   \hline
+#  & 10000snp, 2 PCs & 1000snp, 2 PCs & 10000snp, 5 PCs & 100000bp, 2 PCs & 10000bp, 2 PCs \\ 
+#   \hline
+# 10000snp, 2 PCs & 1.00 & 0.54 & 0.93 & 0.87 & 0.56 \\ 
+#   1000snp, 2 PCs & 0.82 & 1.00 & 0.76 & 0.83 & 0.92 \\ 
+#   10000snp, 5 PCs & 0.93 & 0.50 & 1.00 & 0.83 & 0.52 \\ 
+#   100000bp, 2 PCs & 0.87 & 0.59 & 0.84 & 1.00 & 0.58 \\ 
+#   10000bp, 2 PCs & 0.83 & 0.92 & 0.77 & 0.84 & 1.00 \\ 
+#    \hline
+# \end{tabular}
+# \end{table}
+# 

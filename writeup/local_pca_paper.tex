@@ -1267,6 +1267,72 @@ to find only the top $k$ eigenvectors.
     \clearpage
 \fi
 
+\section{Supplementary Tables}
+
+% latex table generated in R 3.3.1 by xtable 1.8-2 package
+% Wed Feb  8 16:17:12 2017
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrrrrr}
+  \hline
+ & 10000snp, 2 PCs & 1000snp, 2 PCs & 10000snp, 5 PCs & 100000bp, 2 PCs & 10000bp, 2 PCs \\ 
+  \hline
+10000snp, 2 PCs & 1.00 & 0.87 & 0.96 & 0.90 & 0.88 \\ 
+  1000snp, 2 PCs & 0.68 & 1.00 & 0.73 & 0.68 & 0.94 \\ 
+  10000snp, 5 PCs & 0.96 & 0.92 & 1.00 & 0.88 & 0.93 \\ 
+  100000bp, 2 PCs & 0.90 & 0.87 & 0.88 & 1.00 & 0.87 \\ 
+  10000bp, 2 PCs & 0.68 & 0.93 & 0.72 & 0.67 & 1.00 \\ 
+   \hline
+\end{tabular}
+\end{table}
+
+[[2]]
+% latex table generated in R 3.3.1 by xtable 1.8-2 package
+% Wed Feb  8 16:17:12 2017
+\begin{table}[ht]
+\centering
+    \begin{tabular}{rrrrrr}
+      \hline
+     MDS1 & 10000 SNPs, 2 PCs & 1000 SNPs, 2 PCs & 10000 SNPs, 5 PCs & 100000bp, 2 PCs & 10000bp, 2 PCs \\ 
+      \hline
+      10000 SNPs, 2 PCs & 1.00 & 0.54 & 0.93 & 0.87 & 0.56 \\ 
+      1000 SNPs, 2 PCs & 0.82 & 1.00 & 0.76 & 0.83 & 0.92 \\ 
+      10000 SNPs, 5 PCs & 0.93 & 0.50 & 1.00 & 0.83 & 0.52 \\ 
+      100000bp, 2 PCs & 0.87 & 0.59 & 0.84 & 1.00 & 0.58 \\ 
+      10000bp, 2 PCs & 0.83 & 0.92 & 0.77 & 0.84 & 1.00 \\ 
+       \hline
+    \end{tabular}
+    \begin{tabular}{rrrrrr}
+      \hline
+     MDS2 & 10000snp, 2 PCs & 1000snp, 2 PCs & 10000snp, 5 PCs & 100000bp, 2 PCs & 10000bp, 2 PCs \\ 
+      \hline
+      10000snp, 2 PCs & 1.00 & 0.54 & 0.93 & 0.87 & 0.56 \\ 
+      1000snp, 2 PCs & 0.82 & 1.00 & 0.76 & 0.83 & 0.92 \\ 
+      10000snp, 5 PCs & 0.93 & 0.50 & 1.00 & 0.83 & 0.52 \\ 
+      100000bp, 2 PCs & 0.87 & 0.59 & 0.84 & 1.00 & 0.58 \\ 
+      10000bp, 2 PCs & 0.83 & 0.92 & 0.77 & 0.84 & 1.00 \\ 
+       \hline
+    \end{tabular}
+    \begin{caption}
+        Correlations between MDS coordinates of genomic regions
+        between runs with different parameter values.
+        To produce these, 
+        we first ran the algorithm with the specified window size and number of PCs 
+        ($k$ in equation \plr{XXX})
+        on the full \textit{Medicago truncatula} dataset.
+        Then to obtain the correlation between results obtained from parameters A in the row of the matrix above
+        and parameters B in the column of the matrix above,
+        we mapped the windows of B to those of A by averaging MDS coordinates of any windows of B whose midpoints lay in the corresponding window of A;
+        we then computed the correlation between the MDS coordinates of A and the averaged MDS coordinates of B.
+        This is not a symmetric operation, so these matrices are not symmetric.
+        As expected, parameter values with smaller windows produce noisier estimates.
+        Plots of MDS values along the genome are visually nearly identical
+        for parameter sets having similar window sizes --
+        full reports are available as supplementary material on Data Dryad \plr{XXX}.
+        \label{tab:param_cors}
+    \end{caption}
+\end{table}
+
 \section{Supplementary Figures}
 
 
