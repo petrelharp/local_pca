@@ -1,0 +1,24 @@
+#PBS -S /bin/bash
+#PBS -q cmb
+#PBS -l nodes=1:ppn=1
+#PBS -l walltime=120:00:00
+#PBS -l mem=16000mb
+#PBS -l vmem=16000mb
+#PBS -l pmem=16000mb
+# #PBS -e qsub-logs
+# #PBS -o qsub-logs
+
+# USAGE:
+#    qsub -vARGS="stuff to evaluate" skeleton.pbs
+# e.g.
+#    qsub -vARGS="./run_on_medicago.R -args" skeleton.pbs
+
+source /home/rcf-40/pralph/cmb/bin/R-setup-usc.sh
+
+cd $PBS_O_WORKDIR
+
+echo "Running: $ARGS"
+
+( eval "$ARGS" ) || echo "$ARGS failed."
+
+exit
