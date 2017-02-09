@@ -121,11 +121,28 @@ time ./background-sim.py -T 100 -N 100 -w 2 -L .25e6 -l 1000 -m 4e-3 -u 5e-3 -r 
 time ./background-sim.py -T 100 -N 100 -w 2 -L .25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
             -A 10000 -k 100 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log
 
-# 150s : 100 gens, 4x4 grid, 100 samples, 100x smaller chromosome
+# 120s : 100 gens, 4x4 grid, 100 samples, 100x smaller chromosome
 time ./background-sim.py -T 100 -N 100 -w 4 -L .25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
             -A 10000 -k 100 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log
 
-# : 100 gens, 4x4 grid, 1000 samples, 100x smaller chromosome
+# 150s: 100 gens, 4x4 grid, 1000 samples, 100x smaller chromosome
 time ./background-sim.py -T 100 -N 100 -w 4 -L .25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log
+
+# 190 user/330 real: 100 gens, 4x4 grid, 1000 samples, 10x smaller chromosome
+time ./background-sim.py -T 100 -N 100 -w 4 -L 2.5e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log
+
+# 600s: 400 gens, 4x4 grid, 1000 samples, 10x smaller chromosome
+# with vcf: 780/1260s but terminated writing 116G+ vcf file
+time ./background-sim.py -T 400 -N 100 -w 4 -L 2.5e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log
+
+# 40m sim + 10m simplify: 400 gens, 8x8 grid, 1000 samples
+time ./background-sim.py -T 400 -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log
+
+# 10000 gens, 8x8 grid
+time ./background-sim.py -T 400 -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
             -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log
 ```

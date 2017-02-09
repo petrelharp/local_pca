@@ -9,7 +9,6 @@ from optparse import OptionParser
 import math
 import time
 import random
-from itertools import accumulate
 from ftprime import RecombCollector, ind_to_chrom, mapa_labels
 import msprime
 
@@ -84,7 +83,9 @@ npops=width*width
 
 # increase spacing between loci as we go along the chromosome
 spacing_fac=9
-rel_positions=list(accumulate([random.expovariate(1)*(1+spacing_fac*k/nloci) for k in range(nloci)]))
+rel_positions=[0.0 for k in range(nloci)]
+for k in range(nloci):
+    rel_positions[k] = rel_positions[k-1] + random.expovariate(1)*(1+spacing_fac*k/nloci)
 pos_fac=length/(rel_positions[-1]+random.expovariate(1)*(1+spacing_fac))
 locus_position=[x*pos_fac for x in rel_positions]
 
