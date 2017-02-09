@@ -62,6 +62,8 @@ selloci_file = options.selloci_file
 
 logfile.write("Options:\n")
 logfile.write(str(options)+"\n")
+logfile.write(time.strftime('%X %x %Z')+"\n")
+logfile.write("----------\n")
 logfile.flush()
 
 generations=int(options.generations)
@@ -160,6 +162,7 @@ pop.evolve(
 
 logfile.write("Done simulating!\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
+logfile.write("----------\n")
 logfile.flush()
 
 # writes out events in this form:
@@ -174,21 +177,23 @@ ts = rc.args.tree_sequence(samples=sample_locs)
 
 logfile.write("Loaded into tree sequence!\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
+logfile.write("----------\n")
 logfile.flush()
 
 ts.simplify(samples=list(range(nsamples)))
 
 logfile.write("Simplified; now writing to treefile (if specified).\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
+logfile.write("----------\n")
 logfile.flush()
-
-if options.treefile is not None:
-    ts.dump(options.treefile)
 
 mut_seed=random.randrange(1,1000)
 logfile.write("Generating mutations with seed "+str(mut_seed)+"\n")
 rng = msprime.RandomGenerator(mut_seed)
 ts.generate_mutations(mut_rate,rng)
+
+if options.treefile is not None:
+    ts.dump(options.treefile)
 
 logfile.write("Generated mutations!\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
@@ -197,9 +202,9 @@ logfile.write("Sequence length: {}\n".format(ts.get_sequence_length()))
 logfile.write("Number of trees: {}\n".format(ts.get_num_trees()))
 logfile.write("Number of mutations: {}\n".format(ts.get_num_mutations()))
 
-print("Writing out vcf to",outfile)
-ts.write_vcf(outfile,ploidy=1)
+print("NOT writing out vcf to",outfile)
+# ts.write_vcf(outfile,ploidy=1)
 
 
 logfile.write("All done!\n")
-logfile.flush()
+logfile.close()
