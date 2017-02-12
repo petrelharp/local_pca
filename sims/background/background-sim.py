@@ -43,9 +43,9 @@ parser.add_option("-b","--gamma_beta",dest="gamma_beta",help="beta parameter in 
 parser.add_option("-k","--nsamples",dest="nsamples",help="number of *diploid* samples, total")
 parser.add_option("-A","--ancestor_age",dest="ancestor_age",help="time to ancestor above beginning of sim")
 parser.add_option("-U","--mut_rate",dest="mut_rate",help="mutation rate",default=1e-7)
-parser.add_option("-t","--treefile",dest="treefile",help="name of output file for trees (or '-' for stdout)")
+parser.add_option("-t","--treefile",dest="treefile",help="name of output file for trees (default: not output)",default=None)
 
-parser.add_option("-o","--outfile",dest="outfile",help="name of output file (or '-' for stdout)",default="-")
+parser.add_option("-o","--outfile",dest="outfile",help="name of output VCF file (default: not output)",default=None)
 parser.add_option("-g","--logfile",dest="logfile",help="name of log file (or '-' for stdout)",default="-")
 parser.add_option("-s","--selloci_file",dest="selloci_file",help="name of file to output selected locus information",default="sel_loci.txt")
 (options,args) =  parser.parse_args()
@@ -55,7 +55,8 @@ simuOpt.setOptions(alleleType='mutant')
 import simuPOP as sim
 from simuPOP.demography import migr2DSteppingStoneRates
 
-outfile = fileopt(options.outfile, "w")
+if options.outfile is not None:
+    outfile = fileopt(options.outfile, "w")
 logfile = fileopt(options.logfile, "w")
 selloci_file = options.selloci_file
 
@@ -180,7 +181,8 @@ logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
-ts.simplify(samples=list(range(nsamples)))
+minimal_ts = ts.simplify()
+del ts
 
 logfile.write("Simplified; now writing to treefile (if specified).\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
@@ -190,20 +192,22 @@ logfile.flush()
 mut_seed=random.randrange(1,1000)
 logfile.write("Generating mutations with seed "+str(mut_seed)+"\n")
 rng = msprime.RandomGenerator(mut_seed)
-ts.generate_mutations(mut_rate,rng)
+minimal_ts.generate_mutations(mut_rate,rng)
 
 if options.treefile is not None:
-    ts.dump(options.treefile)
+    minimal_ts.dump(options.treefile)
 
 logfile.write("Generated mutations!\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
-logfile.write("Mean pairwise diversity: {}\n".format(ts.get_pairwise_diversity()/ts.get_sequence_length()))
-logfile.write("Sequence length: {}\n".format(ts.get_sequence_length()))
-logfile.write("Number of trees: {}\n".format(ts.get_num_trees()))
-logfile.write("Number of mutations: {}\n".format(ts.get_num_mutations()))
+logfile.write("Mean pairwise diversity: {}\n".format(minimal_ts.get_pairwise_diversity()/minimal_ts.get_sequence_length()))
+logfile.write("Sequence length: {}\n".format(minimal_ts.get_sequence_length()))
+logfile.write("Number of trees: {}\n".format(minimal_ts.get_num_trees()))
+logfile.write("Number of mutations: {}\n".format(minimal_ts.get_num_mutations()))
 
-print("NOT writing out vcf to",outfile)
-# ts.write_vcf(outfile,ploidy=1)
+if options.outfile is None:
+    print("NOT writing out vcf to",outfile)
+else:
+    minimal_ts.write_vcf(outfile,ploidy=1)
 
 
 logfile.write("All done!\n")

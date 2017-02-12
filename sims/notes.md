@@ -78,17 +78,6 @@ which translates to $\alpha=.23$ and $\beta=5.34$.
 Output of .selloci is `loc a1 a2 fitness gen` (but appears not to have `gen`),
 where `a1` and `a2` are alleles.
 
-Very short version:
-```
-./background-sim.py -T 4 -N 8 -w 2 -L 100 -l 10 -m .01 -u .001 -r .0001 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
-./recombs-to-msprime.py -i bground_sim_short.recomb -A 10 -k 3 -u .01 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.msprime.log
-```
-Longer version:
-```
-./background-sim.py -T 10 -N 100 -w 10 -L 25e6 -l 10 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -o bground_sim_short.recomb -g bground_sim_short.simupop.log -s bground_sim_short.selloci
-./recombs-to-msprime.py -i bground_sim_short.recomb -A 100 -k 3 -u 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.msprime.log
-```
-
 Modifying the above towards Drosophila:
 all simulations on an 10x10 grid, with 2Ne=1000 per population,
 a chromosome arm is about 25Mb,
@@ -142,7 +131,16 @@ time ./background-sim.py -T 400 -N 100 -w 4 -L 2.5e6 -l 1000 -m 4e-3 -u 5e-3 -r 
 time ./background-sim.py -T 400 -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
             -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log
 
-# 10000 gens, 8x8 grid
-time ./background-sim.py -T 400 -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
+# 1000 gens, 8x8 grid
+time ./background-sim.py -T 1000 -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
             -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log
 ```
+
+
+With the following:
+```
+time ./background-sim.py -T 1000 -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log
+```
+Memory: 16Gb for 1000 gens.
+2h to simulate; 1h to simplify.
