@@ -2,22 +2,24 @@
 #PBS -q cmb
 #PBS -l nodes=1:ppn=1
 #PBS -l walltime=240:00:00
-#PBS -l mem=48000mb
-#PBS -l vmem=48000mb
-#PBS -l pmem=48000mb
+#PBS -l mem=120000mb
+#PBS -l vmem=120000mb
+#PBS -l pmem=120000mb
 
-source /usr/usc/python/2.7.8/setup.sh
+# for msprime
 source /usr/usc/hdf5/1.8.12/setup.sh
+
+source $HOME/cmb/bin/python3_setup.sh
 
 cd $PBS_O_WORKDIR
 
-OUTBASE="bground_sim_time_${TIME}_run_${RANDOM}"
+OUTBASE="bground_sim_time_${TIME}_width_${WIDTH}_run_${RANDOM}"
 echo "Output to $OUTBASE"
 
 echo "Running:"
-echo " ./background-sim.py -T $TIME -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s ${OUTBASE}.selloci -A 10000 -k 1000 -U 1e-7 -o ${OUTBASE}.vcf -t ${OUTBASE}.trees -g ${OUTBASE}.log"
+echo " /usr/usc/python/3.5.2/bin/python3.5 background-sim.py -T $TIME -N 100 -w $WIDTH -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s ${OUTBASE}.selloci -A 10000 -k 1000 -U 1e-7 -o ${OUTBASE}.vcf -t ${OUTBASE}.trees -g ${OUTBASE}.log"
 
-time ./background-sim.py -T $TIME -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s ${OUTBASE}.selloci \
+time /usr/usc/python/3.5.2/bin/python3.5 background-sim.py -T $TIME -N 100 -w $WIDTH -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s ${OUTBASE}.selloci \
             -A 10000 -k 1000 -U 1e-7 -o ${OUTBASE}.vcf -t ${OUTBASE}.trees -g ${OUTBASE}.log
 
 exit

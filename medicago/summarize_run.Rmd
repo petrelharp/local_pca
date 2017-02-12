@@ -66,6 +66,10 @@ pca.files <- list.files(".",".*.pca.csv")
 mds.file <- "mds_coords.csv"
 regions.files <- list.files(".",".*.regions.csv")
 
+# output file patterns
+corner.covmat.file <- "corner_covmat_%d.csv"
+mds.corners.file <- "mds_corners.csv"
+
 # read in mds
 mds.coords <- read.csv(mds.file,header=TRUE)
 mds.cols <- (1:ncol(mds.coords))[-(1:2)]
@@ -121,6 +125,7 @@ if (do.pdfs) { pdf_copy() }
 Here are the extreme windows in the MDS plot:
 ```{r get_corners}
 mds.corners <- corners( mds.coords[,mds.cols[1:2]], prop=.05 )
+write.csv(mds.corners,file=mds.corners.file,row.names=FALSE)
 # set up colors and pchs for corners
 corner.cols <- brewer.pal(3,"Dark2")
 corner.pch <- c(15,17,19)
@@ -170,6 +175,9 @@ corner.covmats <- lapply( 1:ncol(mds.corners), function (k) {
             qfun <- multi_vcf_query_fn( chrom.list=chroms, file=bcf.files, regions=reg )
             running_cov(qfun,1:nrow(reg))
         } )
+for (k in 1:length(corner.covmats)) {
+    write.csv(corner.covmats[[k]], file=sprintf(corner.covmat.file,k),row.names=FALSE)
+}
 corner.pca <- lapply( corner.covmats, function (covmat) {
             cov_pca(covmat=covmat,k=corner.npc,w=opt$weights)
     } )
