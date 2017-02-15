@@ -11,8 +11,8 @@
 #'   dist(A,B) = sqrt( sum_{i,j}  w[i] * w[j] * ( A[i,j] - B[i,j] )^2 )
 #'
 #' @param x Matrix as output by eigen_windows(): one row per window, with entries (sum squares), (eigenvalues), (eigenvectors).
-#' @param npc Number of pcas computed.
-#' @param w A vector of weights corresponding to columns of \code{x}.
+#' @param npc Number of PCs computed.
+#' @param w A vector of weights corresponding to samples (of same length as an eigenvector).
 #' @param normalize Normalize the matrices to have the same norm?  Can be "L1" (default), "L2", or FALSE.
 #' @param mc.cores If this is greater than 1, parallel::mclapply will be used.
 #' @return A symmetric, numeric matrix with number of columns equal to the number of columns in eigen.win$values.

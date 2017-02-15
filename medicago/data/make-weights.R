@@ -1,3 +1,5 @@
+library(lostruct)
+
 samples <- read.table("sample_info.tsv",sep="\t",header=TRUE)
 
 samples$nsamples <- table(samples$Country.of.Origin)[samples$Country.of.Origin]
@@ -9,3 +11,7 @@ bcf.samples[bcf.samples=="HM020-I"] <- "HM020"
 weights <- data.frame( ID=bcf.samples, weight=samples$weight[match(bcf.samples,samples$ID)] )
 
 write.table(weights, sep="\t", file="inverse-samplesize-weights.tsv", row.names=FALSE)
+
+weights$weight <- sqrt(weights$weight)
+
+write.table(weights, sep="\t", file="inverse-sqrt-samplesize-weights.tsv", row.names=FALSE)
