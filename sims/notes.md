@@ -94,13 +94,17 @@ then we want a deleterious mutation rate of 5e-3.
 
 Then, we want the universal ancestor to be maybe another 10,000 generations above the start of the simulation.
 
-Timing results:
-Here's the goal:
+Here's what we did: a 6x6 grid for 4,000 generations
+(to fit within 32G memory):
 ```
-time ./background-sim.py -T 10000 -N 100 -w 10 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
-            -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log
+# elapsed: 12:39:49 / kernel: 19.46 / user: 45569.19 / mem: 30613852
+OUTBASE="bground_sim_4000gens_6x6"
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 4000 -N 100 -w 6 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s ${OUTBASE}.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o ${OUTBASE}.vcf -t ${OUTBASE}.trees -g ${OUTBASE}.log  &> time_4000gens_6x6_1000samp.log &
 ```
 
+
+Timing experiments:
 ```
 # 32s : 100 gens, 2x2 grid, 10 samples, 100x smaller chromosome
 time ./background-sim.py -T 100 -N 100 -w 2 -L .25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
@@ -128,19 +132,39 @@ time ./background-sim.py -T 400 -N 100 -w 4 -L 2.5e6 -l 1000 -m 4e-3 -u 5e-3 -r 
             -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log
 
 # 40m sim + 10m simplify: 400 gens, 8x8 grid, 1000 samples
-time ./background-sim.py -T 400 -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
-            -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log
-
-# 1000 gens, 8x8 grid
-time ./background-sim.py -T 1000 -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
-            -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log
+# elapsed: 54:06.38 / kernel: 9.33 / user: 3210.98 / mem: 6215856
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 400 -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log  &> time_400gens_8x8_1000samp.log
 ```
 
 
 With the following:
 ```
-time ./background-sim.py -T 1000 -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 1000 -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
             -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log
 ```
 Memory: 16Gb for 1000 gens.
 2h to simulate; 1h to simplify.
+
+Note: "mem" is "Maximum resident set size of the process during its lifetime, in Kilobytes."
+```
+# 100 gens: 
+# elapsed: 12:04.53 / kernel: 14.59 / user: 623.08 / mem: 2864400
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 100 -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log  &> time_100gens_8x8_1000samp.log
+
+# 200 gens: 
+# elapsed: 22:41.62 / kernel: 9.42 / user: 1300.16 / mem: 3818808
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 200 -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log  &> time_200gens_8x8_1000samp.log
+
+# 300 gens: 
+# elapsed: 35:30.72 / kernel: 9.09 / user: 2103.78 / mem: 5059304
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 300 -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log  &> time_300gens_8x8_1000samp.log
+
+# 400 gens: 
+# elapsed: 54:06.38 / kernel: 9.33 / user: 3210.98 / mem: 6215856
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 400 -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log  &> time_400gens_8x8_1000samp.log
+```
