@@ -167,23 +167,35 @@ Note: "mem" is "Maximum resident set size of the process during its lifetime, in
 ```
 # 100 gens: 
 # elapsed: 12:04.53 / kernel: 14.59 / user: 623.08 / mem: 2864400
-/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 100 -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
-            -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log  &> time_100gens_8x8_1000samp.log
+# 7 min to sim, 2 min to simplify
+NGENS=100
+OUTBASE="bground_sim_${NGENS}gens_6x6"
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T $NGENS -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s ${OUTBASE}.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o ${OUTBASE}.vcf -t ${OUTBASE}.trees -g ${OUTBASE}.log  &> time_${OUTBASE}.log
 
 # 200 gens: 
 # elapsed: 22:41.62 / kernel: 9.42 / user: 1300.16 / mem: 3818808
-/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 200 -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
-            -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log  &> time_200gens_8x8_1000samp.log
+# 17 min to sim, 3 min to simplify
+NGENS=200
+OUTBASE="bground_sim_${NGENS}gens_6x6"
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T $NGENS -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s ${OUTBASE}.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o ${OUTBASE}.vcf -t ${OUTBASE}.trees -g ${OUTBASE}.log  &> time_${OUTBASE}.log
 
 # 300 gens: 
 # elapsed: 35:30.72 / kernel: 9.09 / user: 2103.78 / mem: 5059304
-/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 300 -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
-            -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log  &> time_300gens_8x8_1000samp.log
+# 29 min to sim, 6 min to simplify
+NGENS=300
+OUTBASE="bground_sim_${NGENS}gens_6x6"
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T $NGENS -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s ${OUTBASE}.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o ${OUTBASE}.vcf -t ${OUTBASE}.trees -g ${OUTBASE}.log  &> time_${OUTBASE}.log
 
 # 400 gens: 
 # elapsed: 54:06.38 / kernel: 9.33 / user: 3210.98 / mem: 6215856
-/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 400 -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
-            -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log  &> time_400gens_8x8_1000samp.log
+# 40 min to sim, 9 min to simplify
+NGENS=400
+OUTBASE="bground_sim_${NGENS}gens_6x6"
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T $NGENS -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s ${OUTBASE}.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o ${OUTBASE}.vcf -t ${OUTBASE}.trees -g ${OUTBASE}.log  &> time_${OUTBASE}.log
 ```
 
 ## One-dimensional
