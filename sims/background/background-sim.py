@@ -95,6 +95,12 @@ init_freqs=[[k/100,1-k/100,0,0] for k in range(1,11)]
 locus_classes=[min(len(init_freqs)-1,math.floor(random.expovariate(1))) for k in range(nloci)]
 init_classes=[list(filter(lambda k: locus_classes[k]==x,range(nloci))) for x in range(len(init_freqs))]
 
+logfile.write("Locus positions:\n")
+logfile.write(str(locus_positions)+"\n")
+logfile.write("----------\n")
+logfile.flush()
+
+
 init_geno=[sim.InitGenotype(freq=init_freqs[k],loci=init_classes[k]) for k in range(len(init_freqs))]
 
 # record recombinations
