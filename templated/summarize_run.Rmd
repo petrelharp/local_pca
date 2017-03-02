@@ -56,9 +56,15 @@ bcf.files <- opt$bcf_files
 names(bcf.files) <- chroms
 
 sample.ids <- vcf_samples(bcf.files[1])
-samp.file <- opt$sample_info
-samps <- read.table(samp.file,sep="\t",header=TRUE)
-samps <- droplevels( samps[match(sample.ids,samps$ID),] )
+if (!is.null(opt$sample_info)) {
+    samp.file <- opt$sample_info
+    samps <- read.table(samp.file,sep="\t",header=TRUE)
+    samps <- droplevels( samps[match(sample.ids,samps$ID),] )
+} else {
+    samps <- data.frame( 
+            ID=sample.ids,
+            population=factor(rep("pop",length(sample.ids))) )
+}
 
 # data files, precomputed
 pca.files <- list.files(".",".*.pca.csv")
@@ -91,7 +97,7 @@ chrom.cols <- rainbow_hcl(length(chroms), c=90, end=.9*360)[as.numeric(regions$c
 chrom.plot <- function (y,ylab='',main='',chrom.labels=TRUE,...) {
     plot(0, type='n', xlim=range(chrom.offsets/1e6), ylim=range(y,finite=TRUE), 
          xlab='', xaxt='n', yaxt='n', ylab=ylab, main=main)
-    for (k in 1:floor(length(chroms)/2)) {
+    if (length(chroms)>1) for (k in 1:floor(length(chroms)/2)) {
         rect( xleft=chrom.dividers[2*k-1]/1e6, xright=chrom.dividers[2*k]/1e6, 
              ybottom=par("usr")[3], ytop=par("usr")[4], 
              border=NA, col=adjustcolor("grey",0.25) )

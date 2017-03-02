@@ -78,10 +78,12 @@ which translates to $\alpha=.23$ and $\beta=5.34$.
 Output of .selloci is `loc a1 a2 fitness gen` (but appears not to have `gen`),
 where `a1` and `a2` are alleles.
 
-Modifying the above towards Drosophila:
+Modifying the above towards Drosophila: if possible,
 all simulations on an 10x10 grid, with 2Ne=1000 per population,
 a chromosome arm is about 25Mb,
-mean recombination rate 2.5e-8, mutation rate 1e-7. 
+neutral mutation rate 1e-7. 
+Recombination rate in Drosophila is around 2.5 cM/Mb, or 2.5e-8 per bp,
+which will give 0.625 recombinations per chromosome per generation.
 Total population is 1e5, so we expect divergence of 0.01, and a tree every 400bp.
 To have lineages mix over this time, but not instantly,
 migration rate 4e-3 (in proportion of a population replaced by a given neighbor each generation).
@@ -91,8 +93,23 @@ a Drosophila chromosome arm is about 25Mb, of which about 1/5 is coding sequence
 divided into 1,000 loci this is 1Kb per locus;
 if we assume that roughly 1/2 of these are deleterious
 then we want a deleterious mutation rate of 5e-3.
+This has a total mutation rate of 5 per generation, or 0.2e-6 per bp.
+
+Hudson and Kaplan (1995) show that the effect on a neutral marker at the center of a region of length $R$
+of a collection of deleterious loci each having selective disadvantage $sh$ and total mutation rate $U$ 
+spread across the region is to reduce diversity by $\exp(-U/(2sh+R))$,
+which for a large region is roughly $\exp(-u/r)$, where $u/r$ is the ratio of deleterious mutation rate to recombination rate.
+Here we have $U=5$, $R=0.625$, and $sh=.043$, so $U/(2sh+R)=7$.
+The first quarter of the chromosome has $U=3.125$ (and $R=0.156$), so $U/(2sh+R)=12.9$,
+while the last quarter has $U=0.395$ and so $U/(2sh+R)=1.63$.
+But, we want to know if this will affect *spatial structure* --
+we want the variation in $N_e$ to affect whether there is strong spatial structure or not.
+To do this, we want the neutral model to have little spatial structure, 
+but to have stronger spatial structure with lower $N_e$.
 
 Then, we want the universal ancestor to be maybe another 10,000 generations above the start of the simulation.
+
+## Two-dimensional
 
 Here's what we did: a 6x6 grid for 4,000 generations
 (to fit within 32G memory):
@@ -167,4 +184,33 @@ Note: "mem" is "Maximum resident set size of the process during its lifetime, in
 # elapsed: 54:06.38 / kernel: 9.33 / user: 3210.98 / mem: 6215856
 /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 400 -N 100 -w 8 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s bground_sim_short.selloci \
             -A 10000 -k 1000 -U 1e-7 -o bground_sim_short.vcf -t bground_sim_short.trees -g bground_sim_short.log  &> time_400gens_8x8_1000samp.log
+```
+
+## One-dimensional
+
+With population size of $N=100$ and migration rate of $m=4e-3$,
+coalescence occurs before migration almost surely.
+In fact we want little spatial structure in the absence of background selection,
+so take $m=0.1$.
+
+To fit within 32G memory, we can do a linear arrangement of 25 populations for for 5,000 generations:
+
+Testing:
+```
+# elapsed: 4:27.36 / kernel: 23.94 / user: 200.72 / mem: 1162724
+OUTBASE="bground_sim_50gens_25x1"
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 50 -N 100 -w 25 -y 1 -L 25e6 -l 1000 -m 0.1 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s ${OUTBASE}.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o ${OUTBASE}.vcf -t ${OUTBASE}.trees -g ${OUTBASE}.log  &> time_${OUTBASE}.log
+
+# elapsed: 6:30.24 / kernel: 11.55 / user: 345.27 / mem: 1174148
+OUTBASE="bground_sim_100gens_25x1"
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 100 -N 100 -w 25 -y 1 -L 25e6 -l 1000 -m 0.1 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s ${OUTBASE}.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o ${OUTBASE}.vcf -t ${OUTBASE}.trees -g ${OUTBASE}.log  &> time_${OUTBASE}.log
+
+# elapsed: 14:06:10 / kernel: 29.68 / user: 50726.24 / mem: 26792648
+OUTBASE="bground_sim_5000gens_25x1"
+OUTDIR=OUTBASE
+mkdir -p $OUTDIR
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 5000 -N 100 -w 25 -y 1 -L 25e6 -l 1000 -m 0.1 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s ${OUTDIR}/${OUTBASE}.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o ${OUTDIR}/${OUTBASE}.vcf -t ${OUTDIR}/${OUTBASE}.trees -g ${OUTDIR}/${OUTBASE}.log  &> ${OUTDIR}/time_${OUTBASE}.log
 ```

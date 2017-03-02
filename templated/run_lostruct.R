@@ -20,7 +20,7 @@ for options.\
 option_list <- list(
     # input/output
         make_option( c("-i","--input_dir"),   type="character",        help="Directory with input: indexed .bcf or .vcf.gz files. (REQUIRED)"),
-        make_option( c("-I","--sample_info"),   type="character",        help="File with ID and population of the samples. (required to run summarize_run.Rmd from the results))"),
+        make_option( c("-I","--sample_info"),   type="character",        help="File with columns labeled 'ID' and 'population' describing populations of samples in bcf file.)"),
         make_option( c("-t","--type"),   type="character",             help="Window by SNP or by bp? (REQUIRED)"),
         make_option( c("-s","--size"),   type="integer",               help="Size of the window, in units of type. (REQUIRED)"),
         make_option( c("-k","--npc"),   type="integer",   default=2L,  help="Number of principal components to compute for each window. [default: %default]"),
@@ -41,8 +41,10 @@ if (is.null(opt$input_dir) || is.null(opt$type) || is.null(opt$size)) { stop(usa
 opt$start.time <- Sys.time()
 opt$run.dir <- normalizePath(".")
 
-if (is.null(opt$sample_info) || !file.exists(opt$sample_info)) {
-    stop(sprintf("Sample info file %s does not exist - won't be able to produce report afterwards.",opt$sample_info))
+if (is.null(opt$sample_info)) {
+    warning("No sample information file - report from summarize_run.Rmd won't have colors.")
+} else if  (!file.exists(opt$sample_info)) {
+    stop(sprintf("Sample info file %s does not exist.",opt$sample_info))
 } else {
     opt$sample_info <- normalizePath(opt$sample_info)
 }

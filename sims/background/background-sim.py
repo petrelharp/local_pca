@@ -32,7 +32,8 @@ def fileopt(fname,opts):
 parser = OptionParser(description=description)
 parser.add_option("-T","--generations",dest="generations",help="number of generations to run for")
 parser.add_option("-N","--popsize",dest="popsize",help="size of each subpopulation",default=100)
-parser.add_option("-w","--width",dest="width",help="width of square grid, in populations",default=3)
+parser.add_option("-w","--gridwidth",dest="gridwidth",help="width of rectangular grid, in populations",default=3)
+parser.add_option("-y","--gridheight",dest="gridheight",help="height of rectangular grid, in populations (default: equal to gridwidth)")
 parser.add_option("-L","--length",dest="length",help="number of bp in the chromosome",default=1e4)
 parser.add_option("-l","--nloci",dest="nloci",help="number of selected loci",default=20)
 parser.add_option("-m","--migr",dest="migr",help="migration proportion between adjacent populations",default=.01)
@@ -53,7 +54,7 @@ parser.add_option("-s","--selloci_file",dest="selloci_file",help="name of file t
 import simuOpt
 simuOpt.setOptions(alleleType='mutant')
 import simuPOP as sim
-from simuPOP.demography import migr2DSteppingStoneRates
+from simuPOP.demography import migr2DSteppingStoneRates, migrSteppingStoneRates
 
 if options.outfile is not None:
     outfile = fileopt(options.outfile, "w")
@@ -69,7 +70,12 @@ logfile.flush()
 generations=int(options.generations)
 popsize=int(options.popsize)
 nloci=int(options.nloci)
-width=int(options.width)
+gridwidth=int(options.gridwidth)
+if options.gridheight is not None:
+    gridheight=int(options.gridheight)
+else:
+    gridheight=gridwidth
+
 alpha=float(options.gamma_alpha)
 beta=float(options.gamma_beta)
 length=float(options.length)
@@ -80,14 +86,13 @@ migr=float(options.migr)
 nsamples=int(options.nsamples)
 ancestor_age=float(options.ancestor_age)
 
-npops=width*width
+npops=gridwidth*gridheight
 
 # increase spacing between loci as we go along the chromosome
-spacing_fac=9
 rel_positions=[0.0 for k in range(nloci)]
 for k in range(nloci):
-    rel_positions[k] = rel_positions[k-1] + random.expovariate(1)*(1+spacing_fac*k/nloci)
-pos_fac=length/(rel_positions[-1]+random.expovariate(1)*(1+spacing_fac))
+    rel_positions[k] = rel_positions[k-1] + random.expovariate(1)*(k**2)
+pos_fac=length/(rel_positions[-1]+random.expovariate(1)*(nloci**2))
 locus_position=[x*pos_fac for x in rel_positions]
 
 # initially polymorphic alleles
@@ -96,7 +101,7 @@ locus_classes=[min(len(init_freqs)-1,math.floor(random.expovariate(1))) for k in
 init_classes=[list(filter(lambda k: locus_classes[k]==x,range(nloci))) for x in range(len(init_freqs))]
 
 logfile.write("Locus positions:\n")
-logfile.write(str(locus_positions)+"\n")
+logfile.write(str(locus_position)+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
@@ -139,6 +144,13 @@ pop = sim.Population(
         lociPos=locus_position,
         infoFields=['ind_id','fitness','migrate_to'])
 
+if min(gridheight,gridwidth)==1:
+    migr_rates=migrSteppingStoneRates(
+        migr, n=max(gridwidth,gridheight), circular=False)
+else:
+    migr2DSteppingStoneRates(
+        migr, m=gridwidth, n=gridheight, diagonal=False, circular=False)
+
 pop.evolve(
     initOps=[
         sim.InitSex(),
@@ -146,8 +158,7 @@ pop.evolve(
     ]+init_geno,
     preOps=[
         sim.Migrator(
-            rate=migr2DSteppingStoneRates(
-                migr, m=width, n=width, diagonal=False, circular=False),
+            rate=migr_rates,
             mode=sim.BY_PROBABILITY),
         sim.AcgtMutator(rate=[sel_mut_rate], model='JC69'),
         sim.PyMlSelector(GammaDistributedFitness(alpha, beta),
