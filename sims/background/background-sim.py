@@ -1,6 +1,9 @@
 #!/usr/bin/env python3.5
 description = '''
 Simulate AND write to msprime/vcf.
+
+To obtain selected locus positions from the log file:
+    Rscript -e "as.numeric(gsub(']','',gsub('\\\[','',gsub(',','',scan('bground_sim_5000gens_25x1.log',what='',skip=5,nlines=1)))))"
 '''
 
 import gzip
@@ -148,7 +151,7 @@ if min(gridheight,gridwidth)==1:
     migr_rates=migrSteppingStoneRates(
         migr, n=max(gridwidth,gridheight), circular=False)
 else:
-    migr2DSteppingStoneRates(
+    migr_rates=migr2DSteppingStoneRates(
         migr, m=gridwidth, n=gridheight, diagonal=False, circular=False)
 
 pop.evolve(
@@ -187,6 +190,11 @@ logfile.flush()
 # offspringID parentID startingPloidy rec1 rec2 ....
 
 rc.add_samples()
+
+logfile.write("Samples:\n")
+logfile.write(str(rc.diploid_samples)+"\n")
+logfile.write("----------\n")
+logfile.flush()
 
 # not really the sample locs, but we don't care about that
 sample_locs = [ (0,0) for _ in range(rc.nsamples) ]
