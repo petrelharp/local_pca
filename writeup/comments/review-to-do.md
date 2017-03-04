@@ -25,7 +25,7 @@ Scenarios:
 X Neutral, flat recombination.
 X Neutral, with recombination rate increasing linearly from 0 to 2.
 X Neutral, with recombination hot spots.
-- Flat recombination, with selection against mutants with s=.01 at 1,000 sites
+X Flat recombination, with selection against mutants with s=.01 at 1,000 sites
     distributed with decreasing density linearly along the chromosome.
 
 
