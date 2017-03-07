@@ -291,6 +291,7 @@ python3.5 neutral-split-sim.py $OUTDIR
 for vcf in ${OUTDIR}/*.vcf; do 
     bcftools convert -O b $vcf -o ${vcf%%vcf}bcf; bcftools index ${vcf%%vcf}bcf; rm $vcf; 
 done
-./run_lostruct.R -i ${OUTDIR} -t snp -s 10 -o ${OUTDIR}/snp_10 -I ${OUTDIR}/samples.tsv
-Rscript -e "templater::render_template('summarize_run.Rmd',output='${OUTDIR}/snp_10/run-summary.html',change.rootdir=TRUE)"
+LODIR=${OUTDIR}/snp_100
+./run_lostruct.R -i ${OUTDIR} -t snp -s 100 -o $LODIR -I ${OUTDIR}/samples.tsv
+Rscript -e "templater::render_template('summarize_run.Rmd',output='${LODIR}/run-summary.html',change.rootdir=TRUE)"
 ```
