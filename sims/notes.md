@@ -221,8 +221,44 @@ OUTBASE="bground_sim_100gens_25x1"
 
 # elapsed: 14:06:10 / kernel: 29.68 / user: 50726.24 / mem: 26792648
 OUTBASE="bground_sim_5000gens_25x1"
-OUTDIR=OUTBASE
+OUTDIR=$OUTBASE
 mkdir -p $OUTDIR
 /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 5000 -N 100 -w 25 -y 1 -L 25e6 -l 1000 -m 0.1 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s ${OUTDIR}/${OUTBASE}.selloci \
             -A 10000 -k 1000 -U 1e-7 -o ${OUTDIR}/${OUTBASE}.vcf -t ${OUTDIR}/${OUTBASE}.trees -g ${OUTDIR}/${OUTBASE}.log  &> ${OUTDIR}/time_${OUTBASE}.log
+```
+
+## Other parameters
+
+Higher migration rate, but still two-dimensional:
+```
+# elapsed: 12:44:59 / kernel: 13.86 / user: 45883.72 / mem: 26796140
+OUTBASE="bground_sim_5000gens_5x5"
+OUTDIR=$OUTBASE
+mkdir -p $OUTDIR
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 5000 -N 100 -w 5 -y 5 -L 25e6 -l 1000 -m 0.1 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s ${OUTDIR}/${OUTBASE}.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o ${OUTDIR}/${OUTBASE}.vcf -t ${OUTDIR}/${OUTBASE}.trees -g ${OUTDIR}/${OUTBASE}.log  &> ${OUTDIR}/time_${OUTBASE}.log
+```
+
+Not quite so high migration rate, and higher recombination rate:
+```
+#
+OUTBASE="bground_sim_5000gens_5x5_migr0.01_recomb_1e-7"
+OUTDIR=$OUTBASE
+mkdir -p $OUTDIR
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 5000 -N 100 -w 5 -y 5 -L 25e6 -l 1000 -m 0.01 -u 5e-3 -r 1e-7 -a .23 -b 5.34 -s ${OUTDIR}/${OUTBASE}.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o ${OUTDIR}/${OUTBASE}.vcf -t ${OUTDIR}/${OUTBASE}.trees -g ${OUTDIR}/${OUTBASE}.log  &> ${OUTDIR}/time_${OUTBASE}.log
+```
+
+## Comparison with/without msprime
+
+```
+# elapsed: 6:30.24 / kernel: 11.55 / user: 345.27 / mem: 1174148
+OUTBASE="bground_sim_100gens_25x1"
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 100 -N 100 -w 25 -y 1 -L 25e6 -l 1000 -m 0.1 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s ${OUTBASE}.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o ${OUTBASE}.vcf -t ${OUTBASE}.trees -g ${OUTBASE}.log  &> time_${OUTBASE}.log
+
+# elapsed: 2:27.53 / kernel: 0.56 / user: 147.28 / mem: 650148
+OUTBASE="bground_sim_100gens_25x1_nomsprime"
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim-no-msprime.py -T 100 -N 100 -w 25 -y 1 -L 25e6 -l 1000 -m 0.1 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s ${OUTBASE}.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o ${OUTBASE}.vcf -t ${OUTBASE}.trees -g ${OUTBASE}.log  &> time_${OUTBASE}.log
 ```

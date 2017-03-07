@@ -65,7 +65,7 @@ if (!dir.exists(opt$input_dir)) {
 }
 bcf.files <- list.files(opt$input_dir,".*.(bcf|vcf.gz|vcf.bgz)$",full.names=TRUE)
 if (length(bcf.files)==0) {
-    stop(sprintf("No bcf or vcf.gz files found in input directory %s",opt$input.dir))
+    stop(sprintf("No bcf or vcf.gz files found in input directory %s",opt$input_dir))
 }
 bcf.files <- normalizePath(bcf.files)
 chroms <- make.names(gsub("[.](bcf|vcf.gz|vcf.bgz)$","",basename(bcf.files)))
