@@ -249,6 +249,16 @@ mkdir -p $OUTDIR
             -A 10000 -k 1000 -U 1e-7 -o ${OUTDIR}/${OUTBASE}.vcf -t ${OUTDIR}/${OUTBASE}.trees -g ${OUTDIR}/${OUTBASE}.log  &> ${OUTDIR}/time_${OUTBASE}.log
 ```
 
+Even lower migration rate and more recent MRCA:
+```
+#
+OUTBASE="bground_sim_4000gens_3x3_migr0.001_recomb_1e-7_A_1000"
+OUTDIR=$OUTBASE
+mkdir -p $OUTDIR
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 4000 -N 100 -w 3 -y 3 -L 25e6 -l 1000 -m 0.001 -u 5e-3 -r 1e-7 -a .23 -b 5.34 -s ${OUTDIR}/${OUTBASE}.selloci \
+            -A 1000 -k 1000 -U 1e-7 -o ${OUTDIR}/${OUTBASE}.vcf -t ${OUTDIR}/${OUTBASE}.trees -g ${OUTDIR}/${OUTBASE}.log  &> ${OUTDIR}/time_${OUTBASE}.log
+```
+
 ## Comparison with/without msprime
 
 ```
