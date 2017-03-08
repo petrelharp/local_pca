@@ -19,6 +19,8 @@ parser.add_argument('--chrom_length', '-L', type=float, help="Length of chromoso
 parser.add_argument('--mut_rate', '-u', default=1e-7, type=float, help="Mutation rate per bp per generation.")
 parser.add_argument('--recomb_rate', '-r', default=1e-7, type=float, help="Recombination rate per bp per generation.")
 parser.add_argument('--relative_split_time', '-T', default=0.25, type=float, help="Time since rearrangement of populations in units of Ne.")
+parser.add_argument('--relative_fast_m', '-m', default=10, type=float, help="Migration rate for 'close' pops in units of Ne.")
+parser.add_argument('--relative_slow_m', '-M', default=0.1, type=float, help="Migration rate for 'distant' pops in units of Ne.")
 
 args = parser.parse_args()
 
@@ -27,9 +29,9 @@ if not os.path.isdir(args.outdir):
 
 base_options = {
         'Ne' : 1000,
-        'm_rel' : 10,
-        'M_rel' : 0.1,
-        'T_rel' : 0.25,
+        'm_rel' : args.relative_fast_m,
+        'M_rel' : args.relative_slow_m,
+        'T_rel' : args.relative_split_time,
         'nsamples' : args.nsamples,
         'chrom_len' : args.chrom_length,
         'treefile' : "chrom{}.trees",
@@ -52,9 +54,11 @@ with open(os.path.join(args.outdir,"config.json"),"w") as configfile:
 
 with open(os.path.join(args.outdir,"samples.tsv"),"w") as samplefile:
     samplefile.write("ID\tpopulation\n")
+    indiv=0
     for pop in range(1,5):
         for k in range(base_options['nsamples']):
-            samplefile.write("{}\t{}\n".format(k,pop))
+            samplefile.write("msp_{}\tpop_{}\n".format(indiv,pop))
+            indiv+=1
 
 for chrom,opts in options.items():
 

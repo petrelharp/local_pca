@@ -275,6 +275,8 @@ OUTBASE="bground_sim_100gens_25x1_nomsprime"
 
 ## Population history
 
+### Split-and-merge
+
 Suppose that a set of four populations of diploid size N 
 transitions from an (AB)(CD) split to a (AC)(BD) split T generations ago.
 Let $m>1/4N$ be the migration rate between 'nearby' populations 
@@ -286,8 +288,9 @@ but big enough that background selection can make $T/4N_e$ big.
 
 To do this in msprime, see:
 ```
-OUTDIR=sim_25e6
-python3.5 neutral-split-sim.py $OUTDIR
+CHRLEN=5e6
+OUTDIR=sim_${CHRLEN}_${RANDOM}
+time python3.5 neutral-split-sim.py -o $OUTDIR --Ne 1000 20000 --nsamples 100 --chrom_length $CHRLEN -T 0.1 --relative_fast_m 1
 for vcf in ${OUTDIR}/*.vcf; do 
     CHROM=${vcf%%.vcf}
     CHROM=${CHROM: -1}
@@ -297,7 +300,11 @@ for vcf in ${OUTDIR}/*.vcf; do
     bcftools index ${vcf%%vcf}bcf
     rm $vcf
 done
-LODIR=${OUTDIR}/snp_100
-./run_lostruct.R -i ${OUTDIR} -t snp -s 100 -o $LODIR -I ${OUTDIR}/samples.tsv
-Rscript -e "templater::render_template('summarize_run.Rmd',output='${LODIR}/run-summary.html',change.rootdir=TRUE)"
+printf -v CHRLENBP "%.f" "$CHRLEN"
+WINLEN=$((CHRLENBP/100))
+for NPC in 1 2 3; do
+    (LODIR=${OUTDIR}/bp_${WINLEN}_npc_${NPC};
+    ./run_lostruct.R -i ${OUTDIR} -k $NPC -t bp -s $WINLEN -o $LODIR -I ${OUTDIR}/samples.tsv;
+    Rscript -e "templater::render_template('summarize_run.Rmd',output='${LODIR}/run-summary.html',change.rootdir=TRUE)")&
+done
 ```
