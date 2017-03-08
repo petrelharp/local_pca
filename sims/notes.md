@@ -286,10 +286,16 @@ but big enough that background selection can make $T/4N_e$ big.
 
 To do this in msprime, see:
 ```
-OUTDIR=sim_001
+OUTDIR=sim_25e6
 python3.5 neutral-split-sim.py $OUTDIR
 for vcf in ${OUTDIR}/*.vcf; do 
-    bcftools convert -O b $vcf -o ${vcf%%vcf}bcf; bcftools index ${vcf%%vcf}bcf; rm $vcf; 
+    CHROM=${vcf%%.vcf}
+    CHROM=${CHROM: -1}
+    sed -e "s/ID=1,/ID=${CHROM},/" -i $vcf
+    sed -e "s/^1/${CHROM}/" -i $vcf
+    bcftools convert -O b $vcf -o ${vcf%%vcf}bcf
+    bcftools index ${vcf%%vcf}bcf
+    rm $vcf
 done
 LODIR=${OUTDIR}/snp_100
 ./run_lostruct.R -i ${OUTDIR} -t snp -s 100 -o $LODIR -I ${OUTDIR}/samples.tsv

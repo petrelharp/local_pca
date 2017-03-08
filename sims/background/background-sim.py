@@ -230,7 +230,7 @@ logfile.write("Number of trees: {}\n".format(minimal_ts.get_num_trees()))
 logfile.write("Number of mutations: {}\n".format(minimal_ts.get_num_mutations()))
 
 if options.outfile is None:
-    print("NOT writing out vcf to",outfile)
+    print("NOT writing out genotype data.\n")
 else:
     minimal_ts.write_vcf(outfile,ploidy=1)
 

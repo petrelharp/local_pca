@@ -20,19 +20,19 @@ base_options = {
         'm_rel' : 10,
         'M_rel' : 0.1,
         'T_rel' : 0.25,
-        'nsamples' : 10,
-        'chrom_len' : 25e2,
+        'nsamples' : 100,
+        'chrom_len' : 25e6,
         'treefile' : "chrom{}.trees",
         'vcffile' : "chrom{}.vcf",
-        'mut_rate' : 1e-7,
-        'recomb_rate' : 1e-7,
+        'mut_rate' : 1e-6,
+        'recomb_rate' : 1e-6,
      }
 
 logfile=sys.stdout
 
 options = { k:base_options.copy() for k in range(1,3) }
-options[1]['Ne'] = 500
-options[2]['Ne'] = 2000
+options[1]['Ne'] = base_options['Ne']/2
+options[2]['Ne'] = base_options['Ne']*2
 
 logfile.write("Begun: writing to {}\n".format(outdir))
 logfile.write(time.strftime('%X %x %Z\n'))
