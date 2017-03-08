@@ -272,3 +272,64 @@ OUTBASE="bground_sim_100gens_25x1_nomsprime"
 /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim-no-msprime.py -T 100 -N 100 -w 25 -y 1 -L 25e6 -l 1000 -m 0.1 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s ${OUTBASE}.selloci \
             -A 10000 -k 1000 -U 1e-7 -o ${OUTBASE}.vcf -t ${OUTBASE}.trees -g ${OUTBASE}.log  &> time_${OUTBASE}.log
 ```
+
+## Population history
+
+Suppose that a set of four populations of diploid size N 
+transitions from an (AB)(CD) split to a (AC)(BD) split T generations ago.
+Let $m>1/4N$ be the migration rate between 'nearby' populations 
+and $M<1/4N$ be the rate between 'separated' populations.
+If $\exp(-T/4N)$, the probability of no coalescence since the split, 
+is small, then most trees follow (AC)(BD), and conversely.
+We want to take $T/4N$ to be smallish, 
+but big enough that background selection can make $T/4N_e$ big.
+
+To do this in msprime:
+```py
+
+options = { 
+        'Ne' : 1000,
+        'm_rel' : 10,
+        'M_rel' : 0.1,
+        'T_rel' : 0.25,
+        'nsamples' : 1,
+        'chrom_len' : 25e2,
+        'treefile' : "sim.trees",
+        'vcffile' : "sim.vcf",
+        'mut_rate' : 1e-7,
+     }
+
+options['m'] = options['m_rel']/(4*options['Ne'])
+options['M'] = options['M_rel']/(4*options['Ne'])
+options['T'] = options['T_rel']*(4*options['Ne'])
+
+pops = [ msprime.PopulationConfiguration(sample_size=options['nsamples'], initial_size=options['Ne'], growth_rate=0.0)
+        for _ in range(4) ]
+
+migr_init = [ [ 0, options['m'], options['M'], options['M'] ],
+              [ options['m'], 0, options['M'], options['M'] ],
+              [ options['M'], options['M'], 0, options['m'] ],
+              [ options['M'], options['M'], options['m'], 0 ]]
+
+migr_change = [ msprime.MigrationRateChange(options['T'], options['m'], matrix_index=x) for x in [(0,2),(1,3),(2,0),(3,1)] ] \
+        + [ msprime.MigrationRateChange(options['T'], options['M'], matrix_index=x) for x in [(0,1),(0,3),(1,0),(1,2),(2,1),(2,3),(3,0),(3,2)] ]
+
+ts = msprime.simulate(
+    Ne=options['Ne'],
+    length=options['chrom_len'],
+    recombination_rate=1e-7,
+    population_configurations=pops,
+    migration_matrix=migr_init,
+    demographic_events=migr_change)
+
+mut_seed=random.randrange(1,1000)
+rng = msprime.RandomGenerator(mut_seed)
+ts.generate_mutations(options['mut_rate'],rng)
+
+ts.dump(options['treefile'])
+
+ts.write_vcf(open(options['vcffile'],'w'),ploidy=1)
+
+```
+
+
