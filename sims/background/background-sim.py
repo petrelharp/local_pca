@@ -1,9 +1,6 @@
 #!/usr/bin/env python3.5
 description = '''
 Simulate AND write to msprime/vcf.
-
-To obtain selected locus positions from the log file:
-    Rscript -e "as.numeric(gsub(']','',gsub('\\\[','',gsub(',','',scan('bground_sim_5000gens_25x1.log',what='',skip=5,nlines=1)))))"
 '''
 
 import gzip
