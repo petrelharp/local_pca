@@ -284,52 +284,13 @@ is small, then most trees follow (AC)(BD), and conversely.
 We want to take $T/4N$ to be smallish, 
 but big enough that background selection can make $T/4N_e$ big.
 
-To do this in msprime:
-```py
-
-options = { 
-        'Ne' : 1000,
-        'm_rel' : 10,
-        'M_rel' : 0.1,
-        'T_rel' : 0.25,
-        'nsamples' : 1,
-        'chrom_len' : 25e2,
-        'treefile' : "sim.trees",
-        'vcffile' : "sim.vcf",
-        'mut_rate' : 1e-7,
-     }
-
-options['m'] = options['m_rel']/(4*options['Ne'])
-options['M'] = options['M_rel']/(4*options['Ne'])
-options['T'] = options['T_rel']*(4*options['Ne'])
-
-pops = [ msprime.PopulationConfiguration(sample_size=options['nsamples'], initial_size=options['Ne'], growth_rate=0.0)
-        for _ in range(4) ]
-
-migr_init = [ [ 0, options['m'], options['M'], options['M'] ],
-              [ options['m'], 0, options['M'], options['M'] ],
-              [ options['M'], options['M'], 0, options['m'] ],
-              [ options['M'], options['M'], options['m'], 0 ]]
-
-migr_change = [ msprime.MigrationRateChange(options['T'], options['m'], matrix_index=x) for x in [(0,2),(1,3),(2,0),(3,1)] ] \
-        + [ msprime.MigrationRateChange(options['T'], options['M'], matrix_index=x) for x in [(0,1),(0,3),(1,0),(1,2),(2,1),(2,3),(3,0),(3,2)] ]
-
-ts = msprime.simulate(
-    Ne=options['Ne'],
-    length=options['chrom_len'],
-    recombination_rate=1e-7,
-    population_configurations=pops,
-    migration_matrix=migr_init,
-    demographic_events=migr_change)
-
-mut_seed=random.randrange(1,1000)
-rng = msprime.RandomGenerator(mut_seed)
-ts.generate_mutations(options['mut_rate'],rng)
-
-ts.dump(options['treefile'])
-
-ts.write_vcf(open(options['vcffile'],'w'),ploidy=1)
-
+To do this in msprime, see:
 ```
-
-
+OUTDIR=sim_001
+python3.5 neutral-split-sim.py $OUTDIR
+for vcf in ${OUTDIR}/*.vcf; do 
+    bcftools convert -O b $vcf -o ${vcf%%vcf}bcf; bcftools index ${vcf%%vcf}bcf; rm $vcf; 
+done
+./run_lostruct.R -i ${OUTDIR} -t snp -s 10 -o ${OUTDIR}/snp_10 -I ${OUTDIR}/samples.tsv
+Rscript -e "templater::render_template('summarize_run.Rmd',output='${OUTDIR}/snp_10/run-summary.html',change.rootdir=TRUE)"
+```
