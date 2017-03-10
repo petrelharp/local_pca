@@ -308,3 +308,40 @@ for NPC in 1 2 3; do
     Rscript -e "templater::render_template('summarize_run.Rmd',output='${LODIR}/run-summary.html',change.rootdir=TRUE)")&
 done
 ```
+
+### Three populations
+
+Alternatively, suppose that in recent times three populations with strong asymmetric migration `A<-B|C`
+that previously was `A|B->C`.
+
+To do this in msprime, see:
+```
+CHRLEN=1e6
+OUTDIR=threesim_${CHRLEN}_${RANDOM}
+time python3.5 threeway-neutral-split-sim.py -o $OUTDIR --Ne 10000 100000 --nsamples 100 --chrom_length $CHRLEN -T 0.1
+for vcf in ${OUTDIR}/*.vcf; do 
+    CHROM=${vcf%%.vcf}
+    CHROM=${CHROM: -1}
+    sed -e "s/ID=1,/ID=${CHROM},/" -i $vcf
+    sed -e "s/^1/${CHROM}/" -i $vcf
+    bcftools convert -O b $vcf -o ${vcf%%vcf}bcf
+    bcftools index ${vcf%%vcf}bcf
+    rm $vcf
+done
+printf -v CHRLENBP "%.f" "$CHRLEN"
+WINLENBP=$((CHRLENBP/100))
+SNPNUM0=$(bcftools stats $OUTDIR/chrom0.bcf | grep "number of SNPs" | head -n 1 | cut -f 4)
+SNPNUM1=$(bcftools stats $OUTDIR/chrom0.bcf | grep "number of SNPs" | head -n 1 | cut -f 4)
+SNPNUM=$((SNPNUM0+SNPNUM1))
+WINLENSNP=$((SNPNUM/200))
+for NPC in 1 2 3; do
+    # in BP
+    (LODIR=${OUTDIR}/bp_${WINLENBP}_npc_${NPC};
+    ./run_lostruct.R -i ${OUTDIR} -k $NPC -t bp -s $WINLENBP -o $LODIR -I ${OUTDIR}/samples.tsv;
+    Rscript -e "templater::render_template('summarize_run.Rmd',output='${LODIR}/run-summary.html',change.rootdir=TRUE)")&
+    # in SNPs
+    (LODIR=${OUTDIR}/snp_${WINLENSNP}_npc_${NPC};
+    ./run_lostruct.R -i ${OUTDIR} -k $NPC -t snp -s $WINLENSNP -o $LODIR -I ${OUTDIR}/samples.tsv;
+    Rscript -e "templater::render_template('summarize_run.Rmd',output='${LODIR}/run-summary.html',change.rootdir=TRUE)")&
+done
+```
