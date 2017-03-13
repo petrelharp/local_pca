@@ -318,7 +318,7 @@ To do this in msprime, see:
 ```
 CHRLEN=1e6
 OUTDIR=threesim_${CHRLEN}_${RANDOM}
-time python3.5 threeway-neutral-split-sim.py -o $OUTDIR --Ne 10000 100000 --nsamples 100 --chrom_length $CHRLEN -T 0.1
+time python3.5 threeway-neutral-split-sim.py -o $OUTDIR --Ne 10000 100000 --nsamples 100 --chrom_length $CHRLEN -T 0.25 --relative_fast_m 1
 for vcf in ${OUTDIR}/*.vcf; do 
     CHROM=${vcf%%.vcf}
     CHROM=${CHROM: -1}
