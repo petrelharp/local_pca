@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.5
 description = '''
-Simulate AND write to msprime/vcf:
+Simulate with simuPOP AND write to msprime/vcf:
     a population arrangement switches from A<-B|C to A|B->C 
     at some point in the past.
 '''
@@ -39,20 +39,19 @@ parser.add_argument('--relative_fast_M', '-m', default=10, type=float,
         help="Migration rate for 'close' pops in units of population size.")
 parser.add_argument('--relative_slow_m', '-M', default=0.1, type=float, 
         help="Migration rate for 'distant' pops in units of population size.")
-parser.add_argument("--generations", "-T", type=int, help="number of generations to run for")
+parser.add_argument("--generations", "-T", type=int, help="number of generations to run for before the switch")
 parser.add_argument("--popsize", "-N", type=int, help="size of each subpopulation", default=100)
 parser.add_argument("--length", "-L", type=float, help="number of bp in the chromosome", default=1e4)
 parser.add_argument("--nloci", "-l", type=int, help="number of selected loci", default=20)
-parser.add_argument("--migr", "-m", type=float, help="migration proportion between adjacent populations", default=.01)
 parser.add_argument("--sel_mut_rate", "-u", type=float, help="mutation rate of selected alleles", default=1e-7)
-parser.add_argument("--recomb_rate", "-r", type=float, help="recombination rate", default=2.5e-8)
+parser.add_argument("--recomb_rate", "-r", type=float, help="recombination rate", default=1e-7)
 parser.add_argument("--gamma_alpha", "-a", type=float, help="alpha parameter in gamma distributed selection coefficients", default=.23)
 parser.add_argument("--gamma_beta", "-b", type=float, help="beta parameter in gamma distributed selection coefficients", default=5.34)
 parser.add_argument("--nsamples", "-k", type=int, help="number of *diploid* samples, total")
 parser.add_argument("--ancestor_age", "-A", type=float, help="time to ancestor above beginning of sim")
 parser.add_argument("--mut_rate", "-U", type=float, help="mutation rate", default=1e-7)
-parser.add_argument("--treefile", "-t", type=float, help="name of output file for trees (default: not output)", default=None)
 
+parser.add_argument("--treefile", "-t", help="name of output file for trees (default: not output)", default=None)
 parser.add_argument("--outfile", "-o", help="name of output VCF file (default: not output)", default=None)
 parser.add_argument("--logfile", "-g", help="name of log file (or '-' for stdout)", default="-")
 parser.add_argument("--selloci_file", "-s", help="name of file to output selected locus information", default="sel_loci.txt")
@@ -75,9 +74,6 @@ logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
-nsamples=int(options.nsamples)
-ancestor_age=float(options.ancestor_age)
-
 npops=3
 
 # increase spacing between loci as we go along the chromosome
@@ -97,13 +93,7 @@ logfile.write(str(locus_position)+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
-
 init_geno=[sim.InitGenotype(freq=init_freqs[k],loci=init_classes[k]) for k in range(len(init_freqs))]
-
-# record recombinations
-rc = RecombCollector(
-        nsamples=nsamples, generations=args.generations, N=args.popsize*npops,
-        ancestor_age=ancestor_age, length=args.length, locus_position=locus_position)
 
 ###
 # modified from http://simupop.sourceforge.net/manual_svn/build/userGuide_ch5_sec9.html
@@ -136,9 +126,9 @@ pop = sim.Population(
         lociPos=locus_position,
         infoFields=['ind_id','fitness','migrate_to'])
 
-args.fast_M = args.relative_fast_M/(4*args.N)
-args.slow_m = args.relative_slow_m/(4*args.N)
-args.switch_time = args.relative_switch_time*(4*args.N)
+args.fast_M = args.relative_fast_M/(4*args.popsize)
+args.slow_m = args.relative_slow_m/(4*args.popsize)
+args.switch_time = int(args.relative_switch_time*(4*args.popsize))
 
 migr_init = [ [ 0, args.slow_m, args.slow_m ],
               [ args.fast_M, 0, args.slow_m ],
@@ -147,6 +137,12 @@ migr_init = [ [ 0, args.slow_m, args.slow_m ],
 migr_change = [ [ 0, args.slow_m, args.slow_m ],
                 [ args.slow_m, 0, args.fast_M ],
                 [ args.slow_m, args.slow_m, 0 ]]
+
+# record recombinations
+rc = RecombCollector(
+        nsamples=args.nsamples, generations=args.generations+args.switch_time, 
+        N=args.popsize*npops,
+        ancestor_age=args.ancestor_age, length=args.length, locus_position=locus_position)
 
 pop.evolve(
     initOps=[
@@ -188,7 +184,7 @@ logfile.flush()
 # writes out events in this form:
 # offspringID parentID startingPloidy rec1 rec2 ....
 
-rc.add_samples()
+rc.add_samples(pop.indInfo("ind_id"))
 
 logfile.write("Samples:\n")
 logfile.write(str(rc.diploid_samples)+"\n")
@@ -218,8 +214,8 @@ logfile.write("Generating mutations with seed "+str(mut_seed)+"\n")
 rng = msprime.RandomGenerator(mut_seed)
 minimal_ts.generate_mutations(args.mut_rate,rng)
 
-if options.treefile is not None:
-    minimal_ts.dump(options.treefile)
+if args.treefile is not None:
+    minimal_ts.dump(args.treefile)
 
 logfile.write("Generated mutations!\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
@@ -228,7 +224,7 @@ logfile.write("Sequence length: {}\n".format(minimal_ts.get_sequence_length()))
 logfile.write("Number of trees: {}\n".format(minimal_ts.get_num_trees()))
 logfile.write("Number of mutations: {}\n".format(minimal_ts.get_num_mutations()))
 
-if options.outfile is None:
+if args.outfile is None:
     print("NOT writing out genotype data.\n")
 else:
     minimal_ts.write_vcf(outfile,ploidy=1)

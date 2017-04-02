@@ -314,7 +314,7 @@ done
 Alternatively, suppose that in recent times three populations with strong asymmetric migration `A<-B|C`
 that previously was `A|B->C`.
 
-To do this in msprime, see:
+To do this in msprime (i.e., neutrally, but with different Ne on different chromsomes):
 ```
 CHRLEN=1e6
 OUTDIR=threesim_${CHRLEN}_${RANDOM}
@@ -344,4 +344,16 @@ for NPC in 1 2 3; do
     ./run_lostruct.R -i ${OUTDIR} -k $NPC -t snp -s $WINLENSNP -o $LODIR -I ${OUTDIR}/samples.tsv;
     Rscript -e "templater::render_template('summarize_run.Rmd',output='${LODIR}/run-summary.html',change.rootdir=TRUE)")&
 done
+```
+
+To do this in simuPOP (i.e., for real):
+```
+CHRLEN=1e6
+OUTDIR=threesim_background_${CHRLEN}_${RANDOM}
+OUTBASE=threesim
+mkdir -p $OUTDIR
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' python3.5 threeway-background-sim.py \
+    -s ${OUTDIR}/${OUTBASE}.selloci -o ${OUTDIR}/${OUTBASE}.vcf -t ${OUTDIR}/${OUTBASE}.trees -g ${OUTDIR}/${OUTBASE}.log \
+    --popsize 100 --nsamples 100 --length $CHRLEN --relative_switch_time 0.25 -T 100 -A 100 --relative_fast_M 1  &> ${OUTDIR}/time_${OUTBASE}.log
+    
 ```
