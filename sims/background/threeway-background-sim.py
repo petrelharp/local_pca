@@ -138,9 +138,12 @@ migr_change = [ [ 0, args.slow_m, args.slow_m ],
                 [ args.slow_m, 0, args.fast_M ],
                 [ args.slow_m, args.slow_m, 0 ]]
 
+# total number of generations to run simuPOP for
+args.total_generations=args.generations+args.switch_time
+
 # record recombinations
 rc = RecombCollector(
-        nsamples=args.nsamples, generations=args.generations+args.switch_time, 
+        nsamples=args.nsamples, generations=args.total_generations,
         N=args.popsize*npops,
         ancestor_age=args.ancestor_age, length=args.length, locus_position=locus_position)
 
@@ -173,7 +176,7 @@ pop.evolve(
         sim.Stat(numOfSegSites=sim.ALL_AVAIL, step=50),
         sim.PyEval(r"'Gen: %2d #seg sites: %d\n' % (gen, numOfSegSites)", step=50)
     ],
-    gen = args.generations
+    gen = args.total_generations
 )
 
 logfile.write("Done simulating!\n")
