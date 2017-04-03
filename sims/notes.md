@@ -331,7 +331,7 @@ done
 printf -v CHRLENBP "%.f" "$CHRLEN"
 WINLENBP=$((CHRLENBP/100))
 SNPNUM0=$(bcftools stats $OUTDIR/chrom0.bcf | grep "number of SNPs" | head -n 1 | cut -f 4)
-SNPNUM1=$(bcftools stats $OUTDIR/chrom0.bcf | grep "number of SNPs" | head -n 1 | cut -f 4)
+SNPNUM1=$(bcftools stats $OUTDIR/chrom1.bcf | grep "number of SNPs" | head -n 1 | cut -f 4)
 SNPNUM=$((SNPNUM0+SNPNUM1))
 WINLENSNP=$((SNPNUM/200))
 for NPC in 1 2 3; do
@@ -352,8 +352,24 @@ CHRLEN=1e6
 OUTDIR=threesim_background_${CHRLEN}_${RANDOM}
 OUTBASE=threesim
 mkdir -p $OUTDIR
-/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' python3.5 threeway-background-sim.py \
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' python3.5 threeway-background-sim.py --nloci 1000 \
     -s ${OUTDIR}/${OUTBASE}.selloci -o ${OUTDIR}/${OUTBASE}.vcf -t ${OUTDIR}/${OUTBASE}.trees -g ${OUTDIR}/${OUTBASE}.log \
-    --popsize 100 --nsamples 100 --length $CHRLEN --relative_switch_time 0.25 -T 100 -A 100 --relative_fast_M 1  &> ${OUTDIR}/time_${OUTBASE}.log
+    --popsize 1000 --nsamples 500 --length $CHRLEN --relative_switch_time 0.25 -T 100 -A 100 --relative_fast_M 1  &> ${OUTDIR}/time_${OUTBASE}.log
+printf -v CHRLENBP "%.f" "$CHRLEN"
+bcftools convert -O b -o ${OUTDIR}/${OUTBASE}.bcf ${OUTDIR}/${OUTBASE}.vcf
+bcftools index ${OUTDIR}/${OUTBASE}.bcf
+WINLENBP=$((CHRLENBP/100))
+SNPNUM=$(bcftools stats $OUTDIR/${OUTBASE}.bcf | grep "number of SNPs" | head -n 1 | cut -f 4)
+WINLENSNP=$((SNPNUM/200))
+for NPC in 1 2 3; do
+    # in BP
+    (LODIR=${OUTDIR}/bp_${WINLENBP}_npc_${NPC};
+    ./run_lostruct.R -i ${OUTDIR} -k $NPC -t bp -s $WINLENBP -o $LODIR -I ${OUTDIR}/samples.tsv;
+    Rscript -e "templater::render_template('summarize_run.Rmd',output='${LODIR}/run-summary.html',change.rootdir=TRUE)")&
+    # in SNPs
+    (LODIR=${OUTDIR}/snp_${WINLENSNP}_npc_${NPC};
+    ./run_lostruct.R -i ${OUTDIR} -k $NPC -t snp -s $WINLENSNP -o $LODIR -I ${OUTDIR}/samples.tsv;
+    Rscript -e "templater::render_template('summarize_run.Rmd',output='${LODIR}/run-summary.html',change.rootdir=TRUE)")&
+done
     
 ```

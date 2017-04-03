@@ -184,10 +184,8 @@ logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
-# writes out events in this form:
-# offspringID parentID startingPloidy rec1 rec2 ....
-
 rc.add_samples(pop.indInfo("ind_id"))
+del pop
 
 logfile.write("Samples:\n")
 logfile.write(str(rc.diploid_samples)+"\n")
@@ -198,6 +196,7 @@ logfile.flush()
 sample_locs = [ (0,0) for _ in range(rc.nsamples) ]
 
 ts = rc.args.tree_sequence(samples=sample_locs)
+del rc
 
 logfile.write("Loaded into tree sequence!\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
