@@ -363,9 +363,8 @@ mkdir -p $OUTDIR
     -o ${OUTDIR}/${OUTBASE}.vcf -t ${OUTDIR}/${OUTBASE}.trees -g ${OUTDIR}/${OUTBASE}.log \
     --nloci $NLOCI --popsize $POPSIZE --nsamples $NSAMPLES --length $CHRLEN --relative_switch_time 0.25 -T 100 -A 100 --relative_fast_M 1  &> ${OUTDIR}/time_${OUTBASE}.log
 
-# make samples file
-echo -e "ID\tpopulation" > $OUTDIR/samples.tsv
-for x in $(bcftools query -l $OUTDIR/${OUTBASE}.bcf); do echo -e "$x\tpop_0" >> $OUTDIR/samples.tsv; done
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' python3 tree-stats.py -t ${OUTDIR}/${OUTBASE}.trees \
+    -s ${OUTDIR}/samples.tsv -n 100 -o ${OUTDIR}/divergences.tsv &> ${OUTDIR}/time_divergences.log
 
 printf -v CHRLENBP "%.f" "$CHRLEN"
 bcftools convert -O b -o ${OUTDIR}/${OUTBASE}.bcf ${OUTDIR}/${OUTBASE}.vcf
