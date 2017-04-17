@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.5
+#!/usr/bin/env python3
 description = '''
 Simulate AND write to msprime/vcf.
 '''
@@ -186,7 +186,8 @@ logfile.flush()
 # writes out events in this form:
 # offspringID parentID startingPloidy rec1 rec2 ....
 
-rc.add_samples()
+locations = [pop.subPopIndPair(x)[0] for x in range(pop.popSize())]
+rc.add_diploid_samples(pop.indInfo("ind_id"),locations)
 
 logfile.write("Samples:\n")
 logfile.write(str(rc.diploid_samples)+"\n")
@@ -196,7 +197,7 @@ logfile.flush()
 # not really the sample locs, but we don't care about that
 sample_locs = [ (0,0) for _ in range(rc.nsamples) ]
 
-ts = rc.args.tree_sequence(samples=sample_locs)
+ts = rc.args.tree_sequence()
 
 logfile.write("Loaded into tree sequence!\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
@@ -214,22 +215,32 @@ logfile.flush()
 mut_seed=random.randrange(1,1000)
 logfile.write("Generating mutations with seed "+str(mut_seed)+"\n")
 rng = msprime.RandomGenerator(mut_seed)
-minimal_ts.generate_mutations(mut_rate,rng)
+nodes = msprime.NodeTable()
+edgesets = msprime.EdgesetTable()
+sites = msprime.SiteTable()
+mutations = msprime.MutationTable()
+minimal_ts.dump_tables(nodes=nodes, edgesets=edgesets)
+mutgen = msprime.MutationGenerator(rng, mut_rate)
+mutgen.generate(nodes, edgesets, sites, mutations)
+mutated_ts = msprime.load_tables(
+    nodes=nodes, edgesets=edgesets, sites=sites, mutations=mutations)
+
+del minimal_ts
 
 if options.treefile is not None:
-    minimal_ts.dump(options.treefile)
+    mutated_ts.dump(options.treefile)
 
 logfile.write("Generated mutations!\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
-logfile.write("Mean pairwise diversity: {}\n".format(minimal_ts.get_pairwise_diversity()/minimal_ts.get_sequence_length()))
-logfile.write("Sequence length: {}\n".format(minimal_ts.get_sequence_length()))
-logfile.write("Number of trees: {}\n".format(minimal_ts.get_num_trees()))
-logfile.write("Number of mutations: {}\n".format(minimal_ts.get_num_mutations()))
+logfile.write("Mean pairwise diversity: {}\n".format(mutated_ts.get_pairwise_diversity()/mutated_ts.get_sequence_length()))
+logfile.write("Sequence length: {}\n".format(mutated_ts.get_sequence_length()))
+logfile.write("Number of trees: {}\n".format(mutated_ts.get_num_trees()))
+logfile.write("Number of mutations: {}\n".format(mutated_ts.get_num_mutations()))
 
 if options.outfile is None:
     print("NOT writing out genotype data.\n")
 else:
-    minimal_ts.write_vcf(outfile,ploidy=1)
+    mutated_ts.write_vcf(outfile,ploidy=1)
 
 
 logfile.write("All done!\n")

@@ -1,4 +1,4 @@
-#!/usr/bin/python3.5
+#!/usr/bin/python3
 usage = '''
 Simulate a bisplit neutral simulation with different Ne on different chromosomes.
 '''

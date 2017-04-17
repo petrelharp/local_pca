@@ -1,4 +1,4 @@
-#!/usr/bin/python3.5
+#!/usr/bin/python3
 usage = '''
 Simulate a three-population neutral simulation with different Ne on different chromosomes.
 '''

@@ -290,7 +290,7 @@ To do this in msprime, see:
 ```
 CHRLEN=5e6
 OUTDIR=sim_${CHRLEN}_${RANDOM}
-time python3.5 neutral-split-sim.py -o $OUTDIR --Ne 1000 20000 --nsamples 100 --chrom_length $CHRLEN -T 0.1 --relative_fast_m 1
+time python3 neutral-split-sim.py -o $OUTDIR --Ne 1000 20000 --nsamples 100 --chrom_length $CHRLEN -T 0.1 --relative_fast_m 1
 for vcf in ${OUTDIR}/*.vcf; do 
     CHROM=${vcf%%.vcf}
     CHROM=${CHROM: -1}
@@ -318,7 +318,7 @@ To do this in msprime (i.e., neutrally, but with different Ne on different chrom
 ```
 CHRLEN=1e6
 OUTDIR=threesim_${CHRLEN}_${RANDOM}
-time python3.5 threeway-neutral-split-sim.py -o $OUTDIR --Ne 10000 100000 --nsamples 100 --chrom_length $CHRLEN -T 0.25 --relative_fast_m 1
+time python3 threeway-neutral-split-sim.py -o $OUTDIR --Ne 10000 100000 --nsamples 100 --chrom_length $CHRLEN -T 0.25 --relative_fast_m 1
 for vcf in ${OUTDIR}/*.vcf; do 
     CHROM=${vcf%%.vcf}
     CHROM=${CHROM: -1}
@@ -346,15 +346,27 @@ for NPC in 1 2 3; do
 done
 ```
 
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 5000 -N 100 -w 25 -y 1 -L 25e6 -l 1000 -m 0.1 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s ${OUTDIR}/${OUTBASE}.selloci \
+            -A 10000 -k 1000 -U 1e-7 -o ${OUTDIR}/${OUTBASE}.vcf -t ${OUTDIR}/${OUTBASE}.trees -g ${OUTDIR}/${OUTBASE}.log  &> ${OUTDIR}/time_${OUTBASE}.log
+
 To do this in simuPOP (i.e., for real):
 ```
-CHRLEN=1e6
-OUTDIR=threesim_background_${CHRLEN}_${RANDOM}
+
+CHRLEN=25e6
+POPSIZE=1000
+NLOCI=1000
+NSAMPLES=500
+OUTDIR=threesim_background_${CHRLEN}_${POPSIZE}_${NLOCI}_${NSAMPLES}_${RANDOM}
 OUTBASE=threesim
 mkdir -p $OUTDIR
-/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' python3.5 threeway-background-sim.py --nloci 1000 \
-    -s ${OUTDIR}/${OUTBASE}.selloci -o ${OUTDIR}/${OUTBASE}.vcf -t ${OUTDIR}/${OUTBASE}.trees -g ${OUTDIR}/${OUTBASE}.log \
-    --popsize 1000 --nsamples 500 --length $CHRLEN --relative_switch_time 0.25 -T 100 -A 100 --relative_fast_M 1  &> ${OUTDIR}/time_${OUTBASE}.log
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' python3 threeway-background-sim.py \
+    -o ${OUTDIR}/${OUTBASE}.vcf -t ${OUTDIR}/${OUTBASE}.trees -g ${OUTDIR}/${OUTBASE}.log \
+    --nloci $NLOCI --popsize $POPSIZE --nsamples $NSAMPLES --length $CHRLEN --relative_switch_time 0.25 -T 100 -A 100 --relative_fast_M 1  &> ${OUTDIR}/time_${OUTBASE}.log
+
+# make samples file
+echo -e "ID\tpopulation" > $OUTDIR/samples.tsv
+for x in $(bcftools query -l $OUTDIR/${OUTBASE}.bcf); do echo -e "$x\tpop_0" >> $OUTDIR/samples.tsv; done
+
 printf -v CHRLENBP "%.f" "$CHRLEN"
 bcftools convert -O b -o ${OUTDIR}/${OUTBASE}.bcf ${OUTDIR}/${OUTBASE}.vcf
 bcftools index ${OUTDIR}/${OUTBASE}.bcf
@@ -363,13 +375,13 @@ SNPNUM=$(bcftools stats $OUTDIR/${OUTBASE}.bcf | grep "number of SNPs" | head -n
 WINLENSNP=$((SNPNUM/200))
 for NPC in 1 2 3; do
     # in BP
-    (LODIR=${OUTDIR}/bp_${WINLENBP}_npc_${NPC};
-    ./run_lostruct.R -i ${OUTDIR} -k $NPC -t bp -s $WINLENBP -o $LODIR -I ${OUTDIR}/samples.tsv;
-    Rscript -e "templater::render_template('summarize_run.Rmd',output='${LODIR}/run-summary.html',change.rootdir=TRUE)")&
+    ( LODIR=${OUTDIR}/bp_${WINLENBP}_npc_${NPC};
+      ./run_lostruct.R -i ${OUTDIR} -k $NPC -t bp -s $WINLENBP -o $LODIR -I ${OUTDIR}/samples.tsv;
+      Rscript -e "templater::render_template('summarize_run.Rmd',output='${LODIR}/run-summary.html',change.rootdir=TRUE)")&
     # in SNPs
-    (LODIR=${OUTDIR}/snp_${WINLENSNP}_npc_${NPC};
-    ./run_lostruct.R -i ${OUTDIR} -k $NPC -t snp -s $WINLENSNP -o $LODIR -I ${OUTDIR}/samples.tsv;
-    Rscript -e "templater::render_template('summarize_run.Rmd',output='${LODIR}/run-summary.html',change.rootdir=TRUE)")&
+    ( LODIR=${OUTDIR}/snp_${WINLENSNP}_npc_${NPC};
+      ./run_lostruct.R -i ${OUTDIR} -k $NPC -t snp -s $WINLENSNP -o $LODIR -I ${OUTDIR}/samples.tsv;
+      Rscript -e "templater::render_template('summarize_run.Rmd',output='${LODIR}/run-summary.html',change.rootdir=TRUE)")&
 done
     
 ```
