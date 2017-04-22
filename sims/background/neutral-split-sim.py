@@ -97,16 +97,26 @@ for chrom,opts in options.items():
     logfile.write(time.strftime('     %X %x %Z\n'))
     logfile.flush()
 
-    mut_seed=random.randrange(1,1000)
     rng = msprime.RandomGenerator(mut_seed)
-    ts.generate_mutations(opts['mut_rate'],rng)
+    nodes = msprime.NodeTable()
+    edgesets = msprime.EdgesetTable()
+    sites = msprime.SiteTable()
+    mutations = msprime.MutationTable()
+    minimal_ts.dump_tables(nodes=nodes, edgesets=edgesets)
+    mutgen = msprime.MutationGenerator(rng, opts['mut_rate'])
+    mutgen.generate(nodes, edgesets, sites, mutations)
+
+    mutated_ts = msprime.load_tables(
+        nodes=nodes, edgesets=edgesets, sites=sites, mutations=mutations)
+
+    del ts
 
     logfile.write("  done generating mutations! Writing out data.\n")
     logfile.write(time.strftime('     %X %x %Z\n'))
     logfile.flush()
 
-    ts.dump(opts['treefile'])
-    ts.write_vcf(open(opts['vcffile'],'w'),ploidy=1)
+    mutated_ts.dump(opts['treefile'])
+    mutated_ts.write_vcf(open(opts['vcffile'],'w'),ploidy=1)
 
 
 logfile.write("Done!\n")

@@ -59,7 +59,8 @@ sample.ids <- vcf_samples(bcf.files[1])
 if (!is.null(opt$sample_info)) {
     samp.file <- opt$sample_info
     samps <- read.table(samp.file,sep="\t",header=TRUE)
-    samps <- droplevels( samps[match(sample.ids,samps$ID),] )
+    names(samps) <- tolower(names(samps))
+    samps <- droplevels( samps[match(sample.ids,samps$id),] )
     samps$population <- factor(samps$population)
 } else {
     samps <- data.frame( 

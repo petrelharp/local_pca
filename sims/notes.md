@@ -355,13 +355,14 @@ To do this in simuPOP (i.e., for real):
 CHRLEN=25e6
 POPSIZE=1000
 NLOCI=1000
-NSAMPLES=500
+NSAMPLES=200
 OUTDIR=threesim_background_${CHRLEN}_${POPSIZE}_${NLOCI}_${NSAMPLES}_${RANDOM}
 OUTBASE=threesim
 mkdir -p $OUTDIR
 /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' python3 threeway-background-sim.py \
     -o ${OUTDIR}/${OUTBASE}.vcf -t ${OUTDIR}/${OUTBASE}.trees -g ${OUTDIR}/${OUTBASE}.log \
-    --nloci $NLOCI --popsize $POPSIZE --nsamples $NSAMPLES --length $CHRLEN --relative_switch_time 0.25 -T 100 -A 100 --relative_fast_M 1  &> ${OUTDIR}/time_${OUTBASE}.log
+    --nloci $NLOCI --popsize $POPSIZE --nsamples $NSAMPLES --length $CHRLEN --relative_switch_time 0.25 -T 100 -A 100 \
+    --recomb_rate 1e-4 --sel_mut_rate 1e-2 --gamma_alpha 1.0 --relative_fast_M 1  --relative_slow_m .01  &> ${OUTDIR}/time_${OUTBASE}.log
 
 /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' python3 tree-stats.py -t ${OUTDIR}/${OUTBASE}.trees \
     -s ${OUTDIR}/samples.tsv -n 100 -o ${OUTDIR}/divergences.tsv &> ${OUTDIR}/time_divergences.log

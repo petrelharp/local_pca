@@ -38,9 +38,9 @@ def fileopt(fname,opts):
 parser = argparse.ArgumentParser(description=description)
 parser.add_argument('--relative_switch_time', '-w', default=0.25, type=float, 
         help="Time since rearrangement of populations in units of population size.")
-parser.add_argument('--relative_fast_M', '-m', default=10, type=float, 
+parser.add_argument('--relative_fast_M', '-M', default=10, type=float, 
         help="Migration rate for 'close' pops in units of population size.")
-parser.add_argument('--relative_slow_m', '-M', default=0.1, type=float, 
+parser.add_argument('--relative_slow_m', '-m', default=0.1, type=float, 
         help="Migration rate for 'distant' pops in units of population size.")
 parser.add_argument("--generations", "-T", type=int, help="number of generations to run for before the switch")
 parser.add_argument("--popsize", "-N", type=int, help="size of each subpopulation", default=100)
