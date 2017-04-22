@@ -2,3 +2,5 @@
 *.selloci
 *.trees
 *.vcf
+bground_sim_*
+threesim_*

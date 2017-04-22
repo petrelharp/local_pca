@@ -3,6 +3,10 @@ description = '''
 Simulate with simuPOP AND write to msprime/vcf:
     a population arrangement switches from A<-B|C to A|B->C 
     at some point in the past.
+
+Output in selloci is of the form
+   loc a1 a2 fitness
+meaning locus number, allele1, allele2, fitness when it is first seen.
 '''
 
 import gzip
