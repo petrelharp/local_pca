@@ -385,3 +385,74 @@ for NPC in 1 2 3; do
 done
     
 ```
+
+# Testing simuPOP
+
+We'll try simulating a basic popultaion with evenly distributed loci and a range of fixed selection coefficients.
+
+As in Hudson & Kaplan 1995, with
+
+- $U$ = total deleterious mutation rate (= number of loci times per-locus rate)
+- $sh$ = effect of a single mutation,
+
+we have that:
+
+- the number of deleterious mutations per individual is Poisson($U/(2sh)$)
+- without recombination, divergence is $\pi_0 \exp(-U/(2sh))$ (Charlesworth et al 1993)
+- with recombination distance between the focal locus and locus $x$, 
+    divergence is $\pi_0 \exp\left(-\int u(x) sh dx / 2(sh + R(x)\right)^2$;
+    which in the center of the chromsome with constant recombination and mutation
+    is $\pi_0 \exp\left(-U/(2sh+R)\right)$, where $R$ is the length of the chromosome in Morgans
+
+Below, $U$=`NSEL * SELMUTRATE` and $sh$=`SELCOEF` and $R=10^6$` * RECOMBRATE` and $\pi_0$=`2 POPSIZE`.
+
+Trial baloon:
+```sh
+
+runsim () {
+    POPSIZE=$1
+    NSEL=$2
+    SELCOEF=$3
+    SELMUTRATE=$4
+    RECOMBRATE=$5
+    OUTDIR="test_${POPSIZE}_${NSEL}_${SELCOEF}_${SELMUTRATE}_${RANDOM}"; mkdir -p $OUTDIR
+    /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
+        python3 simple-background-sim.py --generations $((5 * $POPSIZE)) --popsize $POPSIZE --length 1e6 --nloci $NSEL --recomb_rate $RECOMBRATE \
+            --sel_mut_rate $SELMUTRATE --selection_coef $SELCOEF \
+            --nsamples 20 --ancestor_age 100 --mut_rate 0 --treefile $OUTDIR/sim.trees --logfile $OUTDIR/sim.log \
+            &> $OUTDIR/time.log
+    python3 ../tree-stats.py --treefile $OUTDIR/sim.trees --samples_file $OUTDIR/samples.tsv --n_window 100 --outfile $OUTDIR/divergences.tsv
+    echo $OUTDIR
+}
+
+runsim 100 100 0.1 1e-3 1e-5
+runsim 100 100 0.01 1e-3 1e-5
+runsim 100 100 0.1 1e-4 1e-5
+
+runsim 200 400 0.01 1e-3 1e-5
+runsim 200 400 0.0 1e-3 1e-5
+runsim 200 400 0.01 1e-4 1e-5
+
+runsim 100 1000 0.01 1e-3 1e-5
+runsim 100 1000 0.0 1e-3 1e-5
+runsim 100 1000 0.01 1e-4 1e-5
+runsim 100 1000 0.001 1e-3 1e-5
+runsim 100 1000 0.001 1e-4 1e-5
+
+runsim 100 10000 0.01 1e-3 1e-5
+runsim 100 10000 0.0 1e-3 1e-5
+runsim 100 10000 0.01 1e-4 1e-5
+runsim 100 10000 0.001 1e-3 1e-5
+runsim 100 10000 0.001 1e-4 1e-5
+
+runsim 200 4000 0.1 1e-3 1e-5
+runsim 200 4000 0.01 1e-3 1e-5
+runsim 200 4000 0.001 1e-3 1e-5
+runsim 200 4000 0.01 1e-4 1e-5
+
+
+# print name, average divergence
+( echo "name divergence nwindows U denom ratio pi"; 
+    ( for x in test_*; do echo $x $(if [ -f $x/divergences.tsv ]; then cat $x/divergences.tsv | tail -n +2  | awk 'BEGIN { x=0; n=0 } {x+=$3; n+=1} END { print x/n, n}' 2>/dev/null; else echo "xxx"; fi); done ) | sort  -k 2 -n | awk -F "_" '{ U=$3*$5; D=(2*$4+1000000/100000); print $0,U,D,U/D,4*$2*exp(-U/D)}' ) | column -t > results.tsv
+
+```

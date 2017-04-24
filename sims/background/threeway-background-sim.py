@@ -75,10 +75,10 @@ if args.outfile is not None:
     outfile = fileopt(args.outfile, "w")
 logfile = fileopt(args.logfile, "w")
 if args.selloci_file is None:
-    args.selloci_file = os.path.join(os.path.dirname(args.outfile),"sel_loci.txt")
+    args.selloci_file = os.path.join(os.path.dirname(args.treefile),"sel_loci.txt")
 selloci_file = args.selloci_file
 if args.samples_file is None:
-    args.samples_file = os.path.join(os.path.dirname(args.outfile),"samples.tsv")
+    args.samples_file = os.path.join(os.path.dirname(args.treefile),"samples.tsv")
 samples_file = fileopt(args.samples_file,"w")
 
 # compute these here so they get recorded in the log

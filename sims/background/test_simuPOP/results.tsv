@@ -1,5 +1,4 @@
-name                             divergence  U    denom  ratio   pi
-test_results.tsv                 xxx         0    10     0       0
+name                             divergence  nwindows   U    denom  ratio   pi
 test_200_4000_0.1_1e-3_3585      80.4654     100  4      10.2    0.392157     540.479
 test_100_10000_0.01_1e-3_10429   175.888     100  10     10.02   0.998004     147.446
 test_100_10000_0.01_1e-4_35      291.51      100  1      10.02   0.0998004    362.007
