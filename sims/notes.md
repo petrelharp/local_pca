@@ -354,7 +354,7 @@ To do this in simuPOP (i.e., for real):
 
 CHRLEN=25e6
 POPSIZE=1000
-NLOCI=1000
+NLOCI=4000
 NSAMPLES=200
 OUTDIR=threesim_background_${CHRLEN}_${POPSIZE}_${NLOCI}_${NSAMPLES}_${RANDOM}
 OUTBASE=threesim
@@ -362,7 +362,7 @@ mkdir -p $OUTDIR
 /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' python3 threeway-background-sim.py \
     -o ${OUTDIR}/${OUTBASE}.vcf -t ${OUTDIR}/${OUTBASE}.trees -g ${OUTDIR}/${OUTBASE}.log \
     --nloci $NLOCI --popsize $POPSIZE --nsamples $NSAMPLES --length $CHRLEN --relative_switch_time 0.25 -T 100 -A 100 \
-    --recomb_rate 1e-4 --sel_mut_rate 1e-2 --gamma_alpha 1.0 --relative_fast_M 1  --relative_slow_m .01  &> ${OUTDIR}/time_${OUTBASE}.log
+    --recomb_rate 1e-7 --sel_mut_rate 1e-3 --relative_fast_M 1  --relative_slow_m .01  &> ${OUTDIR}/time_${OUTBASE}.log
 
 /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' python3 tree-stats.py -t ${OUTDIR}/${OUTBASE}.trees \
     -s ${OUTDIR}/samples.tsv -n 100 -o ${OUTDIR}/divergences.tsv &> ${OUTDIR}/time_divergences.log
@@ -450,6 +450,13 @@ runsim 200 4000 0.01 1e-3 1e-5
 runsim 200 4000 0.001 1e-3 1e-5
 runsim 200 4000 0.01 1e-4 1e-5
 
+# example had 2382 muts in first 5MB of sequence (=0.5 M)
+runsim 1000 2400 0.01 .001 0.5e-6 &
+# and 281 in the last 5MB
+runsim 1000 280 0.01 .001 0.5e-6 &
+# and 4000 across 25MB (=2.5M)
+#   ... which is an average of 800 per 0.5M
+runsim 800 280 0.01 .001 0.5e-6 &
 
 # print name, average divergence
 ( echo "name divergence nwindows U denom ratio pi"; 

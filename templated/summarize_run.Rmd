@@ -60,9 +60,18 @@ if (!is.null(opt$sample_info)) {
     samp.file <- opt$sample_info
     samps <- read.table(samp.file,sep="\t",header=TRUE)
     names(samps) <- tolower(names(samps))
+    # hack for msprime output
+    if (all(grepl("^msp_",sample.ids)) & is.numeric(samps$id)) {
+        samps$id <- factor(paste0("msp_", samps$id))
+    }
+    drop_ids <- setdiff(sample.ids, levels(samps$id))
+    if (length(drop_ids)>0) {
+        warning(sprintf("These samples have no information in the samples file, %s:\n  %s.", samp.file, paste(drop_ids,collapse=" ")))
+    }
     samps <- droplevels( samps[match(sample.ids,samps$id),] )
     samps$population <- factor(samps$population)
 } else {
+    warning("No populatio information in the sample file, %s.", samp.file)
     samps <- data.frame( 
             ID=sample.ids,
             population=factor(rep("pop",length(sample.ids))) )
