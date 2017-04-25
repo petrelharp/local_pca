@@ -464,6 +464,10 @@ runsim 500 280 0.1 .001 0.5e-6 &
 runsim 500 800 0.01 .001 0.5e-6 &
 runsim 500 800 0.1 .001 0.5e-6 &
 
+# ... what if we did similar on one-tenth the sequence?
+runsim 500 800 0.01 .001 0.05e-6 
+runsim 500 800 0.1 .001 0.05e-6 
+
 # print name, average divergence
 ( echo "name divergence nwindows U denom ratio pi"; 
     ( for x in test_*; do echo $x $(if [ -f $x/divergences.tsv ]; then cat $x/divergences.tsv | tail -n +2  | awk 'BEGIN { x=0; n=0 } {x+=$3; n+=1} END { print x/n, n}' 2>/dev/null; else echo "xxx"; fi); done ) | sort  -k 2 -n | awk -F "_" '{ U=$3*$5; D=(2*$4+1000000/100000); print $0,U,D,U/D,4*$2*exp(-U/D)}' ) | column -t > results.tsv

@@ -134,9 +134,9 @@ class GammaDistributedFitness:
         # print(str(loc)+":"+str(alleles)+"\n")
         # needn't return fitness for alleles=(0,0) as simupop knows that's 1
         if 0 in alleles:
-            return 1. - s
+            return max(0.0, 1. - s)
         else:
-            return 1. - 2.*s
+            return max(0.0, 1. - 2.*s)
 
 pop = sim.Population(
         size=[popsize]*npops, 
