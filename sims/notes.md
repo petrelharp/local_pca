@@ -397,10 +397,10 @@ POPSIZE=500
 NLOCI=400
 SELCOEF=0.1
 OUTDIR=threesim_bg_fixed_s_${CHRLEN}_${POPSIZE}_${NLOCI}_${SELCOEF}_${RANDOM}
-NSAMPLES=200
+NSAMPLES=100
 OUTBASE=threesim
 mkdir -p $OUTDIR
-/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' python3 threeway-background-sim.py \
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' python3 threeway-background-fixed-s-sim.py \
     -o ${OUTDIR}/${OUTBASE}.vcf -t ${OUTDIR}/${OUTBASE}.trees -g ${OUTDIR}/${OUTBASE}.log \
     --nloci $NLOCI --popsize $POPSIZE --nsamples $NSAMPLES --length $CHRLEN --relative_switch_time 0.1 -T 100 -A 100 \
     --selection_coef $SELCOEF --recomb_rate 1e-7 --sel_mut_rate 1e-3 --relative_fast_M 1  --relative_slow_m .01  &> ${OUTDIR}/time_${OUTBASE}.log

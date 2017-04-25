@@ -157,6 +157,7 @@ pop.evolve(
         sim.IdTagger(),
     ]+init_geno,
     preOps=[
+        sim.PyOperator(lambda pop: rc.increment_time() or True),
         sim.Migrator(
             rate=migr_rates,
             mode=sim.BY_PROBABILITY),
