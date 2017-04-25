@@ -415,7 +415,7 @@ runsim () {
     SELCOEF=$3
     SELMUTRATE=$4
     RECOMBRATE=$5
-    OUTDIR="test_${POPSIZE}_${NSEL}_${SELCOEF}_${SELMUTRATE}_${RANDOM}"; mkdir -p $OUTDIR
+    OUTDIR="test_${POPSIZE}_${NSEL}_${SELCOEF}_${SELMUTRATE}_${RECOMBRATE}_${RANDOM}"; mkdir -p $OUTDIR
     /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
         python3 simple-background-sim.py --generations $((5 * $POPSIZE)) --popsize $POPSIZE --length 1e6 --nloci $NSEL --recomb_rate $RECOMBRATE \
             --sel_mut_rate $SELMUTRATE --selection_coef $SELCOEF \
@@ -469,7 +469,7 @@ runsim 500 800 0.01 .001 0.05e-6
 runsim 500 800 0.1 .001 0.05e-6 
 
 # print name, average divergence
-( echo "name divergence nwindows U denom ratio pi"; 
-    ( for x in test_*; do echo $x $(if [ -f $x/divergences.tsv ]; then cat $x/divergences.tsv | tail -n +2  | awk 'BEGIN { x=0; n=0 } {x+=$3; n+=1} END { print x/n, n}' 2>/dev/null; else echo "xxx"; fi); done ) | sort  -k 2 -n | awk -F "_" '{ U=$3*$5; D=(2*$4+1000000/100000); print $0,U,D,U/D,4*$2*exp(-U/D)}' ) | column -t > results.tsv
+( echo "name divergence popsize rel.div U denom length s pi"; 
+    ( for x in test_*; do echo $x $(if [ -f $x/divergences.tsv ]; then cat $x/divergences.tsv | tail -n +2  | awk 'BEGIN { x=0; n=0 } {x+=$3; n+=1} END { print x/n}' 2>/dev/null; else echo "xxx"; fi); done ) | sort  -k 2 -n | awk -F "_" '{ N=$2; U=$3*$5; R=$6; D=(2*$4+1000000*R); print $0,N,N/$1,U,D,1/R,$4,4*$2*exp(-U/D)}' ) | column -t > results.tsv
 
 ```
