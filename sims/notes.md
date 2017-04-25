@@ -349,6 +349,8 @@ done
 /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 5000 -N 100 -w 25 -y 1 -L 25e6 -l 1000 -m 0.1 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 -s ${OUTDIR}/${OUTBASE}.selloci \
             -A 10000 -k 1000 -U 1e-7 -o ${OUTDIR}/${OUTBASE}.vcf -t ${OUTDIR}/${OUTBASE}.trees -g ${OUTDIR}/${OUTBASE}.log  &> ${OUTDIR}/time_${OUTBASE}.log
 
+### Gamma-distributed s
+
 To do this in simuPOP (i.e., for real):
 ```
 
@@ -385,6 +387,47 @@ for NPC in 1 2 3; do
 done
     
 ```
+
+### Fixed *s*
+
+```
+
+CHRLEN=0.05e7
+POPSIZE=500
+NLOCI=400
+SELCOEF=0.1
+OUTDIR=threesim_bg_fixed_s_${CHRLEN}_${POPSIZE}_${NLOCI}_${SELCOEF}_${RANDOM}
+NSAMPLES=200
+OUTBASE=threesim
+mkdir -p $OUTDIR
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' python3 threeway-background-sim.py \
+    -o ${OUTDIR}/${OUTBASE}.vcf -t ${OUTDIR}/${OUTBASE}.trees -g ${OUTDIR}/${OUTBASE}.log \
+    --nloci $NLOCI --popsize $POPSIZE --nsamples $NSAMPLES --length $CHRLEN --relative_switch_time 0.1 -T 100 -A 100 \
+    --selection_coef $SELCOEF --recomb_rate 1e-7 --sel_mut_rate 1e-3 --relative_fast_M 1  --relative_slow_m .01  &> ${OUTDIR}/time_${OUTBASE}.log
+
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' python3 tree-stats.py -t ${OUTDIR}/${OUTBASE}.trees \
+    -s ${OUTDIR}/samples.tsv -n 100 -o ${OUTDIR}/divergences.tsv &> ${OUTDIR}/time_divergences.log
+
+printf -v CHRLENBP "%.f" "$CHRLEN"
+bcftools convert -O b -o ${OUTDIR}/${OUTBASE}.bcf ${OUTDIR}/${OUTBASE}.vcf
+bcftools index ${OUTDIR}/${OUTBASE}.bcf
+WINLENBP=$((CHRLENBP/100))
+SNPNUM=$(bcftools stats $OUTDIR/${OUTBASE}.bcf | grep "number of SNPs" | head -n 1 | cut -f 4)
+WINLENSNP=$((SNPNUM/200))
+for NPC in 1 2 3; do
+    # in BP
+    ( LODIR=${OUTDIR}/bp_${WINLENBP}_npc_${NPC};
+      ./run_lostruct.R -i ${OUTDIR} -k $NPC -t bp -s $WINLENBP -o $LODIR -I ${OUTDIR}/samples.tsv;
+      Rscript -e "templater::render_template('summarize_run.Rmd',output='${LODIR}/run-summary.html',change.rootdir=TRUE)")&
+    # in SNPs
+    ( LODIR=${OUTDIR}/snp_${WINLENSNP}_npc_${NPC};
+      ./run_lostruct.R -i ${OUTDIR} -k $NPC -t snp -s $WINLENSNP -o $LODIR -I ${OUTDIR}/samples.tsv;
+      Rscript -e "templater::render_template('summarize_run.Rmd',output='${LODIR}/run-summary.html',change.rootdir=TRUE)")&
+done
+    
+```
+
+
 
 # Testing simuPOP
 
@@ -469,7 +512,7 @@ runsim 500 800 0.01 .001 0.05e-6
 runsim 500 800 0.1 .001 0.05e-6 
 
 # print name, average divergence
-( echo "name divergence popsize rel.div U denom length s pi"; 
-    ( for x in test_*; do echo $x $(if [ -f $x/divergences.tsv ]; then cat $x/divergences.tsv | tail -n +2  | awk 'BEGIN { x=0; n=0 } {x+=$3; n+=1} END { print x/n}' 2>/dev/null; else echo "xxx"; fi); done ) | sort  -k 2 -n | awk -F "_" '{ N=$2; U=$3*$5; R=$6; D=(2*$4+1000000*R); print $0,N,N/$1,U,D,1/R,$4,4*$2*exp(-U/D)}' ) | column -t > results.tsv
+( echo "name divergence popsize U denom length s pi N/div div/theory"; 
+    ( for x in test_*; do echo $x $(if [ -f $x/divergences.tsv ]; then cat $x/divergences.tsv | tail -n +2  | awk 'BEGIN { x=0; n=0 } {x+=$3; n+=1} END { print x/n}' 2>/dev/null; else echo "xxx"; fi); done ) | awk -F "_" '{ N=$2; U=$3*$5; R=$6; D=(2*$4+1000000*R); print $0,N,U,D,1000000*R,$4,4*$2*exp(-U/D)}' | awk '{print $0,4*$3/$2,$2/$8}' | sort  -k 9 -n ) | column -t > results.tsv
 
 ```

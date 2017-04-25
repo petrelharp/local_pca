@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 description = '''
-Simulate a single population with varying levels of background selection.
+Simulate with simuPOP AND write to msprime/vcf:
+    a population arrangement switches from A<-B|C to A|B->C 
+    at some point in the past.
+
+Output in selloci is of the form
+   loc a1 a2 fitness
+meaning locus number, allele1, allele2, fitness when it is first seen.
 '''
 
 import gzip
@@ -10,7 +16,6 @@ import time
 import random
 from ftprime import RecombCollector, ind_to_chrom, mapa_labels
 import msprime
-
 import argparse
 
 def fileopt(fname,opts):
@@ -31,21 +36,28 @@ def fileopt(fname,opts):
     return fobj
 
 parser = argparse.ArgumentParser(description=description)
-parser.add_argument("--generations","-T", type=int, help="number of generations to run for")
-parser.add_argument("--popsize","-N", type=int, help="size of each subpopulation",default=100)
-parser.add_argument("--length","-L", type=float, help="number of bp in the chromosome",default=1e4)
-parser.add_argument("--nloci","-l", type=int, help="number of selected loci",default=20)
-parser.add_argument("--sel_mut_rate","-u", type=float, help="mutation rate of selected alleles",default=1e-7)
-parser.add_argument("--recomb_rate","-r", type=float, help="recombination rate",default=2.5e-8)
+parser.add_argument('--relative_switch_time', '-w', default=0.25, type=float, 
+        help="Time since rearrangement of populations in units of population size.")
+parser.add_argument('--relative_fast_M', '-M', default=10, type=float, 
+        help="Migration rate for 'close' pops in units of population size.")
+parser.add_argument('--relative_slow_m', '-m', default=0.1, type=float, 
+        help="Migration rate for 'distant' pops in units of population size.")
+parser.add_argument("--generations", "-T", type=int, help="number of generations to run for before the switch")
+parser.add_argument("--popsize", "-N", type=int, help="size of each subpopulation", default=100)
+parser.add_argument("--length", "-L", type=float, help="number of bp in the chromosome", default=1e4)
+parser.add_argument("--nloci", "-l", type=int, help="number of selected loci", default=20)
+parser.add_argument("--sel_mut_rate", "-u", type=float, help="mutation rate of selected alleles", default=1e-7)
+parser.add_argument("--recomb_rate", "-r", type=float, help="recombination rate", default=1e-7)
 parser.add_argument("--selection_coef","-S", type=float, help="strength of selection",default=.1)
-parser.add_argument("--nsamples","-k", type=int, help="number of *diploid* samples, total")
-parser.add_argument("--ancestor_age","-A", type=int, help="time to ancestor above beginning of sim")
-parser.add_argument("--mut_rate","-U", type=float, help="mutation rate",default=1e-7)
-parser.add_argument("--treefile","-t", type=str, help="name of output file for trees (default: not output)")
+parser.add_argument("--nsamples", "-k", type=int, help="number of *diploid* samples, total")
+parser.add_argument("--ancestor_age", "-A", type=float, help="time to ancestor above beginning of sim")
+parser.add_argument("--mut_rate", "-U", type=float, help="mutation rate", default=1e-7)
+parser.add_argument("--seed", "-d", type=int, help="random seed", default=random.randrange(1,1000))
 
-parser.add_argument("--outfile","-o", type=str, help="name of output VCF file (default: not output)")
-parser.add_argument("--logfile","-g", type=str, help="name of log file (or '-' for stdout)",default="-")
-parser.add_argument("--selloci_file","-s", type=str, help="name of file to output selected locus information")
+parser.add_argument("--treefile", "-t", help="name of output file for trees (default: not output)", default=None)
+parser.add_argument("--outfile", "-o", help="name of output VCF file (default: not output)", default=None)
+parser.add_argument("--logfile", "-g", help="name of log file (or '-' for stdout)", default="-")
+parser.add_argument("--selloci_file", "-s", help="name of file to output selected locus information (default: (dir)/sel_loci.txt)")
 parser.add_argument("--samples_file", "-e", help="name of file to output information on samples (default=(dir)/samples.tsv)")
 
 args = parser.parse_args()
@@ -53,16 +65,25 @@ args = parser.parse_args()
 import simuOpt
 simuOpt.setOptions(alleleType='mutant')
 import simuPOP as sim
+from simuPOP.demography import migr2DSteppingStoneRates, migrSteppingStoneRates
 
-if args.selloci_file is None:
-    args.selloci_file = os.path.join(os.path.dirname(args.treefile),"sel_loci.txt")
-if args.samples_file is None:
-    args.samples_file = os.path.join(os.path.dirname(args.treefile),"samples.tsv")
-samples_file = fileopt(args.samples_file,"w")
+sim.setRNG(seed=args.seed)
+random.seed(args.seed)
 
 if args.outfile is not None:
     outfile = fileopt(args.outfile, "w")
 logfile = fileopt(args.logfile, "w")
+if args.selloci_file is None:
+    args.selloci_file = os.path.join(os.path.dirname(args.treefile),"sel_loci.txt")
+selloci_file = args.selloci_file
+if args.samples_file is None:
+    args.samples_file = os.path.join(os.path.dirname(args.treefile),"samples.tsv")
+samples_file = fileopt(args.samples_file,"w")
+
+# compute these here so they get recorded in the log
+args.fast_M = args.relative_fast_M/(4*args.popsize)
+args.slow_m = args.relative_slow_m/(4*args.popsize)
+args.switch_time = int(args.relative_switch_time*(3*2*args.popsize))
 
 logfile.write("Options:\n")
 logfile.write(str(args)+"\n")
@@ -70,11 +91,13 @@ logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
+npops=3
+
 # increase spacing between loci as we go along the chromosome
 rel_positions=[0.0 for k in range(args.nloci)]
 for k in range(args.nloci):
-    rel_positions[k] = rel_positions[k-1] + random.expovariate(1)
-pos_fac=args.length/(rel_positions[-1]+random.expovariate(1))
+    rel_positions[k] = rel_positions[k-1] + random.expovariate(1)*(k**2)
+pos_fac=args.length/(rel_positions[-1]+random.expovariate(1)*(args.nloci**2))
 locus_position=[x*pos_fac for x in rel_positions]
 
 # initially polymorphic alleles
@@ -87,13 +110,7 @@ logfile.write(str(locus_position)+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
-
 init_geno=[sim.InitGenotype(freq=init_freqs[k],loci=init_classes[k]) for k in range(len(init_freqs))]
-
-# record recombinations
-rc = RecombCollector(
-        nsamples=args.nsamples, generations=args.generations, N=args.popsize,
-        ancestor_age=args.ancestor_age, length=args.length, locus_position=locus_position)
 
 ###
 # modified from http://simupop.sourceforge.net/manual_svn/build/userGuide_ch5_sec9.html
@@ -110,11 +127,27 @@ class FixedFitness:
             return 1. - 2.*self.s
 
 pop = sim.Population(
-        size=args.popsize,
+        size=[args.popsize]*npops, 
         loci=[args.nloci], 
         lociPos=locus_position,
         infoFields=['ind_id','fitness','migrate_to'])
 
+migr_init = [ [ 0, args.slow_m, args.slow_m ],
+              [ args.fast_M, 0, args.slow_m ],
+              [ args.slow_m, args.slow_m, 0 ]]
+
+migr_change = [ [ 0, args.slow_m, args.slow_m ],
+                [ args.slow_m, 0, args.fast_M ],
+                [ args.slow_m, args.slow_m, 0 ]]
+
+# total number of generations to run simuPOP for
+args.total_generations=args.generations+args.switch_time
+
+# record recombinations
+rc = RecombCollector(
+        nsamples=args.nsamples, generations=args.total_generations,
+        N=args.popsize*npops,
+        ancestor_age=args.ancestor_age, length=args.length, locus_position=locus_position)
 
 pop.evolve(
     initOps=[
@@ -122,9 +155,17 @@ pop.evolve(
         sim.IdTagger(),
     ]+init_geno,
     preOps=[
-        sim.SNPMutator(u=args.sel_mut_rate, v=args.sel_mut_rate),
+        sim.Migrator(
+            rate=migr_init,
+            mode=sim.BY_PROBABILITY,
+            begin=0, end=args.switch_time),
+        sim.Migrator(
+            rate=migr_change,
+            mode=sim.BY_PROBABILITY,
+            begin=args.switch_time),
+        sim.AcgtMutator(rate=[args.sel_mut_rate], model='JC69'),
         sim.PyMlSelector(FixedFitness(args.selection_coef),
-            output=">>"+args.selloci_file),
+            output=">>"+selloci_file),
     ],
     matingScheme=sim.RandomMating(
         ops=[
@@ -134,10 +175,10 @@ pop.evolve(
                 infoFields="ind_id"),
         ] ),
     postOps=[
-        sim.Stat(numOfSegSites=sim.ALL_AVAIL, step=10),
+        sim.Stat(numOfSegSites=sim.ALL_AVAIL, step=50),
         sim.PyEval(r"'Gen: %2d #seg sites: %d\n' % (gen, numOfSegSites)", step=50)
     ],
-    gen = args.generations
+    gen = args.total_generations
 )
 
 logfile.write("Done simulating!\n")
@@ -145,11 +186,9 @@ logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
-# writes out events in this form:
-# offspringID parentID startingPloidy rec1 rec2 ....
-
 locations = [pop.subPopIndPair(x)[0] for x in range(pop.popSize())]
 rc.add_diploid_samples(pop.indInfo("ind_id"),locations)
+del pop
 
 logfile.write("Samples:\n")
 logfile.write(str(rc.diploid_samples)+"\n")
@@ -159,11 +198,18 @@ logfile.flush()
 rc.args.dump_sample_table(out=samples_file)
 
 ts = rc.args.tree_sequence()
+del rc
 
 logfile.write("Loaded into tree sequence!\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("----------\n")
 logfile.flush()
+
+# nodefile = open("nodes.txt","w")
+# edgefile = open("edges.txt","w")
+# ts.dump_text(nodes=nodefile, edgesets=edgefile)
+# nodefile.flush()
+# edgefile.flush()
 
 minimal_ts = ts.simplify()
 del ts
@@ -173,8 +219,13 @@ logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
-mut_seed=random.randrange(1,1000)
+if args.treefile is not None:
+    minimal_ts.dump(args.treefile)
+
+mut_seed=args.seed
 logfile.write("Generating mutations with seed "+str(mut_seed)+"\n")
+logfile.flush()
+
 rng = msprime.RandomGenerator(mut_seed)
 nodes = msprime.NodeTable()
 edgesets = msprime.EdgesetTable()
@@ -183,13 +234,17 @@ mutations = msprime.MutationTable()
 minimal_ts.dump_tables(nodes=nodes, edgesets=edgesets)
 mutgen = msprime.MutationGenerator(rng, args.mut_rate)
 mutgen.generate(nodes, edgesets, sites, mutations)
+
+# print(nodes, file=logfile)
+# print(edgesets, file=logfile)
+# print(sites, file=logfile)
+# print(mutations, file=logfile)
+
 mutated_ts = msprime.load_tables(
     nodes=nodes, edgesets=edgesets, sites=sites, mutations=mutations)
 
 del minimal_ts
 
-if args.treefile is not None:
-    mutated_ts.dump(args.treefile)
 
 logfile.write("Generated mutations!\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
