@@ -8,8 +8,6 @@ import sys, os
 import math
 import time
 import random
-from ftprime import RecombCollector, ind_to_chrom, mapa_labels
-import msprime
 
 import argparse
 
@@ -90,11 +88,6 @@ logfile.flush()
 
 init_geno=[sim.InitGenotype(freq=init_freqs[k],loci=init_classes[k]) for k in range(len(init_freqs))]
 
-# record recombinations
-rc = RecombCollector(
-        nsamples=args.nsamples, generations=args.generations, N=args.popsize,
-        ancestor_age=args.ancestor_age, length=args.length, locus_position=locus_position)
-
 ###
 # modified from http://simupop.sourceforge.net/manual_svn/build/userGuide_ch5_sec9.html
 
@@ -130,7 +123,7 @@ pop.evolve(
         ops=[
             sim.IdTagger(),
             sim.Recombinator(intensity=args.recomb_rate,
-                output=rc.collect_recombs,
+                output=">>" + args.treefile,
                 infoFields="ind_id"),
         ] ),
     postOps=[
@@ -144,64 +137,6 @@ logfile.write("Done simulating!\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("----------\n")
 logfile.flush()
-
-# writes out events in this form:
-# offspringID parentID startingPloidy rec1 rec2 ....
-
-locations = [pop.subPopIndPair(x)[0] for x in range(pop.popSize())]
-rc.add_diploid_samples(pop.indInfo("ind_id"),locations)
-
-logfile.write("Samples:\n")
-logfile.write(str(rc.diploid_samples)+"\n")
-logfile.write("----------\n")
-logfile.flush()
-
-rc.args.dump_sample_table(out=samples_file)
-
-ts = rc.args.tree_sequence()
-
-logfile.write("Loaded into tree sequence!\n")
-logfile.write(time.strftime('%X %x %Z')+"\n")
-logfile.write("----------\n")
-logfile.flush()
-
-minimal_ts = ts.simplify()
-del ts
-
-logfile.write("Simplified; now writing to treefile (if specified).\n")
-logfile.write(time.strftime('%X %x %Z')+"\n")
-logfile.write("----------\n")
-logfile.flush()
-
-mut_seed=random.randrange(1,1000)
-logfile.write("Generating mutations with seed "+str(mut_seed)+"\n")
-rng = msprime.RandomGenerator(mut_seed)
-nodes = msprime.NodeTable()
-edgesets = msprime.EdgesetTable()
-sites = msprime.SiteTable()
-mutations = msprime.MutationTable()
-minimal_ts.dump_tables(nodes=nodes, edgesets=edgesets)
-mutgen = msprime.MutationGenerator(rng, args.mut_rate)
-mutgen.generate(nodes, edgesets, sites, mutations)
-mutated_ts = msprime.load_tables(
-    nodes=nodes, edgesets=edgesets, sites=sites, mutations=mutations)
-
-del minimal_ts
-
-if args.treefile is not None:
-    mutated_ts.dump(args.treefile)
-
-logfile.write("Generated mutations!\n")
-logfile.write(time.strftime('%X %x %Z')+"\n")
-logfile.write("Mean pairwise diversity: {}\n".format(mutated_ts.get_pairwise_diversity()/mutated_ts.get_sequence_length()))
-logfile.write("Sequence length: {}\n".format(mutated_ts.get_sequence_length()))
-logfile.write("Number of trees: {}\n".format(mutated_ts.get_num_trees()))
-logfile.write("Number of mutations: {}\n".format(mutated_ts.get_num_mutations()))
-
-if args.outfile is None:
-    print("NOT writing out genotype data.\n")
-else:
-    mutated_ts.write_vcf(outfile,ploidy=1)
 
 
 logfile.write("All done!\n")
