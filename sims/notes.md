@@ -392,9 +392,9 @@ done
 
 ```
 
-CHRLEN=0.05e7
+CHRLEN=0.5e7
 POPSIZE=500
-NLOCI=400
+NLOCI=4000
 SELCOEF=0.1
 OUTDIR=threesim_bg_fixed_s_${CHRLEN}_${POPSIZE}_${NLOCI}_${SELCOEF}_${RANDOM}
 NSAMPLES=100
@@ -402,7 +402,7 @@ OUTBASE=threesim
 mkdir -p $OUTDIR
 /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' python3 threeway-background-fixed-s-sim.py \
     -o ${OUTDIR}/${OUTBASE}.vcf -t ${OUTDIR}/${OUTBASE}.trees -g ${OUTDIR}/${OUTBASE}.log \
-    --nloci $NLOCI --popsize $POPSIZE --nsamples $NSAMPLES --length $CHRLEN --relative_switch_time 0.1 -T 100 -A 100 \
+    --nloci $NLOCI --popsize $POPSIZE --nsamples $NSAMPLES --length $CHRLEN --relative_switch_time 0.1 -T 100 -A 100 --mut_rate 1e-6 \
     --selection_coef $SELCOEF --recomb_rate 1e-7 --sel_mut_rate 1e-3 --relative_fast_M 1  --relative_slow_m .01  &> ${OUTDIR}/time_${OUTBASE}.log
 
 /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' python3 tree-stats.py -t ${OUTDIR}/${OUTBASE}.trees \
