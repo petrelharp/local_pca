@@ -516,3 +516,26 @@ runsim 500 800 0.1 .001 0.05e-6
     ( for x in test_*; do echo $x $(if [ -f $x/divergences.tsv ]; then cat $x/divergences.tsv | tail -n +2  | awk 'BEGIN { x=0; n=0 } {x+=$3; n+=1} END { print x/n}' 2>/dev/null; else echo "xxx"; fi); done ) | awk -F "_" '{ N=$2; U=$3*$5; R=$6; D=(2*$4+1000000*R); print $0,N,U,D,1000000*R,$4,4*$2*exp(-U/D)}' | awk '{print $0,4*$3/$2,$2/$8}' | sort  -k 9 -n ) | column -t > results.tsv
 
 ```
+
+
+With uneven loci:
+```
+runsim2 () {
+    POPSIZE=$1
+    NSEL=$2
+    SELCOEF=$3
+    SELMUTRATE=$4
+    RECOMBRATE=$5
+    OUTDIR="uneven_${NSEL}_${SELCOEF}_${SELMUTRATE}_${RECOMBRATE}_${RANDOM}"; mkdir -p $OUTDIR
+    /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
+        python3 simple-uneven-loci-background-sim.py --generations $((5 * $POPSIZE)) --popsize $POPSIZE --length 1e6 --nloci $NSEL --recomb_rate $RECOMBRATE \
+            --sel_mut_rate $SELMUTRATE --selection_coef $SELCOEF \
+            --nsamples 20 --ancestor_age 100 --mut_rate 0 --treefile $OUTDIR/sim.trees --logfile $OUTDIR/sim.log \
+            &> $OUTDIR/time.log
+    python3 ../tree-stats.py --treefile $OUTDIR/sim.trees --samples_file $OUTDIR/samples.tsv --n_window 100 --outfile $OUTDIR/divergences.tsv
+    echo $OUTDIR
+}
+
+runsim2 100 100 0.1 1e-3 1e-5
+
+```

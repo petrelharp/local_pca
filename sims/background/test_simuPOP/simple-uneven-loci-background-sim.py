@@ -151,12 +151,10 @@ locations = [pop.subPopIndPair(x)[0] for x in range(pop.popSize())]
 rc.add_diploid_samples(nsamples=args.nsamples, sample_ids=pop.indInfo("ind_id"),
                        populations=locations)
 
-logfile.write("Samples:\n")
+logfile.write("Samples, before 'simplify':\n")
 logfile.write(str(rc.diploid_samples)+"\n")
 logfile.write("----------\n")
 logfile.flush()
-
-rc.args.dump_sample_table(out=samples_file)
 
 ts = rc.args.tree_sequence()
 
@@ -168,7 +166,16 @@ logfile.flush()
 minimal_ts = ts.simplify()
 del ts
 
-logfile.write("Simplified; now writing to treefile (if specified).\n")
+logfile.write("Simplified; now writing out sample file.\n")
+
+nodes = msprime.NodeTable()
+for k in minimal_ts.samples():
+    node = minimal_ts.node(k)
+    nodes.add_row(time=node.time, name=node.name, flags=node.flags, population=node.population)
+
+print(nodes, file=samples_file)
+
+logfile.write("Simplified; now generating mutations and writing to treefile (if specified).\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("----------\n")
 logfile.flush()
