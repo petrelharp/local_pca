@@ -92,11 +92,11 @@ ancestor_age=float(options.ancestor_age)
 npops=gridwidth*gridheight
 
 # increase spacing between loci as we go along the chromosome
-rel_positions=[0.0 for k in range(nloci)]
-for k in range(nloci):
+rel_positions=[0.0 for k in range(args.nloci-1)]
+for k in range(1,args.nloci-1):
     rel_positions[k] = rel_positions[k-1] + random.expovariate(1)*(k**2)
-pos_fac=length/(rel_positions[-1]+random.expovariate(1)*(nloci**2))
-locus_position=[x*pos_fac for x in rel_positions]
+pos_fac=length/(rel_positions[-1] + random.expovariate(1)*(k**2))
+locus_position=[x*pos_fac for x in rel_positions] + [args.length]
 
 # initially polymorphic alleles
 init_freqs=[[k/100,1-k/100,0,0] for k in range(1,11)]
@@ -116,6 +116,13 @@ rc = RecombCollector(
         nsamples=nsamples, generations=generations, N=popsize*npops,
         ancestor_age=ancestor_age, length=length, locus_position=locus_position)
 
+id_tagger = sim.IdTagger()
+id_tagger.apply(pop)
+
+# record recombinations
+rc = RecombCollector(
+        first_gen=pop.indInfo("ind_id"), ancestor_age=args.ancestor_age, 
+                              length=args.length, locus_position=locus_position)
 ###
 # modified from http://simupop.sourceforge.net/manual_svn/build/userGuide_ch5_sec9.html
 
@@ -147,7 +154,6 @@ else:
 pop.evolve(
     initOps=[
         sim.InitSex(),
-        sim.IdTagger(),
     ]+init_geno,
     preOps=[
         sim.PyOperator(lambda pop: rc.increment_time() or True),
@@ -160,7 +166,7 @@ pop.evolve(
     ],
     matingScheme=sim.RandomMating(
         ops=[
-            sim.IdTagger(),
+            id_tagger,
             sim.Recombinator(intensity=recomb_rate,
                 output=rc.collect_recombs,
                 infoFields="ind_id"),
@@ -172,6 +178,7 @@ pop.evolve(
     gen = generations
 )
 
+
 logfile.write("Done simulating!\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("----------\n")
@@ -181,7 +188,9 @@ logfile.flush()
 # offspringID parentID startingPloidy rec1 rec2 ....
 
 locations = [pop.subPopIndPair(x)[0] for x in range(pop.popSize())]
-rc.add_diploid_samples(pop.indInfo("ind_id"),locations)
+rc.add_diploid_samples(nsamples=args.nsamples, sample_ids=pop.indInfo("ind_id"),
+                       populations=locations)
+
 del pop
 
 logfile.write("Samples:\n")

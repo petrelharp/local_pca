@@ -70,7 +70,7 @@ logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
-locus_position = [args.length * k / (args.nloci - 1) for k in range(args.nloci - 1)]
+locus_position = [args.length * k / (args.nloci - 1) for k in range(args.nloci)]
 
 # initially polymorphic alleles
 init_freqs=[[k/100,1-k/100,0,0] for k in range(10)]
@@ -110,6 +110,7 @@ pop.evolve(
         sim.InitSex(),
     ]+init_geno,
     preOps=[
+        sim.PyOperator(lambda pop: rc.increment_time() or True),
         sim.SNPMutator(u=args.sel_mut_rate, v=args.sel_mut_rate),
         sim.PyMlSelector(fitness_fun,
             output=">>"+args.selloci_file),
@@ -137,7 +138,8 @@ logfile.flush()
 # offspringID parentID startingPloidy rec1 rec2 ....
 
 locations = [pop.subPopIndPair(x)[0] for x in range(pop.popSize())]
-rc.add_diploid_samples(pop.indInfo("ind_id"),locations)
+rc.add_diploid_samples(nsamples=args.nsamples, sample_ids=pop.indInfo("ind_id"),
+                       populations=locations)
 
 logfile.write("Samples:\n")
 logfile.write(str(rc.diploid_samples)+"\n")

@@ -95,11 +95,11 @@ logfile.flush()
 npops=3
 
 # increase spacing between loci as we go along the chromosome
-rel_positions=[0.0 for k in range(args.nloci)]
-for k in range(1,args.nloci):
+rel_positions=[0.0 for k in range(args.nloci-1)]
+for k in range(1,args.nloci-1):
     rel_positions[k] = rel_positions[k-1] + random.expovariate(1)*(k**2)
-pos_fac=args.length/(rel_positions[-1]+random.expovariate(1)*(args.nloci**2))
-locus_position=[x*pos_fac for x in rel_positions]
+pos_fac=args.length/(rel_positions[-1] + random.expovariate(1)*(k**2))
+locus_position=[x*pos_fac for x in rel_positions] + [args.length]
 
 # initially polymorphic alleles
 init_freqs=[[k/100,1-k/100,0,0] for k in range(1,11)]
@@ -201,7 +201,9 @@ logfile.write("----------\n")
 logfile.flush()
 
 locations = [pop.subPopIndPair(x)[0] for x in range(pop.popSize())]
-rc.add_diploid_samples(pop.indInfo("ind_id"),locations)
+rc.add_diploid_samples(nsamples=args.nsamples, sample_ids=pop.indInfo("ind_id"),
+                       populations=locations)
+
 del pop
 
 logfile.write("Samples:\n")
