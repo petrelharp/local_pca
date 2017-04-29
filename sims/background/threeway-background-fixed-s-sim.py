@@ -95,7 +95,7 @@ npops=3
 
 # increase spacing between loci as we go along the chromosome
 rel_positions=[0.0 for k in range(args.nloci)]
-for k in range(args.nloci):
+for k in range(1,args.nloci):
     rel_positions[k] = rel_positions[k-1] + random.expovariate(1)*(k**2)
 pos_fac=args.length/(rel_positions[-1]+random.expovariate(1)*(args.nloci**2))
 locus_position=[x*pos_fac for x in rel_positions]
@@ -112,25 +112,26 @@ logfile.flush()
 
 init_geno=[sim.InitGenotype(freq=init_freqs[k],loci=init_classes[k]) for k in range(len(init_freqs))]
 
-###
-# modified from http://simupop.sourceforge.net/manual_svn/build/userGuide_ch5_sec9.html
-
-class FixedFitness:
-    def __init__(self,s):
-        self.s = s
-    def __call__(self, loc, alleles):
-        # print(str(loc)+":"+str(alleles)+"\n")
-        # needn't return fitness for alleles=(0,0) as simupop knows that's 1
-        if 0 in alleles:
-            return 1. - self.s
-        else:
-            return 1. - 2.*self.s
+def fitness_fun(loc, alleles):
+    if 0 in alleles:
+        return 1. - args.selection_coef
+    else:
+        return 1. - 2. * args.selection_coef
 
 pop = sim.Population(
         size=[args.popsize]*npops, 
         loci=[args.nloci], 
         lociPos=locus_position,
         infoFields=['ind_id','fitness','migrate_to'])
+
+id_tagger = sim.IdTagger()
+id_tagger.apply(pop)
+
+# record recombinations
+rc = RecombCollector(
+        first_gen=pop.indInfo("ind_id"), ancestor_age=args.ancestor_age, 
+                              length=args.length, locus_position=locus_position)
+
 
 migr_init = [ [ 0, args.slow_m, args.slow_m ],
               [ args.fast_M, 0, args.slow_m ],
@@ -143,16 +144,9 @@ migr_change = [ [ 0, args.slow_m, args.slow_m ],
 # total number of generations to run simuPOP for
 args.total_generations=args.generations+args.switch_time
 
-# record recombinations
-rc = RecombCollector(
-        nsamples=args.nsamples, generations=args.total_generations,
-        N=args.popsize*npops,
-        ancestor_age=args.ancestor_age, length=args.length, locus_position=locus_position)
-
 pop.evolve(
     initOps=[
         sim.InitSex(),
-        sim.IdTagger(),
     ]+init_geno,
     preOps=[
         sim.PyOperator(lambda pop: rc.increment_time() or True),
@@ -164,13 +158,13 @@ pop.evolve(
             rate=migr_change,
             mode=sim.BY_PROBABILITY,
             begin=args.switch_time),
-        sim.AcgtMutator(rate=[args.sel_mut_rate], model='JC69'),
-        sim.PyMlSelector(FixedFitness(args.selection_coef),
+        sim.SNPmutator(u=args.sel_mut_rate, v=args.sel_mut_rate),
+        sim.PyMlSelector(fitness_fun,
             output=">>"+selloci_file),
     ],
     matingScheme=sim.RandomMating(
         ops=[
-            sim.IdTagger(),
+            id_tagger,
             sim.Recombinator(intensity=args.recomb_rate,
                 output=rc.collect_recombs,
                 infoFields="ind_id"),
