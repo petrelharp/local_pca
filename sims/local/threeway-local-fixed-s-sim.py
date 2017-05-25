@@ -87,7 +87,7 @@ npops=3
 
 # loci evenly spaced on left half the choromosome
 # except must have one on each end
-locus_position=[0.5*x*args.length/args.nloci for x in range(args.nloci-1)] + [args.length]
+locus_position=[x*args.length/args.nloci for x in range(args.nloci-1)] + [args.length]
 
 # initially polymorphic alleles
 init_freqs=[[k/100,1-k/100,0,0] for k in range(10)]
@@ -138,8 +138,8 @@ fitness = PlusMinusFitness(args.selection_coef)
 
 pop = sim.Population(
         size=[args.popsize]*npops, 
-        loci=[args.nloci], 
-        lociPos=locus_position,
+        loci=[args.nloci,2], 
+        lociPos=locus_position + [0, args.length],
         infoFields=['ind_id','fitness','migrate_to'])
 
 id_tagger = sim.IdTagger()
@@ -148,7 +148,8 @@ id_tagger.apply(pop)
 # record recombinations
 rc = RecombCollector(
         first_gen=pop.indInfo("ind_id"), ancestor_age=args.ancestor_age, 
-                              length=args.length, locus_position=locus_position)
+                              length=2*args.length, 
+                              locus_position=locus_position+[args.length, 2*args.length])
 
 migr_mat = [[ 0, args.m, 0 ],
             [ args.m, 0, args.M ],

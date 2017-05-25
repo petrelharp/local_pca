@@ -589,6 +589,9 @@ localsim () {
     echo $OUTDIR
 }
 
+# testing:
+localsim 20 10 0.001 1.0 .000001
+
 # elapsed: 0:41.14 / kernel: 0.65 / user: 40.70 / mem: 410508
 localsim 100 1000 0.001 1.0 .000001
 
@@ -617,6 +620,8 @@ with selection coefficients opposite in the third population.
   a migrant has disadvantage around $Ls/2$, thus replacing $m_{23}$ by $M \exp(-LS/2)$.
   If this is much less than $m$, then on the selected half, 1 and 2 should be closer than to 3.
 
+- 
+
 ```
 
 localthree () {
@@ -626,20 +631,21 @@ localthree () {
     SLOW_M=$4
     FAST_M=$5
     RECOMB_RATE=$6
+    RELATIVE_GENS=$7
     SEED=$RANDOM
-    OUTDIR="threeway_${1}_${2}_${3}_${4}_${5}_${6}_${SEED}"; mkdir -p $OUTDIR
+    OUTDIR="threeway_${1}_${2}_${3}_${4}_${5}_${6}_${7}_${SEED}"; mkdir -p $OUTDIR
     /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
         python3 threeway-local-fixed-s-sim.py \
                              --relative_m $SLOW_M \
                              --relative_M $FAST_M \
-                             --generations $((5 * $POPSIZE)) \
+                             --generations $(($RELATIVE_GENS * $POPSIZE)) \
                              --popsize $POPSIZE \
                              --length 1e6  \
                              --nloci $NSEL \
                              --sel_mut_rate 1e-3 \
                              --recomb_rate $RECOMB_RATE \
                              --selection_coef $SELECTION_COEF \
-                             --nsamples 20 \
+                             --nsamples 100 \
                              --ancestor_age 100 \
                              --mut_rate 1e-5  \
                              --seed $SEED \
@@ -652,21 +658,30 @@ localthree () {
 }
 
 # elapsed: 15:02.56 / kernel: 1.72 / user: 901.34 / mem: 3587288
-localthree 200 1000 0.001 1.0 0.1 .000004
+localthree 200 1000 0.001 1.0 0.1 .000004 100 &
 
-localthree 200 1000 0.001 5.0 0.02 .000004
+localthree 200 1000 0.001 5.0 0.02 .000004 100 &
+
+localthree 200 1000 0.003 5.0 0.2 .000004 100 &
+
+localthree 200 1000 0.003 5.0 0.5 .000004 100 &
 
 
 ```
 
 Looking at results:
 ```
-divs <- list.files(".", "divergences.tsv", recursive=TRUE, full.names=TRUE)
+divs <- file.path(list.files(".", "threeway", full.names=TRUE), "divergences.tsv")
+divs <- divs[file.exists(divs)][order(file.info(divs)$ctime)]
 x <- lapply(divs, read.table, header=TRUE)
 names(x) <- basename(dirname(divs))
-layout(matrix(1:6,nrow=2))
-for (xx in x) { 
-    matplot(xx[,-(1:2)], type='l') 
+cols <- c(grey(.8), 'red', 'green', 'red', grey(.5), 'purple', 'green', 'purple', grey(.3))
+names(cols) <- paste0("X", c("0_0", "1_0", "2_0", "0_1", "1_1", "2_1", "0_2", "1_2", "2_2"))
+layout(matrix(1:9,nrow=3))
+for (k in seq_along(x)) { 
+    xx <- x[[k]]
+    matplot((xx[,1]+xx[,2])/2,xx[,-(1:2)], type='l', lty=1, col=cols[colnames(xx)[-(1:2)]],
+        main=names(x)[k], xlab='position (bp)') 
     legend("topright", lty=1:5, col=1:6, legend=colnames(xx)[-(1:2)])
 }
 
