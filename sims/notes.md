@@ -569,7 +569,7 @@ localsim () {
     SEED=$RANDOM
     OUTDIR="local_${1}_${2}_${3}_${4}_${5}_${SEED}"; mkdir -p $OUTDIR
     /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
-        local-fixed-s-sim.py --relative_m $RELATIVE_M \
+        python3 local-fixed-s-sim.py --relative_m $RELATIVE_M \
                              --generations $((5 * $POPSIZE)) \
                              --popsize $POPSIZE \
                              --length 1e6  \
@@ -589,7 +589,47 @@ localsim () {
     echo $OUTDIR
 }
 
-localsim 100 10 0.01 0.01 .001
+localsim 1000 1000 0.001 1.0 .00001
+
+
+```
+
+
+```
+
+localthree () {
+    POPSIZE=$1
+    NSEL=$2
+    SELECTION_COEF=$3
+    SLOW_M=$4
+    FAST_M=$5
+    RECOMB_RATE=$6
+    SEED=$RANDOM
+    OUTDIR="threeway_${1}_${2}_${3}_${4}_${5}_${SEED}"; mkdir -p $OUTDIR
+    /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
+        python3 threeway-local-fixed-s-sim.py \
+                             --relative_m $SLOW_M \
+                             --relative_M $FAST_M \
+                             --generations $((5 * $POPSIZE)) \
+                             --popsize $POPSIZE \
+                             --length 1e6  \
+                             --nloci $NSEL \
+                             --sel_mut_rate 1e-3 \
+                             --recomb_rate $RECOMB_RATE \
+                             --selection_coef $SELECTION_COEF \
+                             --nsamples 20 \
+                             --ancestor_age 100 \
+                             --mut_rate 1e-5  \
+                             --seed $SEED \
+                             --treefile $OUTDIR/sim.trees  \
+                             --outfile $OUTDIR/sim.vcf \
+                             --logfile $OUTDIR/sim.log  \
+            &> $OUTDIR/time.log
+    python3 ../tree-stats.py --treefile $OUTDIR/sim.trees --samples_file $OUTDIR/samples.tsv --n_window 100 --outfile $OUTDIR/divergences.tsv
+    echo $OUTDIR
+}
+
+localsim 1000 1000 0.001 1.0 .00001
 
 
 ```
