@@ -90,7 +90,7 @@ npops=3
 locus_position=[0.5*x*args.length/args.nloci for x in range(args.nloci-1)] + [args.length]
 
 # initially polymorphic alleles
-init_freqs=[[k/100,1-k/100,0,0] for k in range(1,11)]
+init_freqs=[[k/100,1-k/100,0,0] for k in range(10)]
 locus_classes=[min(len(init_freqs)-1,math.floor(random.expovariate(1))) for k in range(args.nloci)]
 init_classes=[list(filter(lambda k: locus_classes[k]==x,range(args.nloci))) for x in range(len(init_freqs))]
 
@@ -105,8 +105,10 @@ class PlusMinusFitness:
     def __init__(self, s):
         self.coefMap = {}
         self.s = s
-    def __call__(self, loc, alleles):
-        # because ssign is assigned for each locus, we need to make sure the
+        self.left_subpops = [0,1]
+        self.right_subpops = [2]
+    def left(self, loc, alleles):
+        # because sign is assigned for each locus, we need to make sure the
         # same sign is used for fitness of genotypes 01 (1-s) and 11 (1-2s)
         # at each locus
         if loc in self.coefMap:
@@ -120,8 +122,19 @@ class PlusMinusFitness:
             return max(0.0, 1. - s)
         else:
             return max(0.0, 1. - 2.*s)
+    def right(self, loc, alleles):
+        # opposite sign!!
+        if loc in self.coefMap:
+            s = self.coefMap[loc]
+        else:
+            s = random.choice([-1.0,1.0]) * self.s
+            self.coefMap[loc] = s
+        if 0 in alleles:
+            return max(0.0, 1. + s)
+        else:
+            return max(0.0, 1. + 2.*s)
 
-flipper = sim.InfoExec('fitness = 2-fitness', subPops=2)
+fitness = PlusMinusFitness(args.selection_coef)
 
 pop = sim.Population(
         size=[args.popsize]*npops, 
@@ -151,9 +164,10 @@ pop.evolve(
             rate=migr_mat,
             mode=sim.BY_PROBABILITY),
         sim.SNPMutator(u=args.sel_mut_rate, v=args.sel_mut_rate),
-        sim.PyMlSelector(PlusMinusFitness(args.selection_coef),
+        sim.PyMlSelector(fitness.left, subPops=fitness.left_subpops,
             output=">>"+selloci_file),
-        flipper,
+        sim.PyMlSelector(fitness.right, subPops=fitness.right_subpops,
+            output=">>"+selloci_file),
     ],
     matingScheme=sim.RandomMating(
         ops=[

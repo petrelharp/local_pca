@@ -589,11 +589,33 @@ localsim () {
     echo $OUTDIR
 }
 
-localsim 1000 1000 0.001 1.0 .00001
+# elapsed: 0:41.14 / kernel: 0.65 / user: 40.70 / mem: 410508
+localsim 100 1000 0.001 1.0 .000001
+
+# elapsed: 2:21.83 / kernel: 0.86 / user: 141.49 / mem: 1113744
+localsim 100 1000 0.001 1.0 .00001
+
+# elapsed: 4:34.72 / kernel: 0.92 / user: 274.30 / mem: 1493748
+localsim 200 1000 0.001 1.0 .000001
+
+# elapsed: 9:25.62 / kernel: 1.29 / user: 564.74 / mem: 2423340
+localsim 200 1000 0.001 1.0 .000004
 
 
 ```
 
+
+Here there are three populations, connected by migration rates $m = m_{12} < m_{23} = M$;
+with selection coefficients opposite in the third population.
+
+- On the neutral half, the migration rates will be as given; if $M > 1/N$ 
+  then divergence times between 2 and 3 will be like $1/N$, and if $m < 1/N$
+  then divergence times between 1 and 2 or 3 will be like $1/N + 1/m$.
+
+- On the selected half, with $L$ loci of selection coefficient $s$,
+  of which half are positive and half are negative,
+  a migrant has disadvantage around $Ls/2$, thus replacing $m_{23}$ by $M \exp(-LS/2)$.
+  If this is much less than $m$, then on the selected half, 1 and 2 should be closer than to 3.
 
 ```
 
@@ -605,7 +627,7 @@ localthree () {
     FAST_M=$5
     RECOMB_RATE=$6
     SEED=$RANDOM
-    OUTDIR="threeway_${1}_${2}_${3}_${4}_${5}_${SEED}"; mkdir -p $OUTDIR
+    OUTDIR="threeway_${1}_${2}_${3}_${4}_${5}_${6}_${SEED}"; mkdir -p $OUTDIR
     /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
         python3 threeway-local-fixed-s-sim.py \
                              --relative_m $SLOW_M \
@@ -629,8 +651,23 @@ localthree () {
     echo $OUTDIR
 }
 
-localsim 1000 1000 0.001 1.0 .00001
+# elapsed: 15:02.56 / kernel: 1.72 / user: 901.34 / mem: 3587288
+localthree 200 1000 0.001 1.0 0.1 .000004
+
+localthree 200 1000 0.001 5.0 0.02 .000004
 
 
 ```
 
+Looking at results:
+```
+divs <- list.files(".", "divergences.tsv", recursive=TRUE, full.names=TRUE)
+x <- lapply(divs, read.table, header=TRUE)
+names(x) <- basename(dirname(divs))
+layout(matrix(1:6,nrow=2))
+for (xx in x) { 
+    matplot(xx[,-(1:2)], type='l') 
+    legend("topright", lty=1:5, col=1:6, legend=colnames(xx)[-(1:2)])
+}
+
+```
