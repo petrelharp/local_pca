@@ -25,17 +25,25 @@ args = parser.parse_args()
 ts = msprime.load(args.treefile)
 
 pops = {}
+ids = {} # record msprime -> ftprime ID here (not used)
 
 with open(args.samples_file, newline='') as csvfile:
     thereader = csv.DictReader(csvfile, delimiter='\t')
     assert(thereader.fieldnames == ['id', 'flags', 'population', 'time'])
+    msp_id = 0
     for x in thereader:
         if not x['population'] in pops:
             pops[x['population']] = []
-        pops[x['population']] += [x['id']]
+        pops[x['population']] += [msp_id]
+        ids[msp_id] = int(x['id'])
+        msp_id += 1
 
 leaf_sets = [list(map(int,u)) for u in pops.values()]
 pop_names = list(pops.keys())
+
+print('leaf sets:', leaf_sets)
+print('samples:', list(ts.samples()))
+print('ids:', list(ids.values()))
 
 output_names = ["_".join([pop_names[i],pop_names[j]]) for i in range(len(pop_names))
                         for j in range(i,len(pop_names))]

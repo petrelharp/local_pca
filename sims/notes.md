@@ -520,6 +520,7 @@ runsim 500 800 0.1 .001 0.05e-6
 
 With uneven loci:
 ```
+
 runsim2 () {
     POPSIZE=$1
     NSEL=$2
@@ -536,6 +537,60 @@ runsim2 () {
     echo $OUTDIR
 }
 
-runsim2 100 100 0.1 1e-3 1e-5
+runsim2 100 100 0.1 1e-3 1e-5 & 
+
+# example had 2382 muts in first 5MB of sequence (=0.5 M)
+runsim2 500 2400 0.01 .001 0.5e-6 &
+runsim2 500 2400 0.1 .001 0.5e-6 &
+# and 281 in the last 5MB
+runsim2 500 280 0.01 .001 0.5e-6 &
+runsim2 500 280 0.1 .001 0.5e-6 &
+# and 4000 across 25MB (=2.5M)
+#   ... which is an average of 800 per 0.5M
+runsim2 500 800 0.01 .001 0.5e-6 &
+runsim2 500 800 0.1 .001 0.5e-6 &
+
+# print name, average divergence
+( echo "name divergence popsize U denom length s pi N/div div/theory"; 
+    ( for x in uneven_*; do echo $x $(if [ -f $x/divergences.tsv ]; then cat $x/divergences.tsv | tail -n +2  | awk 'BEGIN { x=0; n=0 } {x+=$3; n+=1} END { print (n+0==0)?"NA":(x/n)}' 2>/dev/null; else echo "xxx"; fi); done ) | awk -F "_" '{ N=$2; U=$3*$5; R=$6; D=(2*$4+1000000*R); print $0,N,U,D,1000000*R,$4,(D+0==0)?"NA":(4*$2*exp(-U/D))}' | awk '{X=($2+0==0)?"NA":(4*$3/$2); Y=($8+0==0)?"NA":($2/$8); print $0,X,Y}' | sort  -k 9 -n ) | column -t > results_uneven.tsv
 
 ```
+
+# Local adaptation
+
+```
+
+localsim () {
+    POPSIZE=$1
+    NSEL=$2
+    SELECTION_COEF=$3
+    RELATIVE_M=$4
+    RECOMB_RATE=$5
+    SEED=$RANDOM
+    OUTDIR="local_${1}_${2}_${3}_${4}_${5}_${SEED}"; mkdir -p $OUTDIR
+    /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
+        local-fixed-s-sim.py --relative_m $RELATIVE_M \
+                             --generations $((5 * $POPSIZE)) \
+                             --popsize $POPSIZE \
+                             --length 1e6  \
+                             --nloci $NSEL \
+                             --sel_mut_rate 1e-3 \
+                             --recomb_rate $RECOMB_RATE \
+                             --selection_coef $SELECTION_COEF \
+                             --nsamples 20 \
+                             --ancestor_age 100 \
+                             --mut_rate 1e-5  \
+                             --seed $SEED \
+                             --treefile $OUTDIR/sim.trees  \
+                             --outfile $OUTDIR/sim.vcf \
+                             --logfile $OUTDIR/sim.log  \
+            &> $OUTDIR/time.log
+    python3 ../tree-stats.py --treefile $OUTDIR/sim.trees --samples_file $OUTDIR/samples.tsv --n_window 100 --outfile $OUTDIR/divergences.tsv
+    echo $OUTDIR
+}
+
+localsim 100 10 0.01 0.01 .001
+
+
+```
+
