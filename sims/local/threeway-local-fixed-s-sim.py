@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 description = '''
-Simulates and writes to msprime/vcf, two populations connected by migration,
-with a number of SNPs under selection evenly distributed on one-half of the chromosome,
-which are selected with opposite selection coefficients in the two populations.
+Simulates and writes to msprime/vcf, three populations connected by migration,
+with a number of SNPs under selection evenly distributed on one-half of the chromosome.
+The left two pops share an environment, so the right pop has opposite selection coefficients,
+while the right two have a higher migration rate.
 '''
 
 import gzip
@@ -32,8 +33,10 @@ def fileopt(fname,opts):
     return fobj
 
 parser = argparse.ArgumentParser(description=description)
-parser.add_argument('--relative_m', '-m', default=0.1, type=float, 
-        help="Migration rate in units of population size.")
+parser.add_argument('--relative_m', '-m', default=1.0, type=float, 
+        help="Migration rate between left two pops in units of population size (small).")
+parser.add_argument('--relative_M', '-M', default=0.1, type=float, 
+        help="Migration rate between right two pops in units of population size (large).")
 parser.add_argument("--generations", "-T", type=int, help="number of generations to run for.")
 parser.add_argument("--popsize", "-N", type=int, help="size of each subpopulation", default=100)
 parser.add_argument("--length", "-L", type=float, help="number of bp in the chromosome", default=1e4)
@@ -72,6 +75,7 @@ samples_file = fileopt(args.samples_file,"w")
 
 # compute these here so they get recorded in the log
 args.m = args.relative_m/(4*args.popsize)
+args.M = args.relative_M/(4*args.popsize)
 
 logfile.write("Options:\n")
 logfile.write(str(args)+"\n")
@@ -79,7 +83,7 @@ logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
-npops=2
+npops=3
 
 # loci evenly spaced on left half the choromosome
 # except must have one on each end
@@ -117,7 +121,7 @@ class PlusMinusFitness:
         else:
             return max(0.0, 1. - 2.*s)
 
-flipper = sim.InfoExec('fitness = 2-fitness', subPops=1)
+flipper = sim.InfoExec('fitness = 2-fitness', subPops=2)
 
 pop = sim.Population(
         size=[args.popsize]*npops, 
@@ -133,8 +137,9 @@ rc = RecombCollector(
         first_gen=pop.indInfo("ind_id"), ancestor_age=args.ancestor_age, 
                               length=args.length, locus_position=locus_position)
 
-migr_mat = [[ 0, args.m ],
-             [ args.m, 0 ]]
+migr_mat = [[ 0, args.m, 0 ],
+            [ args.m, 0, args.M ],
+            [ 0, args.M, 0 ] ]
 
 pop.evolve(
     initOps=[
@@ -247,3 +252,4 @@ else:
 
 logfile.write("All done!\n")
 logfile.close()
+
