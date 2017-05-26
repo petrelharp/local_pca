@@ -58,7 +58,7 @@ getCircleFrom3 <- function(xy) {
         v1  <- rowSums(xy^2)                    # first vector in the numerator
         v2x <- c( xDeltaB, -xDeltaC,  xDeltaA)  # 2nd vector numerator for Mx
         v2y <- c(-yDeltaB,  yDeltaC, -yDeltaA)  # 2nd vector numerator for My
-        ctr <- c(t(v1) %*% v2y, t(v1) %*% v2x) / (2 * (t(y) %*% v2x))  # center
+        ctr <- c(t(v1) %*% v2y, t(v1) %*% v2x) / as.vector(2 * (t(y) %*% v2x))  # center
     }
 
     return(list(ctr=ctr, rad=rad))

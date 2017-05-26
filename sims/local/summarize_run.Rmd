@@ -1,0 +1,235 @@
+---
+title: "Local PCA results"
+date: "`r date()`"
+---
+
+```{r setup, include=FALSE}
+library(lostruct)
+library(colorspace)
+library(jsonlite)
+library(RColorBrewer)
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,fig.height=fig.dim,fig.align='center')
+do.pdfs <- FALSE
+```
+```{r plot_setup, include=FALSE}
+layout_heights <- function (k,dl=0,ncol=1) {
+    # to set up layout without 'dl' lines between plots
+    # use like layout(1:5,heights=layout_heights(5))
+    if (k==1) return(1)
+    layout(matrix(seq_len(k*ncol),ncol=ncol))  # this changes par("csi")
+    ds <- dl*par("lheight")*par("csi")
+    eps=par("mai")[c(1,3)]
+    dh=(par("din")[2]-sum(eps)-(k-1)*ds)/k
+    return(c(eps[2]+dh+ds/2,rep(dh+ds,k-2),eps[1]+dh+ds/2)/par("din")[2])
+}
+pdf_copy <- function (
+                width=6,
+                height=width*knitr::opts_current$get("fig.height")/knitr::opts_current$get("fig.width"),
+                plot.id=NULL,
+                filename
+                ) {
+    if (missing(filename)) {
+        file.id <- if (is.null(plot.id)) { "" } else { paste0("_",plot.id) }
+        filename <- knitr::fig_path(paste(file.id,".pdf",sep=""))
+    }
+    cat("pdf version at:",filename)
+    dev.print( file=filename, device=pdf, 
+            width=width, height=height,
+            pointsize=10,
+            family="sans")
+}
+```
+
+Render this, for instance, like:
+```
+templater::render_template("summarize_run.Rmd",output="lostruct_results/type_snp_size_10000_jobid_324902/run_summary.html",change.rootdir=TRUE)
+```
+
+```{r data_setup, include=FALSE}
+opt <- fromJSON("config.json")
+if (is.null(opt$weights)) { opt$weights <- 1 }
+
+# original data files
+chroms <- opt$bcf_file_names
+bcf.files <- opt$bcf_files
+names(bcf.files) <- chroms
+
+sample.ids <- vcf_samples(bcf.files[1])
+if (!is.null(opt$sample_info)) {
+    samp.file <- opt$sample_info
+    samps <- read.table(samp.file,sep="\t",header=TRUE)
+    names(samps) <- tolower(names(samps))
+    # hack for msprime output
+    if (all(grepl("^msp_",sample.ids)) & is.numeric(samps$id)) {
+        # samps$id <- factor(paste0("msp_", samps$id))
+        samps$id <- paste0("msp_", 0:(nrow(samps)-1))
+    }
+    drop_ids <- setdiff(sample.ids, levels(samps$id))
+    if (length(drop_ids)>0) {
+        warning(sprintf("These samples have no information in the samples file, %s:\n  %s.", samp.file, paste(drop_ids,collapse=" ")))
+    }
+    samps <- droplevels( samps[match(sample.ids,samps$id),] )
+    samps$population <- factor(samps$population)
+} else {
+    warning("No populatio information in the sample file, %s.", samp.file)
+    samps <- data.frame( 
+            ID=sample.ids,
+            population=factor(rep("pop",length(sample.ids))) )
+}
+
+# data files, precomputed
+pca.files <- list.files(".",".*.pca.csv")
+mds.file <- "mds_coords.csv"
+regions.files <- list.files(".",".*.regions.csv")
+
+# read in mds
+mds.coords <- read.csv(mds.file,header=TRUE)
+mds.cols <- (1:ncol(mds.coords))[-(1:2)]
+
+# position information
+regions <- do.call( rbind, lapply( regions.files, read.csv, header=TRUE ) )
+# figure out where to plot things at
+chroms <- unique(regions$chrom)
+chrom.starts <- tapply( regions$start, regions$chrom, min, na.rm=TRUE )
+chrom.ends <- tapply( regions$end, regions$chrom, max, na.rm=TRUE )
+chrom.spacing <- floor(.05*mean(chrom.ends))
+chrom.offsets <- c(0,cumsum(chrom.spacing+chrom.ends))
+names(chrom.offsets) <- c(chroms,"end")
+chrom.dividers <- c(0,chrom.offsets[-1])-chrom.spacing/2
+chrom.mids <- chrom.dividers[-1] - diff(chrom.dividers)/2
+
+# this is where to plot windows at when plotting with all chromosomes
+regions$pos <- chrom.offsets[match(regions$chrom,chroms)]+(regions$start+regions$end)/2
+
+chrom.cols <- rainbow_hcl(length(chroms), c=90, end=.9*360)[as.numeric(regions$chrom)]
+
+#' Set up to plot all chromosomes together
+#' will plot the vector of values 'y' along all the chromosomes.
+chrom.plot <- function (y,ylab='',main='',chrom.labels=TRUE,...) {
+    plot(0, type='n', xlim=range(chrom.offsets/1e6), ylim=range(y,finite=TRUE), 
+         xlab='', xaxt='n', yaxt='n', ylab=ylab, main=main)
+    if (length(chroms)>1) for (k in 1:floor(length(chroms)/2)) {
+        rect( xleft=chrom.dividers[2*k-1]/1e6, xright=chrom.dividers[2*k]/1e6, 
+             ybottom=par("usr")[3], ytop=par("usr")[4], 
+             border=NA, col=adjustcolor("grey",0.25) )
+    }
+    abline( v=chrom.dividers/1e6, lty=3, col=adjustcolor("grey",0.5), lwd=2 )
+    if (chrom.labels) axis( 1, at=chrom.mids/1e6, labels=chroms, las=0, tick=FALSE )
+    points( regions$pos/1e6, y, ...)
+}
+```
+
+This run had these parameters:
+
+- *window type* : `r opt$type`
+- *window size* : `r opt$size`
+- *number of pcs* : `r opt$npc`
+- *number of MDS coordinates* : `r opt$nmds`
+
+Here are the number of windows per chromsome,
+and the computed MDS coordinates, colored by chromosome:
+```{r mds_pairplot, fig.height=2*fig.dim}
+table(regions$chrom)
+pairs( mds.coords[,mds.cols], pch=20, col=adjustcolor(chrom.cols,0.75) )
+if (do.pdfs) { pdf_copy() }
+```
+
+Here are the extreme windows in the MDS plot:
+```{r get_corners}
+mds.corners <- corners( mds.coords[,mds.cols[1:2]], prop=.05 )
+# set up colors and pchs for corners
+corner.cols <- brewer.pal(3,"Dark2")
+corner.pch <- c(15,17,19)
+ccols <- rep("black",nrow(mds.coords))
+cpch <- rep(20,nrow(mds.coords))
+for (k in 1:ncol(mds.corners)) {
+    ccols[ mds.corners[,k] ] <- corner.cols[k]
+    cpch[ mds.corners[,k] ] <- corner.pch[k]
+}
+# centroids of the corners in MDS space
+corner.mds <- do.call(rbind, lapply(1:ncol(mds.corners), 
+                function (ii){
+                    colMeans(mds.coords[mds.corners[,ii],-(1:2)])
+                } ) )
+if (do.pdfs) { pdf_copy() }
+```
+```{r plot_corners, fig.width=3*fig.dim, fig.height=fig.dim*ceiling(length(mds.cols)/2)}
+# plot corners and MDS along the chromosome
+spacing <- 1
+opar <- par(mar=c(4,4,2,1)+.1,mgp=c(2.5,0.8,0))
+layout(matrix(c(rep(1,length(mds.cols)),1+seq_along(mds.cols)),ncol=2),
+        widths=c(1,2), heights=layout_heights(length(mds.cols),dl=spacing,ncol=2))
+plot( mds.coords[,mds.cols[1:2]], pch=cpch, 
+     col=adjustcolor(ccols,0.75),  asp=1,
+     xlab="MDS coordinate 1", ylab="MDS coordinate 2" )
+points( corner.mds, pch=20, cex=5,
+        col=adjustcolor(corner.cols,0.25))
+text( corner.mds, labels=seq_len(nrow(corner.mds)), 
+        col=corner.cols, cex=2, lwd=2 )
+opar2 <- par(mar=c(par("mar"),spacing/2)[c(5,2,3,4)])
+for (k in mds.cols) {
+    lastone <- (k==mds.cols[length(mds.cols)])
+    if (lastone) { par(mar=c(par("mar"),opar2$mar[1])[c(5,2,3,4)]) }
+    chrom.plot( mds.coords[,k], pch=20, 
+            xlab=if (lastone) { "Position (Mb)"} else { "" }, # main=paste("MDS coordinate",match(k,mds.cols)),
+            chrom.labels=lastone,
+            ylab=colnames(mds.coords)[k],
+            col=adjustcolor(ccols,0.75) )
+    # do this for all but first
+    par(mar=c(par("mar"),spacing/2)[c(1,2,5,4)])
+}
+par(opar)
+if (do.pdfs) { pdf_copy() }
+```
+
+
+Now, we'll look at PCA plots from the extracted corners.
+(this is done without a ton of memory by accumulating the covariance matrix in `running_cov`):
+```{r corner_pca, cache=TRUE}
+corner.npc <- 4
+corner.regions <- lapply( 1:ncol(mds.corners), function (k) {
+            regions[ mds.corners[,k],]
+    } )
+corner.covmats <- lapply( 1:ncol(mds.corners), function (k) {
+            reg <- regions[ mds.corners[,k], ]
+            qfun <- multi_vcf_query_fn( chrom.list=chroms, file=bcf.files, regions=reg )
+            running_cov(qfun,1:nrow(reg))
+        } )
+corner.pca <- lapply( corner.covmats, function (covmat) {
+            cov_pca(covmat=covmat,k=corner.npc,w=opt$weights)
+    } )
+```
+
+Here is the color scheme:
+```{r pop_colors, fig.height=2*fig.dim}
+pop.names <- levels(samps$population)
+pop.cols <- rainbow_hcl(nlevels(samps$population))
+pop.pch <- seq_len(nlevels(samps$population))
+plot( rep(1,length(pop.names)), seq_along(pop.names), 
+       cex=4, pch=pop.pch, col=pop.cols, xlim=c(0,length(pop.names)),
+       xlab='', ylab='', xaxt='n', yaxt='n' )
+text( rep(1,length(pop.names)), seq_along(pop.names), labels=pop.names, pos=4 )
+```
+
+
+Here are all pairwise plots of the first `r corner.npc` PCs for each of the three corners:
+```{r plot_corner_pca, fig.width=3*fig.dim}
+layout(t(1:3))
+for (i in 1:(corner.npc-1)) {
+    for (j in (i+1):corner.npc) {
+        for (k in 1:ncol(mds.corners)) {
+            vectors <- matrix( corner.pca[[k]][-(1:(1+corner.npc))], ncol=corner.npc )[,c(i,j)]
+            colnames(vectors) <- paste("PC", c(i,j))
+            plot(vectors, pch=pop.pch[samps$population], 
+                    col=pop.cols[samps$population] )
+            if (i==1 && j==2) {
+                mtext(paste("corner",k),side=3,cex=2)
+            }
+        }
+        if (do.pdfs) { pdf_copy(plot.id=paste(i,j,sep="_")) }
+    }
+}
+```
+
+
