@@ -244,6 +244,7 @@ logfile.flush()
 # nodefile.flush()
 # edgefile.flush()
 
+## SIMPLIFY takes LONGER? but this reduces disk usage a lot.
 minimal_ts = ts.simplify()
 del ts
 

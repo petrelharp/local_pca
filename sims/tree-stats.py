@@ -27,7 +27,10 @@ ids = {} # record msprime -> ftprime ID here (not used)
 
 for node_id in ts.samples():
     node = ts.node(node_id)
-    pops[node.population] += [node_id]
+    pop = str(node.population)
+    if not pop in pops:
+        pops[pop] = []
+    pops[pop] += [node_id]
 
 leaf_sets = [list(map(int,u)) for u in pops.values()]
 pop_names = list(pops.keys())
