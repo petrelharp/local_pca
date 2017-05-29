@@ -567,23 +567,25 @@ localsim () {
     RELATIVE_M=$4
     RECOMB_RATE=$5
     SEED=$RANDOM
+    SCRIPT=local-fixed-s-sim.py 
     OUTDIR="local_${1}_${2}_${3}_${4}_${5}_${SEED}"; mkdir -p $OUTDIR
     /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
-        python3 local-fixed-s-sim.py --relative_m $RELATIVE_M \
-                             --generations $((5 * $POPSIZE)) \
-                             --popsize $POPSIZE \
-                             --length 1e6  \
-                             --nloci $NSEL \
-                             --sel_mut_rate 1e-3 \
-                             --recomb_rate $RECOMB_RATE \
-                             --selection_coef $SELECTION_COEF \
-                             --nsamples 20 \
-                             --ancestor_age 100 \
-                             --mut_rate 1e-5  \
-                             --seed $SEED \
-                             --treefile $OUTDIR/sim.trees  \
-                             --outfile $OUTDIR/sim.vcf \
-                             --logfile $OUTDIR/sim.log  \
+        python3 $SCRIPT \
+                     --relative_m $RELATIVE_M \
+                     --generations $((5 * $POPSIZE)) \
+                     --popsize $POPSIZE \
+                     --length 1e6  \
+                     --nloci $NSEL \
+                     --sel_mut_rate 1e-3 \
+                     --recomb_rate $RECOMB_RATE \
+                     --selection_coef $SELECTION_COEF \
+                     --nsamples 20 \
+                     --ancestor_age 100 \
+                     --mut_rate 1e-5  \
+                     --seed $SEED \
+                     --treefile $OUTDIR/sim.trees  \
+                     --outfile $OUTDIR/sim.vcf \
+                     --logfile $OUTDIR/sim.log  \
             &> $OUTDIR/time.log
     python3 ../tree-stats.py --treefile $OUTDIR/sim.trees --samples_file $OUTDIR/samples.tsv --n_window 100 --outfile $OUTDIR/divergences.tsv
     echo $OUTDIR
@@ -633,25 +635,26 @@ localthree () {
     RECOMB_RATE=$6
     RELATIVE_GENS=$7
     SEED=$RANDOM
+    SCRIPT=threeway-local-fixed-s-sim.py
     OUTDIR="threeway_chroms_${1}_${2}_${3}_${4}_${5}_${6}_${7}_${SEED}"; mkdir -p $OUTDIR
     /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
-        python3 threeway-local-fixed-s-sim.py \
-                             --relative_m $SLOW_M \
-                             --relative_M $FAST_M \
-                             --generations $(($RELATIVE_GENS * $POPSIZE)) \
-                             --popsize $POPSIZE \
-                             --length 1e6  \
-                             --nloci $NSEL \
-                             --sel_mut_rate 1e-3 \
-                             --recomb_rate $RECOMB_RATE \
-                             --selection_coef $SELECTION_COEF \
-                             --nsamples 20 \
-                             --ancestor_age 100 \
-                             --mut_rate 1e-5  \
-                             --seed $SEED \
-                             --treefile $OUTDIR/sim.trees  \
-                             --outfile $OUTDIR/sim.vcf \
-                             --logfile $OUTDIR/sim.log  \
+        python3 $SCRIPT \
+                     --relative_m $SLOW_M \
+                     --relative_M $FAST_M \
+                     --generations $(($RELATIVE_GENS * $POPSIZE)) \
+                     --popsize $POPSIZE \
+                     --length 1e6  \
+                     --nloci $NSEL \
+                     --sel_mut_rate 1e-3 \
+                     --recomb_rate $RECOMB_RATE \
+                     --selection_coef $SELECTION_COEF \
+                     --nsamples 20 \
+                     --ancestor_age 100 \
+                     --mut_rate 1e-5  \
+                     --seed $SEED \
+                     --treefile $OUTDIR/sim.trees  \
+                     --outfile $OUTDIR/sim.vcf \
+                     --logfile $OUTDIR/sim.log  \
             &> $OUTDIR/time.log
     echo "Now computing tree stats." >> $OUTDIR/time.log
     /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
@@ -693,24 +696,25 @@ symthree () {
     RECOMB_RATE=$5
     RELATIVE_GENS=$6
     SEED=$RANDOM
+    SCRIPT=threeway-symmetric-local-fixed-s-sim.py
     OUTDIR="threeway_sym_${1}_${2}_${3}_${4}_${5}_${6}_${SEED}"; mkdir -p $OUTDIR
     /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
-        python3 threeway-local-fixed-s-sim.py \
-                             --relative_m $RELATIVE_M \
-                             --generations $(($RELATIVE_GENS * $POPSIZE)) \
-                             --popsize $POPSIZE \
-                             --length 1e6  \
-                             --nloci $NSEL \
-                             --sel_mut_rate 1e-3 \
-                             --recomb_rate $RECOMB_RATE \
-                             --selection_coef $SELECTION_COEF \
-                             --nsamples 20 \
-                             --ancestor_age 100 \
-                             --mut_rate 1e-5  \
-                             --seed $SEED \
-                             --treefile $OUTDIR/sim.trees  \
-                             --outfile $OUTDIR/sim.vcf \
-                             --logfile $OUTDIR/sim.log  \
+        python3 $SCRIPT \
+                     --relative_m $RELATIVE_M \
+                     --generations $(($RELATIVE_GENS * $POPSIZE)) \
+                     --popsize $POPSIZE \
+                     --length 1e6  \
+                     --nloci $NSEL \
+                     --sel_mut_rate 1e-3 \
+                     --recomb_rate $RECOMB_RATE \
+                     --selection_coef $SELECTION_COEF \
+                     --nsamples 20 \
+                     --ancestor_age 100 \
+                     --mut_rate 1e-5  \
+                     --seed $SEED \
+                     --treefile $OUTDIR/sim.trees  \
+                     --outfile $OUTDIR/sim.vcf \
+                     --logfile $OUTDIR/sim.log  \
             &> $OUTDIR/time.log
     echo "Now computing tree stats." >> $OUTDIR/time.log
     /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
@@ -741,7 +745,7 @@ x <- lapply(divs, read.table, header=TRUE)
 names(x) <- basename(dirname(divs))
 cols <- c(grey(.8), 'red', 'green', 'red', grey(.5), 'purple', 'green', 'purple', grey(.3))
 names(cols) <- paste0("X", c("0_0", "1_0", "2_0", "0_1", "1_1", "2_1", "0_2", "1_2", "2_2"))
-layout(matrix(1:20,nrow=4))
+layout(matrix(1:24,nrow=4))
 for (k in seq_along(x)) { 
     xx <- x[[k]]
     matplot((xx[,1]+xx[,2])/2,xx[,-(1:2)], type='l', lty=1, col=cols[colnames(xx)[-(1:2)]],

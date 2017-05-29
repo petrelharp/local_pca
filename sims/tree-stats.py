@@ -11,8 +11,6 @@ import argparse
 parser = argparse.ArgumentParser(description=description)
 parser.add_argument('--treefile', '-t', type=str, 
         help="Name of the tree sequence file output by msprime.")
-parser.add_argument('--samples_file', '-s', type=str, 
-        help="Name of the tsv containing population information about the samples.")
 parser.add_argument('--window_size', '-w', type=float, 
         help="Width of the (regularly spaced) windows.")
 parser.add_argument('--n_window', '-n', type=int, 
@@ -27,16 +25,9 @@ ts = msprime.load(args.treefile)
 pops = {}
 ids = {} # record msprime -> ftprime ID here (not used)
 
-with open(args.samples_file, newline='') as csvfile:
-    thereader = csv.DictReader(csvfile, delimiter='\t')
-    assert(thereader.fieldnames == ['id', 'flags', 'population', 'time'])
-    msp_id = 0
-    for x in thereader:
-        if not x['population'] in pops:
-            pops[x['population']] = []
-        pops[x['population']] += [msp_id]
-        ids[msp_id] = int(x['id'])
-        msp_id += 1
+for node_id in ts.samples():
+    node = ts.node(node_id)
+    pops[node.population] += [node_id]
 
 leaf_sets = [list(map(int,u)) for u in pops.values()]
 pop_names = list(pops.keys())

@@ -230,8 +230,6 @@ logfile.write(str(rc.diploid_samples)+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
-rc.args.dump_sample_table(out=samples_file)
-
 ts = rc.args.tree_sequence()
 del rc
 
@@ -257,7 +255,15 @@ logfile.flush()
 if args.treefile is not None:
     minimal_ts.dump(args.treefile)
 
+logfile.write("Writing out samples.\n")
+logfile.write(time.strftime('%X %x %Z')+"\n")
+logfile.write("----------\n")
+logfile.flush()
+
+minimal_ts.dump_text(out=samples_file)
+
 mut_seed=args.seed
+logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("Generating mutations with seed "+str(mut_seed)+"\n")
 logfile.flush()
 
