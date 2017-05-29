@@ -109,11 +109,12 @@ class PlusMinusFitness:
     0 1 2
     We do this by flipping signs for lower-case letters.
     '''
-    def __init__(self, s, a_cutoff, b_cutoff):
+    def __init__(self, s):
         self.coefMap = {}
         self.s = s
-        self.a_cutoff = a_cutoff
-        self.b_cutoff = b_cutoff
+        # func in PyMlSelector accepts a 'loc' argument which is the *index* of the locus
+        self.a_cutoff = args.nloci/2
+        self.b_cutoff = args.nloci/2
         self.AB_subpops = [0]
         self.Ab_subpops = [1]
         self.ab_subpops = [2]
@@ -160,7 +161,7 @@ class PlusMinusFitness:
             return max(0.0, 1. - 2.*s)
 
 
-fitness = PlusMinusFitness(args.selection_coef, args.nloci/2, args.nloci/2)
+fitness = PlusMinusFitness(args.selection_coef)
 
 pop = sim.Population(
         size=[args.popsize]*npops, 
