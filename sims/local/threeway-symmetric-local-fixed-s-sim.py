@@ -160,11 +160,11 @@ class PlusMinusFitness:
             return max(0.0, 1. - 2.*s)
 
 
-fitness = PlusMinusFitness(args.selection_coef, args.nloci/2, arg.nloci/2)
+fitness = PlusMinusFitness(args.selection_coef, args.nloci/2, args.nloci/2)
 
 pop = sim.Population(
         size=[args.popsize]*npops, 
-        loci=[args.nloci,2], 
+        loci=[args.nloci], 
         lociPos=locus_position,
         infoFields=['ind_id','fitness','migrate_to'])
 
@@ -174,7 +174,7 @@ id_tagger.apply(pop)
 # record recombinations
 rc = RecombCollector(
         first_gen=pop.indInfo("ind_id"), ancestor_age=args.ancestor_age, 
-                              length=2*args.length, 
+                              length=args.length, 
                               locus_position=locus_position)
 
 migr_mat = [[ 0, args.m, 0 ],
