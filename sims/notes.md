@@ -653,7 +653,10 @@ localthree () {
                              --outfile $OUTDIR/sim.vcf \
                              --logfile $OUTDIR/sim.log  \
             &> $OUTDIR/time.log
-    python3 ../tree-stats.py --treefile $OUTDIR/sim.trees --samples_file $OUTDIR/samples.tsv --n_window 100 --outfile $OUTDIR/divergences.tsv
+    echo "Now computing tree stats." >> $OUTDIR/time.log
+    /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
+        python3 ../tree-stats.py --treefile $OUTDIR/sim.trees --samples_file $OUTDIR/samples.tsv \
+        --n_window 100 --outfile $OUTDIR/divergences.tsv &>> $OUTDIR/time.log
     echo $OUTDIR
 }
 
@@ -709,14 +712,24 @@ symthree () {
                              --outfile $OUTDIR/sim.vcf \
                              --logfile $OUTDIR/sim.log  \
             &> $OUTDIR/time.log
-    python3 ../tree-stats.py --treefile $OUTDIR/sim.trees --samples_file $OUTDIR/samples.tsv --n_window 100 --outfile $OUTDIR/divergences.tsv
+    echo "Now computing tree stats." >> $OUTDIR/time.log
+    /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
+        python3 ../tree-stats.py --treefile $OUTDIR/sim.trees --samples_file $OUTDIR/samples.tsv \
+        --n_window 100 --outfile $OUTDIR/divergences.tsv &>> $OUTDIR/time.log
     echo $OUTDIR
 }
 
-# elapsed: 15:02.56 / kernel: 1.72 / user: 901.34 / mem: 3587288
-localthree 200 1000 0.001 1.0 0.1 .000004 10 &
+# testing
+symthree 20 100 0.001 1.0 .000004 10 &
 
+# 
+symthree 200 1000 0.001 10.0 .000004 10 &
 
+# larger Ns
+symthree 200 1000 0.005 10.0 .000004 10 &
+symthree 200 1000 0.010 10.0 .000004 10 &
+
+```
 
 
 ## Looking at results:

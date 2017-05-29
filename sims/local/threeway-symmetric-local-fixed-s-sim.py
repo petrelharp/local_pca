@@ -106,7 +106,7 @@ class PlusMinusFitness:
     spatial arrangement is:
     A A a
     B b b
-    1 2 3
+    0 1 2
     We do this by flipping signs for lower-case letters.
     '''
     def __init__(self, s, a_cutoff, b_cutoff):
