@@ -12,7 +12,7 @@ while to run it on windows of 10000 bps: \
     Rscript run_lostruct.R -t bp -s 10000 \
 \
 Do
-    Rscript run_on_medicago.R -h\
+    Rscript run_lostruct.R -h\
 for options.\
 \
 "

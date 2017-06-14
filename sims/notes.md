@@ -1,3 +1,24 @@
+# Recap of the below
+
+- [background, 5x5 grid](background/bground_sim_5000gens_5x5_migr0.01_recomb_1e-7/type_snp_size_200_npc_2_jobid_001/run-summary.html) -
+    intriguing noisy patterns that don't line up with variation in recombination rate
+- [background, 5x5 grid](background/bground_sim_5000gens_5x5/type_snp_size_500_npc_2_jobid_003/run_summary.html) -
+    with a different migraiton rate to the above; intriguing smooth patterns in spikes along the chromosome
+- [symmetric local](local/threeway_sym_200_1000_0.005_10.0_.000004_10_19024/bp_20000_npc_2/run-summary.html) -
+    three pops with alternate halves of the chromosome carrying differently locally adaptive alleles
+    three corners reflect greater or lesser spreading out of populations,
+    somewhat partitioned in halves but noisy
+    * [more windows](local/threeway_sym_200_1000_0.005_10.0_.000004_10_19024/mu_1e-4_bp_2000_npc_2/run-summary.html) same thing with higher mutation rate and more windows
+
+**Pseudo-simulations:**
+
+- [threesim](background/threesim_1e6_8657/bp_10000_npc_2/run-summary.html) - 
+    separate, neutral simulations of two chromosomes mimicking a
+    recent switch of `A|B->C` to `A<-B|C` - has good separation on MDS 1
+- [threesim](background/threesim_1e6_16001/bp_10000_npc_2/run-summary.html) -
+    another example
+
+
 # Neutral simulations:
 
 In `neutral/`; all simulations on an 10x10 grid, with 2Ne=1000 per population,
@@ -386,6 +407,61 @@ for NPC in 1 2 3; do
       Rscript -e "templater::render_template('summarize_run.Rmd',output='${LODIR}/run-summary.html',change.rootdir=TRUE)")&
 done
     
+```
+
+This one orignally ran for `(0.25*3*2*1000 = 1500) + 100` generations with 3000 individuals
+modified it to run for `(0.25*3*2*1200 + 1800) = 3600` generations with `3*1200=3600` individuals
+```
+RUNID=$RANDOM
+OUTDIR=threesim_background_$RUNID
+mkdir -p $OUTDIR
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' python3 threeway-background-sim.py \
+   --ancestor_age 100.0  \
+    --gamma_alpha 0.23  \
+    --gamma_beta 5.34  \
+    --generations 1800  \
+    --length 25000000  \
+    --mut_rate 1e-07  \
+    --nloci 1000  \
+    --nsamples 500  \
+    --popsize 1200  \
+    --recomb_rate 2.5e-8  \
+   --relative_fast_M 1.0  \
+    --relative_slow_m 0.1  \
+    --relative_switch_time 0.25  \
+    --sel_mut_rate 5e-3  \
+   --logfile "$OUTDIR/threesim.log"  \
+   --outfile "$OUTDIR/threesim.vcf"  \
+   --selloci_file "$OUTDIR/threesim.selloci"  \
+   --treefile "$OUTDIR/threesim.trees" &> $OUTDIR/time_threesim.log
+```
+and this one is similar but smaller slow_m:
+```
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' python3 threeway-background-sim.py \
+    --ancestor_age 100.0 
+    --gamma_alpha 0.23 
+    --gamma_beta 5.34 
+    --generations 100 \
+    --length 25000000.0 
+    --mut_rate 1e-07 
+    --nloci 4000 
+    --nsamples 200 \
+    --popsize 1000 \
+    --recomb_rate 1e-07 
+    --relative_fast_M 1.0 
+    --relative_slow_m 0.01 
+    --relative_switch_time 0.25 \
+    --logfile 'threesim_background_25e6_1000_4000_200_22290/threesim.log' \
+    --outfile 'threesim_background_25e6_1000_4000_200_22290/threesim.vcf' 
+    --sel_mut_rate 0.001 
+    --samples_file 'threesim_background_25e6_1000_4000_200_22290/samples.tsv' 
+    --selloci_file 'threesim_background_25e6_1000_4000_200_22290/sel_loci.txt' \
+    --treefile 'threesim_background_25e6_1000_4000_200_22290/threesim.trees'
+
+    --fast_M 0.00025 
+    --slow_m 2.5e-06 
+    --switch_time 1500 \
+
 ```
 
 ### Fixed *s*

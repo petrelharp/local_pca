@@ -113,8 +113,7 @@ class PlusMinusFitness:
         self.coefMap = {}
         self.s = s
         # func in PyMlSelector accepts a 'loc' argument which is the *index* of the locus
-        self.a_cutoff = args.nloci/2
-        self.b_cutoff = args.nloci/2
+        self.ab_cutoff = args.nloci/2
         self.AB_subpops = [0]
         self.Ab_subpops = [1]
         self.ab_subpops = [2]
@@ -137,9 +136,11 @@ class PlusMinusFitness:
         if loc in self.coefMap:
             s = self.coefMap[loc]
         else:
+            # recorded s is the fitness in the first population
             s = random.choice([-1.0,1.0]) * self.s
             self.coefMap[loc] = s
-        if loc > self.b_cutoff:
+        # only flip right half
+        if loc > self.ab_cutoff:
             s = (-1) * s
         if 0 in alleles:
             return max(0.0, 1. - s)
@@ -151,10 +152,8 @@ class PlusMinusFitness:
         else:
             s = random.choice([-1.0,1.0]) * self.s
             self.coefMap[loc] = s
-        if loc > self.b_cutoff:
-            s = (-1) * s
-        if loc > self.a_cutoff:
-            s = (-1) * s
+        # both halves of the chrom are flipped
+        s = (-1) * s
         if 0 in alleles:
             return max(0.0, 1. - s)
         else:
