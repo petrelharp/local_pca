@@ -4,11 +4,14 @@
     intriguing noisy patterns that don't line up with variation in recombination rate
 - [background, 5x5 grid](background/bground_sim_5000gens_5x5/type_snp_size_500_npc_2_jobid_003/run_summary.html) -
     with a different migraiton rate to the above; intriguing smooth patterns in spikes along the chromosome
-- [symmetric local](local/threeway_sym_200_1000_0.005_10.0_.000004_10_19024/bp_20000_npc_2/run-summary.html) -
+- [symmetric local](local/bad_threeway_sym/threeway_sym_200_1000_0.005_10.0_.000004_10_19024/bp_20000_npc_2/run-summary.html) -
     three pops with alternate halves of the chromosome carrying differently locally adaptive alleles
     three corners reflect greater or lesser spreading out of populations,
     somewhat partitioned in halves but noisy
-    * [more windows](local/threeway_sym_200_1000_0.005_10.0_.000004_10_19024/mu_1e-4_bp_2000_npc_2/run-summary.html) same thing with higher mutation rate and more windows
+    **BUT** didn't simulate the right process
+
+    * [more windows](local/bad_threeway_sym/threeway_sym_200_1000_0.005_10.0_.000004_10_19024/mu_1e-4_bp_2000_npc_2/run-summary.html) same thing with higher mutation rate and more windows
+    * TO-DO: run with higher migration rate
 
 **Pseudo-simulations:**
 
@@ -412,6 +415,7 @@ done
 This one orignally ran for `(0.25*3*2*1000 = 1500) + 100` generations with 3000 individuals
 modified it to run for `(0.25*3*2*1200 + 1800) = 3600` generations with `3*1200=3600` individuals
 ```
+## TOO MUCH MEMORY
 RUNID=$RANDOM
 OUTDIR=threesim_background_$RUNID
 mkdir -p $OUTDIR
@@ -634,6 +638,8 @@ runsim2 500 800 0.1 .001 0.5e-6 &
 
 # Local adaptation
 
+Half the chromosome has loci under locally adaptive selection  with opposite signs in the two populations.
+
 ```
 
 localsim () {
@@ -792,11 +798,6 @@ symthree () {
                      --outfile $OUTDIR/sim.vcf \
                      --logfile $OUTDIR/sim.log  \
             &> $OUTDIR/time.log
-    echo "Now computing tree stats." >> $OUTDIR/time.log
-    /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
-        python3 ../tree-stats.py --treefile $OUTDIR/sim.trees --samples_file $OUTDIR/samples.tsv \
-        --n_window 100 --outfile $OUTDIR/divergences.tsv &>> $OUTDIR/time.log
-    echo $OUTDIR
 }
 
 # testing
@@ -831,9 +832,17 @@ for (k in seq_along(x)) {
 
 ```
 
-lostructify:
+Useful functions:
 
 ```
+treestats () {
+    OUTDIR=$1
+    echo "Now computing tree stats." >> $OUTDIR/time.log
+    /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
+        python3 ../tree-stats.py --treefile $OUTDIR/sim.trees --samples_file $OUTDIR/samples.tsv \
+        --n_window 100 --outfile $OUTDIR/divergences.tsv &>> $OUTDIR/time.log
+    echo $OUTDIR
+}
 
 lostruct () {
     OUTDIR=$1
