@@ -196,7 +196,7 @@ logfile.write(str(rc.diploid_samples)+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
-rc.args.dump_sample_table(out=samples_file)
+rc.args.dump_samples_text(samples_file)
 
 ts = rc.args.tree_sequence()
 del rc
