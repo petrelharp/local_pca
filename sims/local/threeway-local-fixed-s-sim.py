@@ -196,13 +196,6 @@ rc.add_diploid_samples(nsamples=args.nsamples,
 
 del pop
 
-logfile.write("Samples:\n")
-logfile.write(str(rc.diploid_samples)+"\n")
-logfile.write("----------\n")
-logfile.flush()
-
-rc.args.dump_samples_text(samples_file)
-
 ts = rc.args.tree_sequence()
 del rc
 
@@ -219,6 +212,13 @@ logfile.flush()
 
 minimal_ts = ts.simplify()
 del ts
+
+logfile.write("Writing out samples.\n")
+logfile.write(time.strftime('%X %x %Z')+"\n")
+logfile.write("----------\n")
+logfile.flush()
+
+minimal_ts.dump_samples_text(samples_file)
 
 logfile.write("Simplified; now writing to treefile (if specified).\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")

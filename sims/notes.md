@@ -413,9 +413,8 @@ done
 ```
 
 This one orignally ran for `(0.25*3*2*1000 = 1500) + 100` generations with 3000 individuals
-modified it to run for `(0.25*3*2*1200 + 1800) = 3600` generations with `3*1200=3600` individuals
+modified it to run for `(0.25*3*2*1000 + 2000)` generations with `3*1000=3000` individuals
 ```
-## TOO MUCH MEMORY
 RUNID=$RANDOM
 OUTDIR=threesim_background_$RUNID
 mkdir -p $OUTDIR
@@ -423,12 +422,12 @@ mkdir -p $OUTDIR
    --ancestor_age 100.0  \
     --gamma_alpha 0.23  \
     --gamma_beta 5.34  \
-    --generations 1800  \
+    --generations 2000  \
     --length 25000000  \
     --mut_rate 1e-07  \
     --nloci 1000  \
     --nsamples 500  \
-    --popsize 1200  \
+    --popsize 1000  \
     --recomb_rate 2.5e-8  \
    --relative_fast_M 1.0  \
     --relative_slow_m 0.1  \
@@ -849,14 +848,21 @@ treestats () {
 
 lostruct () {
     OUTDIR=$1
-    WINLENBP=$((1000000/40))
-    bcftools convert -O b -o ${OUTDIR}/sim.bcf ${OUTDIR}/sim.vcf
-    bcftools index ${OUTDIR}/sim.bcf
-    for NPC in 1 2 3; do
-        (LODIR=${OUTDIR}/bp_${WINLENBP}_npc_${NPC};
-        ./run_lostruct.R -i ${OUTDIR} -k $NPC -t bp -s $WINLENBP -o $LODIR -I ${OUTDIR}/samples.tsv;
-        Rscript -e "templater::render_template('summarize_run.Rmd',output='${LODIR}/run-summary.html',change.rootdir=TRUE)")&
+    for WINLENBP in 2000 20000
+    do
+        WINLENBP=$((1000000/40))
+        for VCF in $OUTDIR/*.vcf
+        do
+            bcftools convert -O b -o ${VCF%vcf}bcf $VCF
+            bcftools index ${VCF%vcf}bcf
+        done
+        for NPC in 2 3; do
+            (LODIR=${OUTDIR}/bp_${WINLENBP}_npc_${NPC};
+            ./run_lostruct.R -i ${OUTDIR} -k $NPC -t bp -s $WINLENBP -o $LODIR -I ${OUTDIR}/samples.tsv;
+            Rscript -e "templater::render_template('summarize_run.Rmd',output='${LODIR}/run-summary.html',change.rootdir=TRUE)")&
+        done
     done
+    wait
 }
 
 ```

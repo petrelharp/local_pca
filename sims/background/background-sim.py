@@ -217,6 +217,17 @@ logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
+if options.treefile is not None:
+    minimal_ts.dump(options.treefile)
+
+logfile.write("Writing out samples.\n")
+logfile.write(time.strftime('%X %x %Z')+"\n")
+logfile.write("----------\n")
+logfile.flush()
+
+minimal_ts.dump_samples_text(samples_file)
+
+
 mut_seed=random.randrange(1,1000)
 logfile.write("Generating mutations with seed "+str(mut_seed)+"\n")
 rng = msprime.RandomGenerator(mut_seed)
@@ -231,9 +242,6 @@ mutated_ts = msprime.load_tables(
     nodes=nodes, edgesets=edgesets, sites=sites, mutations=mutations)
 
 del minimal_ts
-
-if options.treefile is not None:
-    mutated_ts.dump(options.treefile)
 
 logfile.write("Generated mutations!\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")

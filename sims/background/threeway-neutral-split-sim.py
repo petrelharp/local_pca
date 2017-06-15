@@ -120,5 +120,13 @@ for chrom,opts in options.items():
     mutated_ts.write_vcf(open(opts['vcffile'],'w'),ploidy=1)
 
 
+logfile.write("Writing out samples.\n")
+logfile.write(time.strftime('%X %x %Z')+"\n")
+logfile.write("----------\n")
+logfile.flush()
+
+mutated_ts.dump_samples_text(samples_file)
+
+
 logfile.write("Done!\n")
 logfile.write(time.strftime('     %X %x %Z\n'))

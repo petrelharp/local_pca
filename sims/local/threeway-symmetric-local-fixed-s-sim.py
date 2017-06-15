@@ -260,7 +260,7 @@ logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
-# minimal_ts.dump_text(out=samples_file)
+minimal_ts.dump_samples_text(samples_file)
 
 mut_seed=args.seed
 logfile.write(time.strftime('%X %x %Z')+"\n")
