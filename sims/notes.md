@@ -682,6 +682,9 @@ localthree 100 100 0.003 5.0 0.5 .000004 10 &
 localthree 100 500 0.006 20.0 2.0 .000004 10 &
 localthree 100 500 0.006 20.0 5.0 .000004 10 &
 
+# LARGER N*s
+localthree 200 1000 0.005 5.0 0.5 .000004 10 &
+
 ```
 
 ## Here is a more symmetric situation:
@@ -718,20 +721,20 @@ symthree () {
             &> $OUTDIR/time.log
     echo "Now computing tree stats." >> $OUTDIR/time.log
     /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
-        python3 ../tree-stats.py --treefile $OUTDIR/sim.trees --samples_file $OUTDIR/samples.tsv \
-        --n_window 100 --outfile $OUTDIR/divergences.tsv &>> $OUTDIR/time.log
+        python3 ../tree-stats.py --treefile $OUTDIR/sim.trees \
+            --n_window 100 --outfile $OUTDIR/divergences.tsv &>> $OUTDIR/time.log
     echo $OUTDIR
 }
 
 # testing
 symthree 20 100 0.001 1.0 .000004 10 &
 
-# 
-symthree 200 1000 0.001 10.0 .000004 10 &
-
-# larger Ns
+# larger N*s
 symthree 200 1000 0.005 10.0 .000004 10 &
 symthree 200 1000 0.010 10.0 .000004 10 &
+
+# sparser loci
+symthree 200 100 0.005 10.0 .000004 10 &
 
 ```
 
