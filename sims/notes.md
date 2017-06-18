@@ -220,6 +220,19 @@ OUTBASE="bground_sim_${NGENS}gens_6x6"
             -A 10000 -k 1000 -U 1e-7 -o ${OUTBASE}.vcf -t ${OUTBASE}.trees -g ${OUTBASE}.log  &> time_${OUTBASE}.log
 ```
 
+
+**Updated:**
+
+```
+NGENS=2000
+OUTBASE="bground_sim_${NGENS}gens_8x8_$RANDOM"
+mkdir -p $OUTBASE
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py \
+    -T $NGENS -N 100 -w 6 -y 5 -L 25e6 -l 1000 -m 4e-3 -u 5e-3 -r 2.5e-8 -a .23 -b 5.34 \
+    -s ${OUTBASE}/sim.selloci  -A 100 -k 500 -U 5e-7 -o ${OUTBASE}/sim.vcf -t ${OUTBASE}/sim.trees \
+    -g ${OUTBASE}/sim.log  &> ${OUTBASE}/time_sim.log
+```
+
 ## One-dimensional
 
 With population size of $N=100$ and migration rate of $m=4e-3$,
@@ -850,21 +863,20 @@ treestats () {
 
 lostruct () {
     OUTDIR=$1
+    for VCF in $OUTDIR/*.vcf
+    do
+        [ -f $VCF ] || continue
+        bcftools convert -O b -o ${VCF%vcf}bcf $VCF
+        bcftools index ${VCF%vcf}bcf
+    done
     for WINLENBP in 2000 20000
     do
-        for VCF in $OUTDIR/*.vcf
-        do
-            [ -f $VCF ] || continue
-            bcftools convert -O b -o ${VCF%vcf}bcf $VCF
-            bcftools index ${VCF%vcf}bcf
-        done
         for NPC in 2 3; do
             (LODIR=${OUTDIR}/bp_${WINLENBP}_npc_${NPC};
             ./run_lostruct.R -i ${OUTDIR} -k $NPC -t bp -s $WINLENBP -o $LODIR -I ${OUTDIR}/samples.tsv;
             Rscript -e "templater::render_template('summarize_run.Rmd',output='${LODIR}/run-summary.html',change.rootdir=TRUE)")&
         done
     done
-    wait
 }
 
 ```

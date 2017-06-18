@@ -4,7 +4,7 @@ Simulate AND write to msprime/vcf.
 '''
 
 import gzip
-import sys
+import sys, os
 import math
 import time
 import random
@@ -60,6 +60,7 @@ parser.add_argument("--mut_rate","-U", type=float, dest="mut_rate",
         help="mutation rate",default=1e-7)
 parser.add_argument("--treefile","-t", type=str, dest="treefile",
         help="name of output file for trees (default: not output)",default=None)
+parser.add_argument("--seed", "-d", type=int, help="random seed", default=random.randrange(1,1000))
 
 parser.add_argument("--outfile","-o", type=str, dest="outfile",
         help="name of output VCF file (default: not output)",default=None)
@@ -71,14 +72,24 @@ parser.add_argument("--selloci_file","-s", type=str, dest="selloci_file",
 args = parser.parse_args()
 
 import simuOpt
-simuOpt.setOptions(alleleType='mutant')
 import simuPOP as sim
 from simuPOP.demography import migr2DSteppingStoneRates, migrSteppingStoneRates
+
+sim.setRNG(seed=args.seed)
+random.seed(args.seed)
 
 if args.outfile is not None:
     outfile = fileopt(args.outfile, "w")
 logfile = fileopt(args.logfile, "w")
+if args.selloci_file is None:
+    args.selloci_file = os.path.join(os.path.dirname(args.treefile),"sel_loci.txt")
 selloci_file = args.selloci_file
+if args.samples_file is None:
+    args.samples_file = os.path.join(os.path.dirname(args.treefile),"samples.tsv")
+samples_file = fileopt(args.samples_file,"w")
+
+if args.gridheight is None:
+	args.gridheight = args.gridwidth
 
 logfile.write("Options:\n")
 logfile.write(str(args)+"\n")
@@ -164,7 +175,7 @@ pop.evolve(
         sim.Migrator(
             rate=migr_rates,
             mode=sim.BY_PROBABILITY),
-        sim.SNPmutator(u=args.sel_mut_rate, v=args.sel_mut_rate),
+        sim.SNPMutator(u=args.sel_mut_rate, v=args.sel_mut_rate),
         sim.PyMlSelector(GammaDistributedFitness(args.alpha, args.beta),
             output=">>"+selloci_file),
     ],
@@ -191,18 +202,19 @@ logfile.flush()
 # offspringID parentID startingPloidy rec1 rec2 ....
 
 locations = [pop.subPopIndPair(x)[0] for x in range(pop.popSize())]
-rc.add_diploid_samples(nsamples=args.nsamples, sample_ids=pop.indInfo("ind_id"),
+rc.add_diploid_samples(nsamples=args.nsamples, 
+                       sample_ids=pop.indInfo("ind_id"),
                        populations=locations)
+
+del pop
 
 logfile.write("Samples:\n")
 logfile.write(str(rc.diploid_samples)+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
-# not really the sample locs, but we don't care about that
-sample_locs = [ (0,0) for _ in range(rc.nsamples) ]
-
 ts = rc.args.tree_sequence()
+del rc
 
 logfile.write("Loaded into tree sequence!\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
@@ -217,8 +229,8 @@ logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
-if options.treefile is not None:
-    minimal_ts.dump(options.treefile)
+if args.treefile is not None:
+    minimal_ts.dump(args.treefile)
 
 logfile.write("Writing out samples.\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
@@ -227,9 +239,11 @@ logfile.flush()
 
 minimal_ts.dump_samples_text(samples_file)
 
-
-mut_seed=random.randrange(1,1000)
+mut_seed=args.seed
+logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("Generating mutations with seed "+str(mut_seed)+"\n")
+logfile.flush()
+
 rng = msprime.RandomGenerator(mut_seed)
 nodes = msprime.NodeTable()
 edgesets = msprime.EdgesetTable()
@@ -250,7 +264,7 @@ logfile.write("Sequence length: {}\n".format(mutated_ts.get_sequence_length()))
 logfile.write("Number of trees: {}\n".format(mutated_ts.get_num_trees()))
 logfile.write("Number of mutations: {}\n".format(mutated_ts.get_num_mutations()))
 
-if options.outfile is None:
+if args.outfile is None:
     print("NOT writing out genotype data.\n")
 else:
     mutated_ts.write_vcf(outfile,ploidy=1)
