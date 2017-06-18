@@ -4,6 +4,8 @@
 
 \include{slide-macros}
 
+\def\basedir{files}
+
 \newcommand{\widebar}[1]{\overline{#1}}
 \newcommand{\finger}{ \vtop{ \vskip-5pt \hbox{ \includegraphics[width=.68in]{finger_right}} } }
 
@@ -41,11 +43,12 @@
 { Using local PCA to summarize how relatedness varies along the genome }
 
 \author % (optional, use only with lots of authors)
-{Peter Ralph}
+{Peter Ralph and Han Li}
 
 \institute[UO]
 {
-    University of Oregon \& Institute of Ecology and Evolution
+    University of Oregon \& Institute of Ecology and Evolution \\
+    \textit{and} University of Southern California
   }
 
 \date % (optional)
@@ -64,9 +67,14 @@
 %%%%%%%%
 \begin{frame}{Principal Components Analysis (PCA)}
 
-    genes mirror geography
+    \includegraphics<1>[width=\textwidth]{\basedir/novembre-map-genes-mirror-geography-crop}
 
-    another species
+    \only<1>{\aside (Novembre et al 2008)}
+
+    \includegraphics<2>[width=\textwidth]{\basedir/maize_pca}
+
+    \only<2>{\aside (van Heerwaarden et al 2010)}
+    % http://www.pnas.org/content/108/3/1088.full
 
 \end{frame}
 
@@ -138,10 +146,40 @@
 
     genes: (hot/cold) -- (wet/dry)
 
-    25MB with 1000 loci with $s=0.001$
+    25MB (0.625M) with 1000 evenly spaced loci with $s=\pm0.001$, 1000 diploids in each population and 1\% migration
+     with simuPOP + msprime
 
 \end{frame}
 
+%%%%%%%%
+\begin{frame}{Data: African \textit{D.~melanogaster} (DPGP)}
+
+\end{frame}
+
+%%%%%%%%
+\begin{frame}{Data: European Humans}
+
+
+\end{frame}
+
+
+%%%%%%%%
+\begin{frame}{Data: \textit{Medicago truncatula}}
+\end{frame}
+
+
+%%%%%%%%
+\begin{frame}{Conclusions}
+
+    there isn't always a single ``population structure''
+
+    (more) evidence for widespread effects of linked selection
+
+    lostruct is a visualization tool
+
+    \url{https://github.com/petrelharp/local_pca}
+    
+\end{frame}
 
 %%%%%%%%
 \begin{frame}{Thanks}
