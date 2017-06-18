@@ -67,7 +67,8 @@ eigen_windows_winfn <- function (
     .local <- function(n) {
         # returns in order (total, values, vectors)
         x <- win.fn(n=n,...)
-        if (is.null(x)) {  # if there are no markers in this window
+        if (is.null(x) || nrow(x) < k) {
+            # if there are not enough markers in this window
             empty.value
         } else {
             cov_pca( x, k=k, w=w )
