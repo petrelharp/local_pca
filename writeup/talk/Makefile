@@ -8,11 +8,17 @@ clean :
 %.html : %.Rmd
 	Rscript -e "templater::render_template(\"$<\", output=\"$@\", change.rootdir=TRUE)"
 
-%.pdf : %.tex %.bbl
+%.pdf : %.tex
 	while ( $(PDFLATEX) $<;  grep -q "Rerun to get" $*.log ) do true ; done
 
-%.bbl : %.tex
-	-$(PDFLATEX) $<
-	bibtex $*.aux
-
 evolution-2017-talk.pdf : files/what_is_covariance.pdf
+
+%.svg : %.pdf
+	inkscape $< --export-plain-svg=$@
+
+%.png : %.pdf
+	convert -density 300 $< -flatten $@
+
+%.pdf : %.ink.svg
+	inkscape $< --export-pdf=$@
+
