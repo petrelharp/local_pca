@@ -68,6 +68,8 @@ parser.add_argument("--logfile","-g", type=str, dest="logfile",
         help="name of log file (or '-' for stdout)",default="-")
 parser.add_argument("--selloci_file","-s", type=str, dest="selloci_file",
         help="name of file to output selected locus information",default="sel_loci.txt")
+parser.add_argument("--samples_file", "-e",
+	help="name of file to output information on samples (default=(dir)/samples.tsv)")
 
 args = parser.parse_args()
 
