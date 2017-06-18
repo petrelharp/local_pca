@@ -1,0 +1,54 @@
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{color}
+
+\renewcommand{\familydefault}{\sfdefault}
+
+% syntactic coloring
+% by default, beamer-colors are
+%    normal text is black on white.
+%    alerted text is red.
+%    example text is a dark green (green with 50% black).
+%    structure is set to a light version of MidnightBlue (more precisely, 20% red, 20% green, and 70% blue).
+
+\setbeamercolor{key point}{parent=alerted text}
+
+\def\struct{\usebeamercolor[fg]{structure}}
+\def\key{\em \usebeamercolor[fg]{key point}}
+\def\aside{\scriptsize \usebeamercolor[fg]{example text}}
+\def\newthing{\usebeamercolor[fg]{key point}}
+\def\oldthing{\usebeamercolor[fg]{structure}}
+\def\defthing{\usebeamercolor[fg]{structure}}
+
+% \definecolor{blue}{rgb}{0.05,0.6,1}
+% \definecolor{orange}{rgb}{1,0.549,0}
+% \definecolor{dark-red}{rgb}{.4,.1,.1}
+% \definecolor{pink}{rgb}{1,.8,.8}
+% \definecolor{dark-green}{rgb}{.1,.6,.1}
+% \definecolor{light-green}{rgb}{.8,1,.8}
+% \definecolor{blue-white}{rgb}{.95,.95,1}
+% \definecolor{purple}{rgb}{1, 0.0, 0.6}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\C}{\mathbb{C}}
+
+\renewcommand{\P}{\mathbb{P}}
+\newcommand{\E}{\mathbb{E}}
+
+\newcommand{\var}{\mathop{\mbox{Var}}}
+\newcommand{\cov}{\mathop{\mbox{cov}}}
+\newcommand{\median}{\mathop{\mbox{median}}}
+%\newcommand{\det}{\mathop{\mbox{det}}}
+\newcommand{\supp}{\mathop{\mbox{supp}}}
+\newcommand{\sgn}{\mathop{\mbox{sgn}}}
+
+\newcommand{\conv}{\mathop{\mbox{conv}}}
+\newcommand{\deq}{\stackrel{\scriptscriptstyle{d}}{=}}
+\newcommand{\dcv}{\stackrel{\scriptscriptstyle{d}}{\longrightarrow}}
+
+
+\newcommand{\figcredit}[1]{{\begin{flushright}\usebeamercolor[fg]{structure} \it \tiny #1 \end{flushright}}}
+

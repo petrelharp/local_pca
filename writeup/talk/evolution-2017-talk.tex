@@ -1,0 +1,165 @@
+\documentclass[smaller]{beamer}
+\usepackage{color}
+\usepackage{ulem}
+
+\include{slide-macros}
+
+\newcommand{\widebar}[1]{\overline{#1}}
+\newcommand{\finger}{ \vtop{ \vskip-5pt \hbox{ \includegraphics[width=.68in]{finger_right}} } }
+
+\renewcommand<>{\sout}[1]{
+  \only#2{\beameroriginal{\sout}{#1}}
+  \invisible#2{#1}
+}
+\setbeamertemplate{blocks}[default]
+\usecolortheme{rose}
+
+\mode<presentation>
+{
+  % \usetheme{default}
+  \usetheme{boxes}
+  % or ...
+  \usefonttheme[options]{structuresmallcapsserif}
+
+  \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+
+
+\usepackage[english]{babel}
+% or whatever
+
+%% PLR COMMENTED THESE:
+\usepackage[latin1]{inputenc}
+% \usepackage{times}
+% \usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+
+\title % (optional, use only with long paper titles)
+{ Using local PCA to summarize how relatedness varies along the genome }
+
+\author % (optional, use only with lots of authors)
+{Peter Ralph}
+
+\institute[UO]
+{
+    University of Oregon \& Institute of Ecology and Evolution
+  }
+
+\date % (optional)
+{June 26, 2017}
+
+
+\begin{document}
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+
+%%%%%%%%
+\begin{frame}{Principal Components Analysis (PCA)}
+
+    genes mirror geography
+
+    another species
+
+\end{frame}
+
+%%%%%%%%
+\begin{frame}{\ldots describes the covariance matix}
+
+    average over trees
+
+    describes patterns of relatedness through averaging patterns in local trees
+
+\end{frame}
+
+%%%%%%%%
+\begin{frame}{``Population structure''}
+
+    describes how everyone is related
+
+    but local adaptation or hybridization
+
+        leads to selection against migrants
+
+        and differential gene flow
+
+    but background selection makes coalescence faster near constrained sites
+
+    \ldots so what is it?
+
+\end{frame}
+
+%%%%%%%%
+\begin{frame}{}
+
+
+    Population structure
+    is historical patterns of interbreeding, migration, and population sizes.
+
+    \pause
+
+    Linked selection distorts the resulting genealogical patterns.
+
+\end{frame}
+
+
+%%%%%%%%
+\begin{frame}{lostruct}
+
+    method figure
+
+\end{frame}
+
+
+%%%%%%%%
+\begin{frame}{lostruct}
+
+    an R package
+
+    with shell scripts
+
+    and templated Rmarkdown report
+
+    shrink method figure
+
+\end{frame}
+
+%%%%%%%%
+\begin{frame}{Simulation: local adaptation}
+
+    environments: (hot, dry) -- (hot, wet) -- (cold, wet) 
+
+    genes: (hot/cold) -- (wet/dry)
+
+    25MB with 1000 loci with $s=0.001$
+
+\end{frame}
+
+
+%%%%%%%%
+\begin{frame}{Thanks}
+
+    theory, coding, oregon
+
+\end{frame}
+
+
+%%%%%%%%
+\begin{frame}{Robust?}
+
+    mutation rate variation
+
+    recombination rate variation (*)
+
+    missing data (**)
+
+\end{frame}
+
+\end{document}

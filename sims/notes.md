@@ -3,15 +3,13 @@
 - [background, 5x5 grid](background/bground_sim_5000gens_5x5_migr0.01_recomb_1e-7/type_snp_size_200_npc_2_jobid_001/run-summary.html) -
     intriguing noisy patterns that don't line up with variation in recombination rate
 - [background, 5x5 grid](background/bground_sim_5000gens_5x5/type_snp_size_500_npc_2_jobid_003/run_summary.html) -
-    with a different migraiton rate to the above; intriguing smooth patterns in spikes along the chromosome
-- [symmetric local](local/bad_threeway_sym/threeway_sym_200_1000_0.005_10.0_.000004_10_19024/bp_20000_npc_2/run-summary.html) -
+    with a different migration rate to the above; intriguing smooth patterns in spikes along the chromosome
+- [symmetric local](threeway_sym_1000_1000_0.001_10.0_2.5e-8_4_21110) -
     three pops with alternate halves of the chromosome carrying differently locally adaptive alleles
     three corners reflect greater or lesser spreading out of populations,
     somewhat partitioned in halves but noisy
-    **BUT** didn't simulate the right process
 
-    * [more windows](local/bad_threeway_sym/threeway_sym_200_1000_0.005_10.0_.000004_10_19024/mu_1e-4_bp_2000_npc_2/run-summary.html) same thing with higher mutation rate and more windows
-    * TO-DO: run with higher migration rate
+    * [also](local/threeway_sym_1000_1000_0.005_10.0_2.5e-8_4_32470/bp_2000_npc_3/run-summary.html) 2Ns=10 instead of 2
 
 **Pseudo-simulations:**
 
@@ -438,32 +436,31 @@ mkdir -p $OUTDIR
    --selloci_file "$OUTDIR/threesim.selloci"  \
    --treefile "$OUTDIR/threesim.trees" &> $OUTDIR/time_threesim.log
 ```
-and this one is similar but smaller slow_m:
+and this one is similar but weaker s and faster migration
 ```
-/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' python3 threeway-background-sim.py \
-    --ancestor_age 100.0 
-    --gamma_alpha 0.23 
-    --gamma_beta 5.34 
-    --generations 100 \
-    --length 25000000.0 
-    --mut_rate 1e-07 
-    --nloci 4000 
-    --nsamples 200 \
-    --popsize 1000 \
-    --recomb_rate 1e-07 
-    --relative_fast_M 1.0 
-    --relative_slow_m 0.01 
-    --relative_switch_time 0.25 \
-    --logfile 'threesim_background_25e6_1000_4000_200_22290/threesim.log' \
-    --outfile 'threesim_background_25e6_1000_4000_200_22290/threesim.vcf' 
-    --sel_mut_rate 0.001 
-    --samples_file 'threesim_background_25e6_1000_4000_200_22290/samples.tsv' 
-    --selloci_file 'threesim_background_25e6_1000_4000_200_22290/sel_loci.txt' \
-    --treefile 'threesim_background_25e6_1000_4000_200_22290/threesim.trees'
 
-    --fast_M 0.00025 
-    --slow_m 2.5e-06 
-    --switch_time 1500 \
+RUNID=$RANDOM
+OUTDIR=threesim_background_$RUNID
+mkdir -p $OUTDIR
+/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' python3 threeway-background-sim.py \
+   --ancestor_age 100.0  \
+    --gamma_alpha 0.005  \
+    --gamma_beta 5  \
+    --generations 2000  \
+    --length 25000000  \
+    --mut_rate 1e-07  \
+    --nloci 1000  \
+    --nsamples 500  \
+    --popsize 1000  \
+    --recomb_rate 2.5e-8  \
+   --relative_fast_M 10.0  \
+    --relative_slow_m 1.0  \
+    --relative_switch_time 0.25  \
+    --sel_mut_rate 5e-3  \
+   --logfile "$OUTDIR/threesim.log"  \
+   --outfile "$OUTDIR/threesim.vcf"  \
+   --selloci_file "$OUTDIR/threesim.selloci"  \
+   --treefile "$OUTDIR/threesim.trees" &> $OUTDIR/time_threesim.log
 
 ```
 
@@ -787,14 +784,14 @@ symthree () {
                      --relative_m $RELATIVE_M \
                      --generations $(($RELATIVE_GENS * $POPSIZE)) \
                      --popsize $POPSIZE \
-                     --length 1e6  \
+                     --length 25e6  \
                      --nloci $NSEL \
                      --sel_mut_rate 1e-3 \
                      --recomb_rate $RECOMB_RATE \
                      --selection_coef $SELECTION_COEF \
-                     --nsamples 20 \
+                     --nsamples 200 \
                      --ancestor_age 100 \
-                     --mut_rate 1e-5  \
+                     --mut_rate 4e-7  \
                      --seed $SEED \
                      --treefile $OUTDIR/sim.trees  \
                      --outfile $OUTDIR/sim.vcf \
@@ -809,9 +806,14 @@ symthree 20 100 0.001 1.0 .000004 10 &
 symthree 200 1000 0.005 10.0 .000004 10 &
 symthree 200 1000 0.010 10.0 .000004 10 &
 
-# sparser loci
-symthree 200 100 0.005 10.0 .000004 10 &
+# (multiplied chrom length by 25)
 
+# even larger
+symthree 600 1000 0.005 10.0 2.5e-8 4 &
+# and this one was barely under 32G
+symthree 1000 1000 0.005 10.0 2.5e-8 4 &
+# adjust s
+symthree 1000 1000 0.001 10.0 2.5e-8 4 &
 ```
 
 
@@ -850,9 +852,9 @@ lostruct () {
     OUTDIR=$1
     for WINLENBP in 2000 20000
     do
-        WINLENBP=$((1000000/40))
         for VCF in $OUTDIR/*.vcf
         do
+            [ -f $VCF ] || continue
             bcftools convert -O b -o ${VCF%vcf}bcf $VCF
             bcftools index ${VCF%vcf}bcf
         done
