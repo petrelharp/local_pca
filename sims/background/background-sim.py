@@ -178,7 +178,7 @@ pop.evolve(
             rate=migr_rates,
             mode=sim.BY_PROBABILITY),
         sim.SNPMutator(u=args.sel_mut_rate, v=args.sel_mut_rate),
-        sim.PyMlSelector(GammaDistributedFitness(args.alpha, args.beta),
+        sim.PyMlSelector(GammaDistributedFitness(args.gamma_alpha, args.gamma_beta),
             output=">>"+selloci_file),
     ],
     matingScheme=sim.RandomMating(
