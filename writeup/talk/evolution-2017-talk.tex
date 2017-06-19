@@ -67,7 +67,7 @@
 %%%%%%%%
 \begin{frame}{Principal Components Analysis (PCA)}
 
-    \includegraphics<1>[width=\textwidth]{\basedir/novembre-map-genes-mirror-geography-crop}
+    \includegraphics<1>[width=0.9\textwidth]{\basedir/novembre-map-genes-mirror-geography-crop}
 
     \only<1>{\aside (Novembre et al 2008)}
 
@@ -81,26 +81,44 @@
 %%%%%%%%
 \begin{frame}{\ldots describes the covariance matix}
 
-    average over trees
+    Genetic covariance between $i$ and $j$ is \\
+    the {average} over {\newthing loci} \\
+    and {\newthing reference samples} $x$, $y$ of:
 
-    describes patterns of relatedness through averaging patterns in local trees
+    \begin{center}
+        \includegraphics[width=\textwidth]{\basedir/what_is_covariance}
+    \end{center}
+
+    \ldots so summarizes average {\newthing patterns of relationships}
 
 \end{frame}
 
 %%%%%%%%
 \begin{frame}{``Population structure''}
 
-    describes how everyone is related
+    \ldots  describes how everyone is related \alert{but}
 
-    but local adaptation or hybridization
+    \vspace{2em}
 
-        leads to selection against migrants
+    \begin{itemize}
 
-        and differential gene flow
+        \item  local adaptation or hybridization
 
-    but background selection makes coalescence faster near constrained sites
+            \begin{itemize}
+                \item leads to selection against migrants
+                \item and differential gene flow
+            \end{itemize}
 
-    \ldots so what is it?
+        \item \alert{and} background selection 
+            \begin{itemize}
+                \item  makes coalescence faster near constrained sites
+            \end{itemize}
+
+    \end{itemize}
+
+    \vspace{2em}
+
+    \ldots so what is population structure?
 
 \end{frame}
 
@@ -108,83 +126,155 @@
 \begin{frame}{}
 
 
-    Population structure
-    is historical patterns of interbreeding, migration, and population sizes.
+    {\defthing \Large Population structure} is: \\
+    \vspace{1em}
+    historical patterns of interbreeding, migration, and population sizes.
 
+    \vspace{5em}
     \pause
 
-    Linked selection distorts the resulting genealogical patterns.
+    {\Large Linked selection} \\
+    \vspace{1em}
+    {\newthing locally distorts} resulting genealogical patterns.
 
 \end{frame}
 
 
 %%%%%%%%
-\begin{frame}{lostruct}
+\begin{frame}{}
 
-    method figure
+    \includegraphics[width=\textwidth]{../the-method-diagram}
 
 \end{frame}
 
 
 %%%%%%%%
-\begin{frame}{lostruct}
+\begin{frame}{``lostruct''}
 
-    an R package
-
-    with shell scripts
-
-    and templated Rmarkdown report
-
-    shrink method figure
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+    \begin{itemize}
+        \item an R package
+        \item with templated Rmarkdown reports
+        \item and a script interface
+        \item \url{https://github.com/petrelharp/local_pca}
+    \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+    \includegraphics[width=\textwidth]{../the-method-diagram}
+        \end{column}
+    \end{columns}
 
 \end{frame}
 
 %%%%%%%%
 \begin{frame}{Simulation: local adaptation}
 
-    environments: (hot, dry) -- (hot, wet) -- (cold, wet) 
+    \begin{itemize}
+    \item three populations: (hot, dry) -- (hot, wet) -- (cold, wet) 
 
-    genes: (hot/cold) -- (wet/dry)
+    \item clustered genes: (hot/cold) -- (wet/dry)
 
-    25MB (0.625M) with 1000 evenly spaced loci with $s=\pm0.001$, 1000 diploids in each population and 1\% migration
-     with simuPOP + msprime
+    \item 1000 diploids in each population and 1\% migration
+    \item 25MB (0.625M) with 1000 evenly spaced loci with $s=\pm0.001$, 
+    \item with simuPOP + msprime
+
+    \end{itemize}
+
+     % cp /home/peter/projects/pca/local_pca/sims/./local/threeway_sym_1000_1000_0.001_10.0_2.5e-8_4_21110/bp_2000_npc_2/figure/run-summary/plot_corners-1.pdf  ../writeup/talk/files/threeway_sym_1000_1000_0.001_10.0_2.5e-8_4_21110_bp_2000_npc_2_plot_corners-1.pdf
+     % ln -s threeway_sym_1000_1000_0.001_10.0_2.5e-8_4_21110_bp_2000_npc_2_plot_corners-1.pdf files/sym_threeway_corners.pdf
+     \includegraphics<1>[width=\textwidth]{\basedir/sym_threeway_corners}
+     % cp /home/peter/projects/pca/local_pca/sims/./local/threeway_sym_1000_1000_0.001_10.0_2.5e-8_4_21110/bp_2000_npc_2/figure/run-summary/plot_corner_pca-1_1_2.pdf  ../writeup/talk/files/threeway_sym_1000_1000_0.001_10.0_2.5e-8_4_21110_bp_2000_npc_2_plot_corner_pca-1_1_2.pdf
+     % ln -s threeway_sym_1000_1000_0.001_10.0_2.5e-8_4_21110_bp_2000_npc_2_plot_corner_pca-1_1_2.pdf files/sym_threeway_pca.pdf
+     \includegraphics<2>[width=\textwidth]{\basedir/sym_threeway_pca}
+
 
 \end{frame}
 
 %%%%%%%%
-\begin{frame}{Data: African \textit{D.~melanogaster} (DPGP)}
+\begin{frame}{Data: African \textit{D.~melanogaster} }
+
+    \begin{itemize}
+        \item DPGP {\aside (Langley et al 2012; Pool et al 2012; Lack et al 2015)} \\
+        \item 380 mostly African samples -- WGS -- 9 Kb windows
+        \item<2-> large, segregating inversions {\aside (Corbett-Detig \& Hartl 2012; Langley et al 2012)}
+        \item<3-> without less common inversion haplotypes: {\newthing linked selection?}
+    \end{itemize}
+
+    \vspace{2em}
+
+  \begin{overlayarea}{\textwidth}{0.55\textheight}
+
+    \begin{center}
+        \includegraphics<2>{\basedir/drosophila_just_2R_3L}
+        \includegraphics<3>[width=\textwidth]{\basedir/drosophila_recomb_mds_for_talk}
+    \end{center}
+
+      \end{overlayarea}
 
 \end{frame}
 
-%%%%%%%%
-\begin{frame}{Data: European Humans}
-
-
-\end{frame}
+% %%%%%%%%
+% \begin{frame}{Data: European Humans}
+% \end{frame}
 
 
 %%%%%%%%
-\begin{frame}{Data: \textit{Medicago truncatula}}
+\begin{frame}{Data: \textit{Medicago truncatula} Hapmap {\aside (Tang et al 2014)}}
+
+    \begin{itemize}
+        \item 263 pan-Mediterranean samples -- WGS -- 100 Kb windows
+    \end{itemize}
+
+  \begin{overlayarea}{\textwidth}{0.9\textheight}
+      \begin{center}
+      \includegraphics[height=0.8\textheight]{\basedir/medicago_for_talk}
+      \end{center}
+  \end{overlayarea}
+
 \end{frame}
 
 
 %%%%%%%%
 \begin{frame}{Conclusions}
 
-    there isn't always a single ``population structure''
+    \begin{itemize}
+        \item  there isn't always a single ``population structure''
 
-    (more) evidence for widespread effects of linked selection
+        \item (more) evidence for widespread effects of linked selection
 
-    lostruct is a visualization tool
+        \item \texttt{lostruct} is a visualization tool
 
-    \url{https://github.com/petrelharp/local_pca}
+        \item applicable to other summary strategies
+
+        \item try it out: \url{https://github.com/petrelharp/local_pca}
+    \end{itemize}
     
 \end{frame}
 
 %%%%%%%%
 \begin{frame}{Thanks}
 
-    theory, coding, oregon
+    {\Large Han Li} -- graduate student, USC \\
+
+    \vspace{3em}
+
+    John Pool, Russ Corbett-Detig, Chuck Langley \\
+    Peter Chang, Matilde Cordeiro \\
+    Graham Coop, Jeremy Berg, Yaniv Brandvain \\
+    Jaime Ashander, Jerome Kelleher
+
+    \vspace{3em}
+
+    \textbf{Funding:} \\
+    NSF ABI 
+
+    \pause
+    \vspace{3em}
+
+    \textbf{University of Oregon:} \\
+    Now recruiting!
+    
 
 \end{frame}
 
@@ -192,11 +282,24 @@
 %%%%%%%%
 \begin{frame}{Robust?}
 
-    mutation rate variation
+    \begin{itemize}
 
-    recombination rate variation (*)
+        \item PC switching? \\
+            uses distance metric insensitive to PC order
 
-    missing data (**)
+        \item window choice? \\
+            weakly: method selects size maximizing information while minimizing noise
+
+        \item mutation rate variation? 
+            \\ normalizes by matrix norm to capture just structure
+
+        \item recombination rate variation?
+            \\ do windows in cM if possible
+            \\ else inversions $\approx$ low recomb regions
+
+        \item missing data?
+            \\ filter; but user beware
+    \end{itemize}
 
 \end{frame}
 
