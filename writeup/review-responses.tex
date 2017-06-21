@@ -52,6 +52,15 @@ Peter Ralph
     impacts of variation in missingness by sub-population (Reviewer 2).
 \end{quote}
 
+Thanks for the positive feedback and the useful suggestions.
+We agree that more extensive exploration 
+using simulations would help bolster understanding of the method,
+and have now done so.
+This took a substantial amount of work, because genome-scale forwards-time simulations
+with a large number of loci under selection
+is at or beyond the current limits of computation,
+depending on the number of individuals simulated.
+
 
 %%%%%%%%%%%%%%
 \reviewersection{1}
@@ -97,12 +106,24 @@ Peter Ralph
 
 
 \begin{point}{}
-\ldots variation in the recombination rate \ldots 
+\ldots variation in the recombination rate \ldots creating spurious structure.
 \end{point}
+
+\reply{
+    We address this in two ways.
+    This point is addressed by comparing results with windows of different types --
+    windows of equal length in bp (or in SNPs) have different lengths in cM;
+    since these different choices show nearly identical patterns,
+    recombination rate variation cannot be driving the results.
+}
 
 \begin{point}{}
 \ldots and variation in the mutation rate, creating spurious structure.
 \end{point}
+
+\reply{
+
+}
 
 \begin{point}{PC switching}
 \ldots could lead to a small number of such windows having their
@@ -110,6 +131,15 @@ orientation reversed: that is, PC1 becomes PC2 and vice versa. (Or PC2 and PC3
 could switch).
 \end{point}
 
+\reply{
+    This is a natural concern.
+    However, the only point at which we compare PCs in a way that could be sensitive to ordering
+    is in determining the window size -- in computing the distance between windows
+    we use a measure which is invariant under ordering.
+    We have made this more clear by moving the note about flipping signs of PCs
+    to the appendix on window choice \llname{ll:moved_pc_note}
+    and added more explicit notes about this to \llname{ll:another_pc_point} and \revref.
+}
 
 \begin{point}{p6}
 ``here, we use k=2...''  - you have to show that $k>2$ is the same.
@@ -128,6 +158,15 @@ Using 2 PCs is common practice: only if this is the end of an analysis and the
 PCA was done for visualisation. Here you are using it for something so should
 keep all the relavant PCs.
 \end{point}
+
+\reply{
+    This is a good point; the question is which the ``relevant'' PCs are.
+    \citet{novembre2008interpreting} showed that under isolation by distance,
+    the top two PCs should reflect the two-dimensional nature of the range,
+    and higher PCs are generally much less interpretable;
+    we used $k=2$ with this in mind.
+    We have changed this sentence \revref.
+}
 
 \begin{point}{}
 I'm surprised that PCAdmix isn't referenced. It is using a very similar
@@ -155,6 +194,23 @@ detecting chromosomal inversions and evidence for background selection. It would
 have a well defined set of hypotheses, test the method’s accuracy  using simulation (see next
 comment), and compare to previous efforts in similar domains.
 \end{point}
+
+\reply{
+    First: we think that ``finding heterogeneity'' is in fact a well-defined goal,
+    although it was not that well-defined in the paper;
+    we have hopefully improved on this in the Introduction \revref.
+    Expanding a bit more:
+    We strongly agree that methods that seek to test well-defined hypotheses
+    are extremely useful and powerful.
+    We also feel that methods for visualization and exploration are also useful --
+    a primary example here being PCA.
+    If PCA is useful -- and we think that it is --
+    then it should be important to also know how much the thing that PCA is summarizing
+    varies along the genome,
+    in the same way that knowing the mean of some quantity in a population 
+    is only of limited usefulness
+    without also knowing the corresponding populaion variance.
+}
 
 \begin{point}{Validation:}
 In several occasions, the authors seem to introduce a potential problem in their

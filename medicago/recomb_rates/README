@@ -1,0 +1,74 @@
+Recomb rates from Paape et al 2011, http://gbe.oxfordjournals.org/content/4/5/726.long
+
+-------------------------- 
+
+Subject: Re: medicago recombination rates
+From: Tim Paape <tim.paape@ieu.uzh.ch>
+In-Reply-To: <CAO0xWMDu6URnDRy=Ho2RLBiwUmt6tWQFpe5PmNGq_Ddg=JaQfw@mail.gmail.com>
+Date: Fri, 12 Aug 2016 09:55:21 +0200
+Cc: Han Li <hli465@usc.edu>,
+ ptiffin@umn.edu
+Message-Id: <47B5C13F-C8BF-4470-A7BE-BFC6D55C0AB4@ieu.uzh.ch>
+References: <CAO0xWMDu6URnDRy=Ho2RLBiwUmt6tWQFpe5PmNGq_Ddg=JaQfw@mail.gmail.com>
+To: Peter Ralph <petrel.harp@gmail.com>
+X-Mailer: Apple Mail (2.3124)
+
+
+--Apple-Mail=_DE208941-66A2-4A41-804A-3608D95D8A0A
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=us-ascii
+
+Dear Peter (cc Han Li and P. Tiffin)
+
+Attached is the filtered dataset we analysed for the paper.  If you need =
+the unfiltered datasets I can send them, feel free to let me know if you =
+have any other questions or requests.
+
+
+"We did not include windows with less than five SNPs
+per window because the accuracy of q estimates may be low
+when estimated using few SNPs. We also excluded estimates
+from windows with more than 25 SNPs because of
+the possibility that these highly polymorphic windows reflect
+errors in SNP variant calling, leaving a remaining
+34,356 windows. Because this filtering may affect correlations
+and include comparisons of 1 kb filtered and unfiltered
+data set, correlations are presented in supplementary table
+S1 (Supplementary Material online)."
+
+best regards
+Tim
+
+
+
+Tim Paape PhD
+Institute of Evolutionary Biology and Environmental Studies
+Winterthurerstrasse 190
+University of Zurich
+Zurich, Switzerland 8057
+tim.paape@ieu.uzh.ch
++41 044 635 4986
+
+> On 12 Aug 2016, at 07:03, Peter Ralph <petrel.harp@gmail.com> wrote:
+>=20
+> Greetings --
+>=20
+> I've been unable to find anywhere to download the recombination rates =
+for Medicago truncatula you estimated in your (very nice) paper in GBE.  =
+Could you help us find these?
+>=20
+> Thanks very much,
+>   Peter
+
+
+--------------------------
+
+and linkage map from Peter Tiffin, 8/17/16:
+( saved second sheet, edited out extraneous rows at the end )
+
+Peter,
+
+i think you also had asked about any information we might have on an updated genetic map (or perhaps I'm just confused by too many emails today, in which case just ignore this one).  I don't know of anything.  The only one I know of is several years old (a paper by Mun et al.) which is attached.  The map was generated from a single cross, and the marker density is pretty sparse (column B in attached spreadsheet).
+
+I've also attached a spreadsheet in which we related physical to genetic map (part of a paper by Branca et al.).  I don't know if this is at all helpful.  The physical map locations are assembly 3.0.

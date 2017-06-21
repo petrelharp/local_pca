@@ -39,6 +39,10 @@
 % grrr
 \newcommand{\citetx}[2][]{\ifsubmission#1 \cite{#2}\else\citet{#2}\fi}
 
+% some figs with many points make the pdfs render slow
+\newif\ifusepngs
+\usepngstrue
+
 \usepackage{color}
 \newcommand{\plr}[1]{{\em \color{blue} #1}}
 
@@ -290,22 +294,23 @@ as we aim to identify similar regions that may be distant.
 % may benefit from other advances in this substantial literature 
 % (reviewed in \citep{vandermaaten2009dimensionality}).
 
-As reviewed above,
-it is common to describe variation along the genome of simple statistics such as $F_{ST}$,
-and also to use methods such as PCA to visualize large-scale patterns in genome-wide relatedness.
-In this paper we 
-apply PCA locally along the genome,
-thus describing in an unbiased, descriptive way
-how patterns of mean relatedness vary systematically along the genome, 
+It is common to describe variation along the genome of simple statistics such as $F_{ST}$
+and to interpret the results in terms of the action of selection 
+\citep{speciation_islands,differentiation_islands,flycatchers}.
+However, it has been pointed out that a given pattern (e.g., valleys of $F_{ST}$)
+can be caused by more than one biological process \citep{hahn_fst,flycatchers2},
+which in retrospect is unsuprising given that we are using a single statistic
+to describe a complex process.
+It is also common to use methods such as PCA to visualize large-scale patterns in 
+mean genome-wide relatedness.
+In this paper we show if and how patterns of mean relatedness vary systematically along the genome, 
 in a way particularly suited to large samples from geographically distributed populations.
-Geographic population structure sets the stage by establishing similar patterns of relatedness across much of the genome;
-we then aim to describe how this structure is affected by selection and other factors.
+Geographic population structure sets the stage by establishing ``background'' patterns of relatedness;
+our method then describes how this structure is affected by selection and other factors.
 Our aim is not to identify outlier loci,
-but rather to describe larger-scale variation shared by many parts of the genome.
-By doing this with three taxa with diverse population histories,
-we can compare relative contributions of different sorts of variation across taxa;
-since the method is an visualization method, 
-we allow ourselves to be surprised by unexpected signals in the data.
+but rather to describe larger-scale variation shared by many parts of the genome;
+correlation of this variation with known genomic features
+can then be used to uncover its source. \revpoint{2}{1}
 
 
 %%%%%%%%%%%%%%%%%
@@ -370,22 +375,14 @@ The principal components are the eigenvectors of $C$,
 normalized to have Euclidean length equal to one,
 and ordered by magnitude of the eigenvalues.
 
-The top few principal components are generally good summaries of population structure; 
-we follow common practice and usually only use the first two (referred to as $\pcone$ and $\pctwo$).
+The top 2--5 principal components are generally good summaries of population structure; 
+for ease of visualization we usually only use the first two (referred to as $\pcone$ and $\pctwo$),
+and check that results hold using more. \revpoint{1}{7}
 The above procedure can be performed on any subset of the data;
 for future reference, denote by $\pcone_j$ and $\pctwo_j$
 the result after applying to all SNPs in the $j^\text{th}$ window.
-
-Since the definition of eigenvectors does not specify their sign,
-when comparing between windows we choose signs to best match each other:
-after choosing $\pcone_1$, for instance, 
-if $u$ is the first eigenvector obtained from the covariance matrix
-for window $j$,
-then we next choose $\pcone_j = \pm u$,
-where the sign is chosen according to which of 
-$\| \pcone_{1} - u \|$ or
-$\| \pcone_{1} + u \|$ 
-is smaller.
+(Note, however, that our measure of dissimilarity between windows
+does not depend on PC ordering.) \linelabel{ll:another_pc_point}
 
 Several of the datasets we use have unbalanced representations of diverged populations,
 which can have a strong impact on the results of PCA.
@@ -406,7 +403,8 @@ we do not compare patterns of relatedness of different genomic regions by direct
 since rotations or reflections of these imply identical patterns of relatedness.
 Instead, we compare the low-dimensional approximations of the local covariance matrices
 obtained using the top $k$ PCs,
-which is invariant under reflections and rotations and yet contains all other information about the PCs.
+which is invariant under ordering of the PCs \revpoint{1}{3},
+reflections, and rotations and yet contains all other information about the PCs.
 (For results shown here, we use $k=2$;
 results using larger numbers of PCs were nearly identical.)
 Furthermore, to remove the effect of artifacts such as mutation rate variation,
@@ -630,7 +628,11 @@ to show how the plot of the first column is laid out along the genome.
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=0.9\textwidth]{Fig1_allchr_Together_MDS_plot_compact_with_ChrX_inv}
+        \ifusepngs
+           \includegraphics[width=0.9\textwidth]{Fig1_allchr_Together_MDS_plot_compact_with_ChrX_inv.png}
+       \else
+           \includegraphics[width=0.9\textwidth]{Fig1_allchr_Together_MDS_plot_compact_with_ChrX_inv}
+       \fi
     \end{center}
     \caption{
         Variation in patterns of relatedness for windows across \textit{Drosophila melanogaster} chromosome arms.
@@ -841,7 +843,7 @@ divided by two, assigned to the nearest window.)
 However, other genomic features, such as distance to centromere show roughly the same patterns,
 so we cannot rule out alternative hypotheses.
 In particular, the recombination rates estimated by \citet{paape2012finescale} appear visually to be similar,
-but were not available in a form that can be compared to our MDS values.
+but were not available in a form that can be reliably compared to our MDS values. \revpoint{2}{8}
 
 We also found nearly identical results when choosing shorter windows of 1,000 SNPs;
 or choosing windows of equal length in base pairs rather than SNPs.
@@ -1117,8 +1119,19 @@ we quantify ``noise'' as the standard error of a sample's position on PC1 in a p
 averaged across windows and samples,
 and ``signal'' as the standard deviation of the sample's position on PC1 over all windows,
 averaged over samples.
-(Recall that the signs for PCs are chosen to match each other.)
-Then, the mean variance across windows is
+The definition of eigenvectors does not specify their sign,
+and so when comparing between windows we choose signs to best match each other:
+after choosing $\pcone_1$, for instance, 
+if $u$ is the first eigenvector obtained from the covariance matrix
+for window $j$,
+then we next choose $\pcone_j = \pm u$,
+where the sign is chosen according to which of 
+$\| \pcone_{1} - u \|$ or
+$\| \pcone_{1} + u \|$ 
+is smaller.
+\linelabel{ll:moved_pc_note}
+
+After doing this, the mean variance across windows is
 \begin{align*}
     \sigma_\text{signal}^2
     = 
@@ -1366,7 +1379,11 @@ to find only the top $k$ eigenvectors.
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=0.9\textwidth]{FigS_pca_plot_allchr_human}
+        \ifusepngs
+           \includegraphics[width=0.9\textwidth]{FigS_pca_plot_allchr_human.png}
+       \else
+           \includegraphics[width=0.9\textwidth]{FigS_pca_plot_allchr_human}
+       \fi
     \end{center}
     \caption{
         PCA plots for all 22 human autosomes from the POPRES data.
@@ -1386,7 +1403,11 @@ to find only the top $k$ eigenvectors.
 
 \begin{figure}
     \begin{center}
-        \includegraphics{MDS_allchr_Together_plot_samples_noinv}
+        \ifusepngs
+            \includegraphics{MDS_allchr_Together_plot_samples_noinv.png}
+        \else
+            \includegraphics{MDS_allchr_Together_plot_samples_noinv}
+        \fi
     \end{center}
     \caption{
         Variation in structure for windows of 1,000 SNPs 
@@ -1501,7 +1522,11 @@ to find only the top $k$ eigenvectors.
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=0.85\textwidth]{FigS_Together_MDS_plot_allchr}
+        \ifusepngs
+           \includegraphics[width=0.85\textwidth]{FigS_Together_MDS_plot_allchr.png}
+       \else
+           \includegraphics[width=0.85\textwidth]{FigS_Together_MDS_plot_allchr}
+       \fi
     \end{center}
     \caption{
         MDS visualizations of the effects of population structure for all 8 chromosomes of the \textit{Medicago truncatula} data.
