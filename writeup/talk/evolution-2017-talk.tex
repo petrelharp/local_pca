@@ -48,7 +48,7 @@
 
 \institute[UO]
 {
-    University of Oregon \& Institute of Ecology and Evolution \\
+    University of Oregon -- Institute of Ecology and Evolution \\
     \textit{and} University of Southern California
   }
 
@@ -92,29 +92,30 @@ bioRxiv:070615}
         \includegraphics[width=\textwidth]{\basedir/what_is_covariance}
     \end{center}
 
-    \ldots so summarizes average {\newthing patterns of relationships}
+    \ldots so summarizes average {\newthing patterns of relationships} \\
+    caused by {\oldthing population structure}.
 
 \end{frame}
 
 %%%%%%%%
 \begin{frame}{``Population structure''}
 
-    \ldots  describes how everyone is related \alert{but}
+    \ldots  describes how everyone is related?
 
     \vspace{2em}
 
     \begin{itemize}
 
-        \item  local adaptation or hybridization
+        \item  \alert{But:} local adaptation or hybridization
 
             \begin{itemize}
                 \item leads to selection against migrants
-                \item and differential gene flow
+                \item and differential gene flow.
             \end{itemize}
 
-        \item \alert{and} background selection 
+        \item \alert{But:} background selection 
             \begin{itemize}
-                \item  makes coalescence faster near constrained sites
+                \item  makes coalescence faster near constrained sites.
             \end{itemize}
 
     \end{itemize}
@@ -133,18 +134,30 @@ bioRxiv:070615}
     \vspace{1em}
     historical patterns of interbreeding, migration, and population sizes.
 
-    \vspace{5em}
+    \vspace{2em}
     \pause
 
     {\Large Linked selection} \\
     \vspace{1em}
     {\newthing locally distorts} resulting genealogical patterns.
 
+    \vspace{2em}
+    \pause
+
+  \begin{overlayarea}{\textwidth}{0.4\textheight}
+    \only<3->{
+    \begin{center}
+        \includegraphics[width=0.5\textwidth]{\basedir/elyashiv-2016-drosophila-linked-sel}
+    \end{center}
+    {\aside (Elyashiv et al 2016)}
+    }
+  \end{overlayarea}
+
 \end{frame}
 
 
 %%%%%%%%
-\begin{frame}{}
+\begin{frame}{Our method}
 
     \includegraphics[width=\textwidth]{../the-method-diagram}
 
@@ -241,6 +254,8 @@ bioRxiv:070615}
 %%%%%%%%
 \begin{frame}{Conclusions}
 
+    \begin{columns}
+        \begin{column}{0.7\textwidth}
     \begin{itemize}
         \item  there isn't always a single ``population structure''
 
@@ -252,7 +267,13 @@ bioRxiv:070615}
 
         \item try it out: \url{https://github.com/petrelharp/local_pca}
     \end{itemize}
+        \end{column}
+        \begin{column}{0.4\textwidth}
     
+            \vspace{-3em}
+    \includegraphics[angle=270,width=0.75\textwidth]{\basedir/another_example_sim}
+        \end{column}
+    \end{columns}
 \end{frame}
 
 %%%%%%%%
@@ -282,10 +303,11 @@ bioRxiv:070615}
 
             \only<2->{
 
-    \textbf{University of Oregon:} \\
-    Now recruiting!
+                \begin{center}
+            \textbf{University of Oregon} \\
     
             \includegraphics[width=\textwidth]{\basedir/oregon}
+                \end{center}
         }
         \end{column}
     \end{columns}
