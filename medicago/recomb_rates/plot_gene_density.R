@@ -20,6 +20,15 @@ recomb <- read.table("from_paape/07_recom.txt",header=TRUE)
 recomb$mid <- (recomb$sStart + recomb$sEnd)/2
 levels(recomb$chr) <- gsub("MtChr","chr",levels(recomb$chr))
 
+# convert to BED
+recomb_bed <- data.frame(chrom=recomb$chr,
+                         chromStart=recomb$sStart,
+                         chromEnd=recomb$sEnd)
+write.table(recomb_bed, file="from_paape/07_recomb.bed", row.names=FALSE, quote=FALSE, col.names=FALSE, sep='\t')
+# then did liftOver - from source as at http://genome-source.cse.ucsc.edu/gitweb/?p=kent.git;a=blob;f=src/userApps/README
+# and 
+#  liftOver from_paape/07_recomb.bed from_paape/07_recomb.bed liftOver/Mt35.liftover.chain from_paape/07_recomb.bedfrom_paape/07_recomb_mt35.bed from_paape/07_recomb.bedfrom_paape/07_recomb_unmapped.bed 
+
 # map <- read.csv("from_paape/Mtruncatula_mapbased_recomb_2may_b.csv",header=TRUE)
 # map <- map[,c("chr","start","end","cM","cm.bp...1.000.000","ave.cM...Mbp....3.window.moving.average")]
 

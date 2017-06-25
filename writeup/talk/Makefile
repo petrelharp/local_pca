@@ -11,7 +11,7 @@ clean :
 %.pdf : %.tex
 	while ( $(PDFLATEX) $<;  grep -q "Rerun to get" $*.log ) do true ; done
 
-evolution-2017-talk.pdf : files/what_is_covariance.pdf ../the-method-diagram.pdf
+evolution-2017-talk.pdf : files/what_is_covariance.pdf ../the-method-diagram.pdf files/the-method-diagram-modified.png
 
 %.svg : %.pdf
 	inkscape $< --export-plain-svg=$@

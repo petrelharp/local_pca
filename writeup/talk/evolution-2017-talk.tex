@@ -84,7 +84,7 @@ bioRxiv:070615}
 %%%%%%%%
 \begin{frame}{\ldots describes the covariance matix}
 
-    Genetic covariance between $i$ and $j$ is \\
+    Genetic covariance between samples $i$ and $j$ is \\
     the {average} over {\newthing loci} \\
     and {\newthing reference samples} $x$, $y$ of:
 
@@ -99,67 +99,75 @@ bioRxiv:070615}
 
 %%%%%%%%
 \begin{frame}{``Population structure''}
-
-    \ldots  describes how everyone is related?
-
-    \vspace{2em}
-
-    \begin{itemize}
-
-        \item  \alert{But:} local adaptation or hybridization
-
-            \begin{itemize}
-                \item leads to selection against migrants
-                \item and differential gene flow.
-            \end{itemize}
-
-        \item \alert{But:} background selection 
-            \begin{itemize}
-                \item  makes coalescence faster near constrained sites.
-            \end{itemize}
-
-    \end{itemize}
-
-    \vspace{2em}
-
-    \ldots so what is population structure?
-
-\end{frame}
-
-%%%%%%%%
-\begin{frame}{}
-
-
-    {\defthing \Large Population structure} is: \\
     \vspace{1em}
-    historical patterns of interbreeding, migration, and population sizes.
+    is historical patterns of interbreeding, migration, and population sizes.
 
     \vspace{2em}
     \pause
 
-    {\Large Linked selection} \\
+    but: {\Large linked selection} \\
     \vspace{1em}
-    {\newthing locally distorts} resulting genealogical patterns.
+    {\newthing locally distorts} resulting genealogical patterns. \\
+    ex: local adaptation, or background selection.
 
     \vspace{2em}
     \pause
 
   \begin{overlayarea}{\textwidth}{0.4\textheight}
-    \only<3->{
+    \only<3>{
     \begin{center}
         \includegraphics[width=0.5\textwidth]{\basedir/elyashiv-2016-drosophila-linked-sel}
     \end{center}
     {\aside (Elyashiv et al 2016)}
     }
+      \only<4>{
+          \begin{center}
+              \includegraphics[width=0.8\textwidth]{\basedir/mathieson-genome-scan}
+          \end{center}
+          {\aside (Mathieson et al 2015)}
+      }
+      \only<5>{
+          \vspace{4em}
+          {\Large Goal:} describe shared, {\newthing large-scale} variation variation.
+      }
   \end{overlayarea}
 
 \end{frame}
+
+% %%%%%%%%
+% \begin{frame}{``Population structure''}
+% 
+%     \ldots  describes how everyone is related?
+% 
+%     \vspace{2em}
+% 
+%     \begin{itemize}
+% 
+%         \item  \alert{But:} local adaptation or hybridization
+% 
+%             \begin{itemize}
+%                 \item leads to selection against migrants
+%                 \item and differential gene flow.
+%             \end{itemize}
+% 
+%         \item \alert{But:} background selection 
+%             \begin{itemize}
+%                 \item  makes coalescence faster near constrained sites.
+%             \end{itemize}
+% 
+%     \end{itemize}
+% 
+%     \vspace{2em}
+% 
+%     \ldots so what is population structure?
+% 
+% \end{frame}
 
 
 %%%%%%%%
 \begin{frame}{Our method}
 
-    \includegraphics[width=\textwidth]{../the-method-diagram}
+    \includegraphics[width=\textwidth]{\basedir/the-method-diagram-modified}
 
 \end{frame}
 
@@ -177,7 +185,7 @@ bioRxiv:070615}
     \end{itemize}
         \end{column}
         \begin{column}{0.5\textwidth}
-    \includegraphics[width=\textwidth]{../the-method-diagram}
+    \includegraphics[width=\textwidth]{\basedir/the-method-diagram-modified}
         \end{column}
     \end{columns}
 
