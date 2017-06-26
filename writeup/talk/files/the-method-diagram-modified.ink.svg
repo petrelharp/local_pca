@@ -300,8 +300,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="238.78102"
-     inkscape:cy="213.25063"
+     inkscape:cx="252.70959"
+     inkscape:cy="211.82206"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -11315,7 +11315,7 @@
       </g>
     </g>
     <g
-       transform="matrix(1.3956731,0,0,-1.3956731,277.81801,350.01349)"
+       transform="matrix(1.3956731,0,0,-1.3956731,275.81801,350.01349)"
        id="g117875">
       <g
          id="g117877"
@@ -37234,7 +37234,7 @@
       </g>
     </g>
     <g
-       transform="matrix(1.3956731,0,0,-1.3956731,277.81801,350.01349)"
+       transform="matrix(1.3956731,0,0,-1.3956731,275.81801,350.01349)"
        id="g129399">
       <path
          d="m 196.16,129.5 79.61,0"
@@ -37396,7 +37396,7 @@
          inkscape:connector-curvature="0" />
     </g>
     <g
-       transform="matrix(1.25,0,0,-1.25,303.42704,323.65877)"
+       transform="matrix(1.25,0,0,-1.25,301.42704,323.65877)"
        id="g129465">
       <g
          id="g129467"
@@ -37414,7 +37414,7 @@
       </g>
     </g>
     <g
-       transform="matrix(1.3956731,0,0,-1.3956731,277.81801,350.01349)"
+       transform="matrix(1.3956731,0,0,-1.3956731,275.81801,350.01349)"
        id="g129477">
       <g
          id="g129479"
@@ -41315,10 +41315,10 @@
     <text
        style="font-variant:normal;font-weight:normal;font-size:10px;font-family:Helvetica;-inkscape-font-specification:Helvetica;writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
        id="text167405"
-       x="581.9989"
+       x="579.9989"
        y="204.99397">
       <tspan
-         x="581.9989 587.5589 593.1189 598.1189 600.33887 603.1189 605.33887 610.89893 616.45892 619.23889 622.56891 630.89893 636.45892 642.01892"
+         x="579.9989 585.5589 591.1189 596.1189 598.33887 601.1189 603.33887 608.89893 614.45892 617.23889 620.56891 628.89893 634.45892 640.01892"
          y="204.99397"
          sodipodi:role="line"
          id="tspan167407">position (Mbp)</tspan>

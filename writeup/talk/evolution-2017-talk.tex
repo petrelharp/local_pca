@@ -108,7 +108,7 @@ bioRxiv:070615}
     but: {\Large linked selection} \\
     \vspace{1em}
     {\newthing locally distorts} resulting genealogical patterns. \\
-    ex: local adaptation, or background selection.
+    {\struct ex:} local adaptation, or background selection.
 
     \vspace{2em}
     \pause
@@ -122,13 +122,14 @@ bioRxiv:070615}
     }
       \only<4>{
           \begin{center}
-              \includegraphics[width=0.8\textwidth]{\basedir/mathieson-genome-scan}
+              \includegraphics[width=0.7\textwidth]{\basedir/mathieson-genome-scan}
           \end{center}
           {\aside (Mathieson et al 2015)}
       }
       \only<5>{
           \vspace{4em}
-          {\Large Goal:} describe shared, {\newthing large-scale} variation variation.
+          {\Large Question:} is there significant {\newthing shared} variation \\
+          in patterns of relatedness?
       }
   \end{overlayarea}
 
@@ -192,37 +193,13 @@ bioRxiv:070615}
 \end{frame}
 
 %%%%%%%%
-\begin{frame}{Simulation: local adaptation}
-
-    \begin{itemize}
-    \item three populations: (hot, dry) -- (hot, wet) -- (cold, wet) 
-
-    \item clustered genes: (hot/cold) -- (wet/dry)
-
-    \item 1000 diploids in each population and 1\% migration
-    \item 25MB (0.625M) with 1000 evenly spaced loci with $s=\pm0.001$, 
-    \item with simuPOP + msprime
-
-    \end{itemize}
-
-     % cp /home/peter/projects/pca/local_pca/sims/./local/threeway_sym_1000_1000_0.001_10.0_2.5e-8_4_21110/bp_2000_npc_2/figure/run-summary/plot_corners-1.pdf  ../writeup/talk/files/threeway_sym_1000_1000_0.001_10.0_2.5e-8_4_21110_bp_2000_npc_2_plot_corners-1.pdf
-     % ln -s threeway_sym_1000_1000_0.001_10.0_2.5e-8_4_21110_bp_2000_npc_2_plot_corners-1.pdf files/sym_threeway_corners.pdf
-     \includegraphics<1>[width=\textwidth]{\basedir/sym_threeway_corners}
-     % cp /home/peter/projects/pca/local_pca/sims/./local/threeway_sym_1000_1000_0.001_10.0_2.5e-8_4_21110/bp_2000_npc_2/figure/run-summary/plot_corner_pca-1_1_2.pdf  ../writeup/talk/files/threeway_sym_1000_1000_0.001_10.0_2.5e-8_4_21110_bp_2000_npc_2_plot_corner_pca-1_1_2.pdf
-     % ln -s threeway_sym_1000_1000_0.001_10.0_2.5e-8_4_21110_bp_2000_npc_2_plot_corner_pca-1_1_2.pdf files/sym_threeway_pca.pdf
-     \includegraphics<2>[width=\textwidth]{\basedir/sym_threeway_pca}
-
-
-\end{frame}
-
-%%%%%%%%
 \begin{frame}{Data: African \textit{D.~melanogaster} }
 
     \begin{itemize}
         \item DPGP {\aside (Langley et al 2012; Pool et al 2012; Lack et al 2015)} \\
         \item 380 mostly African samples -- WGS -- 9 Kb windows
         \item<2-> large, segregating inversions {\aside (Corbett-Detig \& Hartl 2012; Langley et al 2012)}
-        \item<3-> without less common inversion haplotypes: {\newthing linked selection?}
+        \item<4-> without less common inversion haplotypes: {\newthing linked selection?}
     \end{itemize}
 
     \vspace{2em}
@@ -230,8 +207,9 @@ bioRxiv:070615}
   \begin{overlayarea}{\textwidth}{0.55\textheight}
 
     \begin{center}
-        \includegraphics<2>{\basedir/drosophila_just_2R_3L}
-        \includegraphics<3>[width=\textwidth]{\basedir/drosophila_recomb_mds_for_talk}
+        \includegraphics<2>[width=\textwidth]{\basedir/drosophila_2R_inversion_pcs_0}
+        \includegraphics<3>[width=\textwidth]{\basedir/drosophila_2R_inversion_pcs_1}
+        \includegraphics<4>[width=\textwidth]{\basedir/drosophila_recomb_mds_for_talk}
     \end{center}
 
       \end{overlayarea}
@@ -260,20 +238,37 @@ bioRxiv:070615}
 
 
 %%%%%%%%
+\begin{frame}{}
+
+    {\struct Patterns are not driven by:}
+    \vspace{2em}
+
+    \begin{itemize}
+        \item recombination rate variation
+        \item polymorphism
+        \item PC switching
+        \item missingness
+    \end{itemize}
+
+\end{frame}
+
+
+
+%%%%%%%%
 \begin{frame}{Conclusions}
 
     \begin{columns}
         \begin{column}{0.7\textwidth}
     \begin{itemize}
-        \item  there isn't always a single ``population structure''
+        \item There may be more than one ``population structure''
 
-        \item (more) evidence for widespread effects of linked selection
+        \item We have (more) evidence for strong, widespread effects of linked selection
 
-        \item \texttt{lostruct} is a visualization tool
+        \item The method is applicable to other summary strategies
 
-        \item applicable to other summary strategies
+        \item \texttt{lostruct} is a visualization tool \\
 
-        \item try it out: \url{https://github.com/petrelharp/local_pca}
+        try it out: \url{https://github.com/petrelharp/local_pca}
     \end{itemize}
         \end{column}
         \begin{column}{0.4\textwidth}
@@ -298,12 +293,13 @@ bioRxiv:070615}
 
     John Pool, Russ Corbett-Detig \\
     Peter Chang, Matilde Cordeiro \\
+    Peter Tiffin, Tim Paape \\
     Graham Coop, Jeremy Berg, Yaniv Brandvain, Chuck Langley  \\
     Jaime Ashander, Jerome Kelleher
 
     \vspace{1em}
 
-    \textbf{Funding:} \\
+    \textbf{Funding:} 
     NSF ABI 
 
         \end{column}
@@ -319,6 +315,31 @@ bioRxiv:070615}
         }
         \end{column}
     \end{columns}
+
+\end{frame}
+
+
+%%%%%%%%
+\begin{frame}{Simulation: local adaptation}
+
+    \begin{itemize}
+    \item three populations: (hot, dry) -- (hot, wet) -- (cold, wet) 
+
+    \item clustered genes: (hot/cold) -- (wet/dry)
+
+    \item 1000 diploids in each population and 1\% migration
+    \item 25MB (0.625M) with 1000 evenly spaced loci with $s=\pm0.001$, 
+    \item with simuPOP + msprime
+
+    \end{itemize}
+
+     % cp /home/peter/projects/pca/local_pca/sims/./local/threeway_sym_1000_1000_0.001_10.0_2.5e-8_4_21110/bp_2000_npc_2/figure/run-summary/plot_corners-1.pdf  ../writeup/talk/files/threeway_sym_1000_1000_0.001_10.0_2.5e-8_4_21110_bp_2000_npc_2_plot_corners-1.pdf
+     % ln -s threeway_sym_1000_1000_0.001_10.0_2.5e-8_4_21110_bp_2000_npc_2_plot_corners-1.pdf files/sym_threeway_corners.pdf
+     \includegraphics<1>[width=\textwidth]{\basedir/sym_threeway_corners}
+     % cp /home/peter/projects/pca/local_pca/sims/./local/threeway_sym_1000_1000_0.001_10.0_2.5e-8_4_21110/bp_2000_npc_2/figure/run-summary/plot_corner_pca-1_1_2.pdf  ../writeup/talk/files/threeway_sym_1000_1000_0.001_10.0_2.5e-8_4_21110_bp_2000_npc_2_plot_corner_pca-1_1_2.pdf
+     % ln -s threeway_sym_1000_1000_0.001_10.0_2.5e-8_4_21110_bp_2000_npc_2_plot_corner_pca-1_1_2.pdf files/sym_threeway_pca.pdf
+     \includegraphics<2>[width=\textwidth]{\basedir/sym_threeway_pca}
+
 
 \end{frame}
 
