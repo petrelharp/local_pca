@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 description = '''
-Simulate AND write to msprime/vcf.
+Simulates on a rectangular grid that was bisected (in 'width') for some period in the past.
 '''
 
 import gzip
@@ -30,8 +30,12 @@ def fileopt(fname,opts):
     return fobj
 
 parser = argparse.ArgumentParser(description=description)
-parser.add_argument("--generations","-T", type=int, dest="generations",
-        help="number of generations to run for")
+parser.add_argument("--post_generations","-R", type=int, dest="post_generations",
+        help="number of generations since the division")
+parser.add_argument("--split_generations","-S", type=int, dest="split_generations",
+        help="number of generations of the split")
+parser.add_argument("--pre_generations","-T", type=int, dest="pre_generations",
+        help="number of generations to run before the split")
 parser.add_argument("--popsize","-N", type=int, dest="popsize",
         help="size of each subpopulation",default=100)
 parser.add_argument("--gridwidth","-w", type=int, dest="gridwidth",
@@ -52,7 +56,7 @@ parser.add_argument("--gamma_alpha","-a", type=float, dest="gamma_alpha",
         help="alpha parameter in gamma distributed selection coefficients",default=.23)
 parser.add_argument("--gamma_beta","-b", type=float, dest="gamma_beta",
         help="beta parameter in gamma distributed selection coefficients",default=5.34)
-parser.add_argument("--nsamples","-k", type=float, dest="nsamples",
+parser.add_argument("--nsamples","-k", type=int, dest="nsamples",
         help="number of *diploid* samples, total")
 parser.add_argument("--ancestor_age","-A", type=float, dest="ancestor_age",
         help="time to ancestor above beginning of sim")
@@ -67,15 +71,31 @@ parser.add_argument("--outfile","-o", type=str, dest="outfile",
 parser.add_argument("--logfile","-g", type=str, dest="logfile",
         help="name of log file (or '-' for stdout)",default="-")
 parser.add_argument("--selloci_file","-s", type=str, dest="selloci_file",
-        help="name of file to output selected locus information",default="sel_loci.txt")
-parser.add_argument("--samples_file", "-e",
+        help="name of file to output selected locus information",default="(dir)/sel_loci.txt")
+parser.add_argument("--samples_file", "-e", type=str, dest="samples_file",
 	help="name of file to output information on samples (default=(dir)/samples.tsv)")
 
 args = parser.parse_args()
 
 import simuOpt
 import simuPOP as sim
-from simuPOP.demography import migr2DSteppingStoneRates, migrSteppingStoneRates
+# these just return the migration matrix as a list of lists
+# from simuPOP.demography import migr2DSteppingStoneRates, migrSteppingStoneRates
+
+def migrRates(migr, m, n, barrier=False):
+    b = math.floor(m/2) - 1 # barrier is between rows b, b+1
+    npops = m*n
+    rows = [i for i in range(m) for j in range(n)]
+    cols = [j for i in range(m) for j in range(n)]
+    M = [[0.0 for u in range(npops)] for v in range(npops)]
+    for u in range(npops):
+        for v in range(npops):
+            if ((abs(rows[u] - rows[v]) == 0 and abs(cols[u] - cols[v]) == 1)
+                or (abs(rows[u] - rows[v]) == 1 and abs(cols[u] - cols[v]) == 0)):
+                if not barrier or not (((rows[u] == b) and (rows[v] == b+1)) or ((rows[u] == b+1) and (rows[v] == b))):
+                    M[u][v] = migr
+        M[u][u] = 1.0 - sum(M[u])
+    return M
 
 sim.setRNG(seed=args.seed)
 random.seed(args.seed)
@@ -89,6 +109,9 @@ selloci_file = args.selloci_file
 if args.samples_file is None:
     args.samples_file = os.path.join(os.path.dirname(args.treefile),"samples.tsv")
 samples_file = fileopt(args.samples_file,"w")
+
+if args.gridwidth < 2:
+    raise ValueError("gridwidth must be at least 2 to bisect")
 
 if args.gridheight is None:
 	args.gridheight = args.gridwidth
@@ -158,14 +181,11 @@ id_tagger.apply(pop)
 # record recombinations
 rc = RecombCollector(
         first_gen=pop.indInfo("ind_id"), ancestor_age=args.ancestor_age, 
-                              length=args.length, locus_position=locus_position)
+                              length=args.length, 
+                              locus_position=locus_position)
 
-if min(args.gridheight,args.gridwidth)==1:
-    migr_rates=migrSteppingStoneRates(
-        args.migr, n=max(args.gridwidth,args.gridheight), circular=False)
-else:
-    migr_rates=migr2DSteppingStoneRates(
-        args.migr, m=args.gridwidth, n=args.gridheight, diagonal=False, circular=False)
+migr_rates = migrRates(args.migr, m=args.gridwidth, n=args.gridheight, barrier=False)
+barrier_rates = migrRates(args.migr, m=args.gridwidth, n=args.gridheight, barrier=True)
 
 pop.evolve(
     initOps=[
@@ -175,7 +195,19 @@ pop.evolve(
         sim.PyOperator(lambda pop: rc.increment_time() or True),
         sim.Migrator(
             rate=migr_rates,
-            mode=sim.BY_PROBABILITY),
+            mode=sim.BY_PROBABILITY,
+            begin=0, 
+            end=args.pre_generations),
+        sim.Migrator(
+            rate=barrier_rates,
+            mode=sim.BY_PROBABILITY,
+            begin=1 + args.pre_generations, 
+            end=args.split_generations + args.pre_generations),
+        sim.Migrator(
+            rate=migr_rates,
+            mode=sim.BY_PROBABILITY,
+            begin=1 + args.split_generations + args.pre_generations,
+            end=args.split_generations + args.pre_generations + args.post_generations),
         sim.SNPMutator(u=args.sel_mut_rate, v=args.sel_mut_rate),
         sim.PyMlSelector(GammaDistributedFitness(args.gamma_alpha, args.gamma_beta),
             output=">>"+selloci_file),
@@ -191,7 +223,7 @@ pop.evolve(
         sim.Stat(numOfSegSites=sim.ALL_AVAIL, step=50),
         sim.PyEval(r"'Gen: %2d #seg sites: %d\n' % (gen, numOfSegSites)", step=50)
     ],
-    gen = args.generations
+    gen = args.split_generations + args.pre_generations + args.post_generations
 )
 
 logfile.write("Done simulating!\n")
@@ -199,10 +231,13 @@ logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
-# writes out events in this form:
-# offspringID parentID startingPloidy rec1 rec2 ....
-
 locations = [pop.subPopIndPair(x)[0] for x in range(pop.popSize())]
+
+logfile.write("Collecting samples:\n")
+logfile.write("  " + str(args.nsamples) + " of them")
+logfile.write("  " + "ids:" + str(pop.indInfo("ind_id")))
+logfile.write("  " + "locations:" + str(locations))
+
 rc.add_diploid_samples(nsamples=args.nsamples, 
                        sample_ids=pop.indInfo("ind_id"),
                        populations=locations)

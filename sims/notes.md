@@ -4,7 +4,7 @@
     intriguing noisy patterns that don't line up with variation in recombination rate
 - [background, 5x5 grid](background/bground_sim_5000gens_5x5/type_snp_size_500_npc_2_jobid_003/run_summary.html) -
     with a different migration rate to the above; intriguing smooth patterns in spikes along the chromosome
-- [symmetric local](threeway_sym_1000_1000_0.001_10.0_2.5e-8_4_21110) -
+- [symmetric local](local/threeway_sym_1000_1000_0.001_10.0_2.5e-8_4_21110) -
     three pops with alternate halves of the chromosome carrying differently locally adaptive alleles
     three corners reflect greater or lesser spreading out of populations,
     somewhat partitioned in halves but noisy
@@ -96,7 +96,7 @@ and then we renormalize these positions to lie on the chromosome.
 This implies density of selected loci will be ten times greater at the beginning of the chromosome than at the end.
 
 Using the distribution of fitness effects from Eyre-Walker referenced by Kelley Harris: Gamma with shape=0.23 and mean=-0.043,
-which translates to $\alpha=.23$ and $\beta=5.34$.
+which translates to $\alpha=.23$ and $\beta=5.34$ (mean $\alpha/\beta$).
 Output of .selloci is `loc a1 a2 fitness gen` (but appears not to have `gen`),
 where `a1` and `a2` are alleles.
 
@@ -293,6 +293,63 @@ mkdir -p $OUTDIR
 /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' ./background-sim.py -T 4000 -N 100 -w 3 -y 3 -L 25e6 -l 1000 -m 0.001 -u 5e-3 -r 1e-7 -a .23 -b 5.34 -s ${OUTDIR}/${OUTBASE}.selloci \
             -A 1000 -k 1000 -U 1e-7 -o ${OUTDIR}/${OUTBASE}.vcf -t ${OUTDIR}/${OUTBASE}.trees -g ${OUTDIR}/${OUTBASE}.log  &> ${OUTDIR}/time_${OUTBASE}.log
 ```
+
+
+## With a period of separation
+
+Testing:
+```
+
+intro () {
+    SCRIPT=background-introgression-sim.py
+    POPSIZE=$1
+    RELATIVE_M=$2
+    SELECTION_COEF=$3
+    POST_REL_GENS=$4
+    SPLIT_REL_GENS=$5
+    PRE_REL_GENS=$6
+    GRIDWIDTH=$7
+    NSEL=$8
+    RECOMB_RATE=$9
+    SEED=$RANDOM
+    OUTDIR="introgression_${1}_${2}_${3}_${4}_${5}_${6}_${7}_${8}_${9}_${SEED}"; mkdir -p $OUTDIR
+    /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
+        python3 $SCRIPT \
+                     --popsize $POPSIZE \
+                     --migr $(echo "scale=10; $RELATIVE_M / $POPSIZE" | bc) \
+                     --gamma_alpha $(echo "scale=10; 5.34 * $SELECTION_COEF" | bc) \
+                     --gamma_beta 5.34 \
+                     --post_generations $((POPSIZE * POST_REL_GENS)) \
+                     --split_generations $((POPSIZE * SPLIT_REL_GENS)) \
+                     --pre_generations $((POPSIZE * PRE_REL_GENS)) \
+                     --gridwidth $GRIDWIDTH \
+                     --gridheight $GRIDWIDTH \
+                     --length 1e7 \
+                     --recomb_rate $RECOMB_RATE \
+                     --nloci $NSEL \
+                     --sel_mut_rate 1e-3 \
+                     --nsamples 200 \
+                     --ancestor_age 100 \
+                     --mut_rate 4e-7  \
+                     --seed $SEED \
+                     --treefile $OUTDIR/sim.trees  \
+                     --outfile $OUTDIR/sim.vcf \
+                     --logfile $OUTDIR/sim.log  \
+                     --samples_file $OUTDIR/samples.tsv  \
+                     --selloci_file $OUTDIR/sel_loci.txt  \
+            &> $OUTDIR/time.log
+    echo $OUTDIR
+}
+
+```
+
+Testing
+```
+intro 50 1 0.1 10 10 10 3 100 1e-8
+```
+
+
+
 
 ## Comparison with/without msprime
 
