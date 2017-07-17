@@ -10,7 +10,7 @@ library(jsonlite)
 library(RColorBrewer)
 fig.dim <- 4
 knitr::opts_chunk$set(fig.width=2*fig.dim,fig.height=fig.dim,fig.align='center')
-do.pdfs <- FALSE
+if (!exists("do.pdfs")) { do.pdfs <- FALSE }
 ```
 ```{r plot_setup, include=FALSE}
 layout_heights <- function (k,dl=0,ncol=1) {
@@ -23,8 +23,15 @@ layout_heights <- function (k,dl=0,ncol=1) {
     dh=(par("din")[2]-sum(eps)-(k-1)*ds)/k
     return(c(eps[2]+dh+ds/2,rep(dh+ds,k-2),eps[1]+dh+ds/2)/par("din")[2])
 }
+knitr::knit_hooks$set(slide.mar = function(before, options, envir) {
+                if (before) {
+                    par(mai=c(.4,.4,.05,.05),  # margin for presentations
+                        mgp=c(2,0.7,0))
+                }
+            })
+knitr::opts_chunk$set(slide.mar=TRUE)
 pdf_copy <- function (
-                width=6,
+                width=5, 
                 height=width*knitr::opts_current$get("fig.height")/knitr::opts_current$get("fig.width"),
                 plot.id=NULL,
                 filename
@@ -115,7 +122,7 @@ chrom.plot <- function (y,ylab='',main='',chrom.labels=TRUE,...) {
              border=NA, col=adjustcolor("grey",0.25) )
     }
     abline( v=chrom.dividers/1e6, lty=3, col=adjustcolor("grey",0.5), lwd=2 )
-    if (chrom.labels) axis( 1, at=chrom.mids/1e6, labels=chroms, las=0, tick=FALSE )
+    if (chrom.labels) axis( 1, at=chrom.mids/1e6, labels=paste("chromosome", chroms), las=0, tick=FALSE )
     points( regions$pos/1e6, y, ...)
 }
 ```
@@ -152,21 +159,21 @@ corner.mds <- do.call(rbind, lapply(1:ncol(mds.corners),
                 function (ii){
                     colMeans(mds.coords[mds.corners[,ii],-(1:2)])
                 } ) )
-if (do.pdfs) { pdf_copy() }
 ```
 ```{r plot_corners, fig.width=3*fig.dim, fig.height=fig.dim*ceiling(length(mds.cols)/2)}
 # plot corners and MDS along the chromosome
 spacing <- 1
-opar <- par(mar=c(4,4,2,1)+.1,mgp=c(2.5,0.8,0))
+opar <- par(mar=par("mar"),mgp=c(0.5,0.8,0))
 layout(matrix(c(rep(1,length(mds.cols)),1+seq_along(mds.cols)),ncol=2),
         widths=c(1,2), heights=layout_heights(length(mds.cols),dl=spacing,ncol=2))
 plot( mds.coords[,mds.cols[1:2]], pch=cpch, 
      col=adjustcolor(ccols,0.75),  asp=1,
+     xaxt='n', yaxt='n',
      xlab="MDS coordinate 1", ylab="MDS coordinate 2" )
 points( corner.mds, pch=20, cex=5,
         col=adjustcolor(corner.cols,0.25))
 text( corner.mds, labels=seq_len(nrow(corner.mds)), 
-        col=corner.cols, cex=2, lwd=2 )
+        col="black", lwd=2 )
 opar2 <- par(mar=c(par("mar"),spacing/2)[c(5,2,3,4)])
 for (k in mds.cols) {
     lastone <- (k==mds.cols[length(mds.cols)])
@@ -221,10 +228,12 @@ for (i in 1:(corner.npc-1)) {
         for (k in 1:ncol(mds.corners)) {
             vectors <- matrix( corner.pca[[k]][-(1:(1+corner.npc))], ncol=corner.npc )[,c(i,j)]
             colnames(vectors) <- paste("PC", c(i,j))
+            par(mgp=c(0.7,0.7,0), mar=c(2,2,2,0)+.1)
             plot(vectors, pch=pop.pch[samps$population], 
-                    col=pop.cols[samps$population] )
+                    col=pop.cols[samps$population],
+                    xaxt='n', yaxt='n' )
             if (i==1 && j==2) {
-                mtext(paste("corner",k),side=3,cex=2)
+                mtext(paste("corner",k),side=3)
             }
         }
         if (do.pdfs) { pdf_copy(plot.id=paste(i,j,sep="_")) }
