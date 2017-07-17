@@ -52,7 +52,7 @@ parser.add_argument("--sel_mut_rate","-u", type=float, dest="sel_mut_rate",
         help="mutation rate of selected alleles",default=1e-7)
 parser.add_argument("--recomb_rate","-r", type=float, dest="recomb_rate",
         help="recombination rate",default=2.5e-8)
-parser.add_argument("--selection_coef","-S", type=float, dest="selection_coef",
+parser.add_argument("--selection_coef","-s", type=float, dest="selection_coef",
 	help="strength of selection",default=.1)
 parser.add_argument("--nsamples","-k", type=int, dest="nsamples",
         help="number of *diploid* samples, total")
@@ -68,7 +68,7 @@ parser.add_argument("--outfile","-o", type=str, dest="outfile",
         help="name of output VCF file (default: not output)",default=None)
 parser.add_argument("--logfile","-g", type=str, dest="logfile",
         help="name of log file (or '-' for stdout)",default="-")
-parser.add_argument("--selloci_file","-s", type=str, dest="selloci_file",
+parser.add_argument("--selloci_file","-c", type=str, dest="selloci_file",
         help="name of file to output selected locus information",default="(dir)/sel_loci.txt")
 parser.add_argument("--samples_file", "-e", type=str, dest="samples_file",
 	help="name of file to output information on samples (default=(dir)/samples.tsv)")

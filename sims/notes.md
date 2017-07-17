@@ -349,6 +349,64 @@ intro 50 1 0.1 10 10 10 3 100 1e-8
 
 # larger N*s
 intro 200 4 0.01 10 10 10 4 100 1e-8 &
+intro 200 4 0.01 10 10 10 4 500 1e-8 &
+
+```
+
+
+### Introgression, with fixed *s*:
+
+```
+
+fixedintro () {
+    SCRIPT=background-introgression-fixed-s-sim.py
+    POPSIZE=$1
+    RELATIVE_M=$2
+    SELECTION_COEF=$3
+    POST_REL_GENS=$4
+    SPLIT_REL_GENS=$5
+    PRE_REL_GENS=$6
+    GRIDWIDTH=$7
+    NSEL=$8
+    RECOMB_RATE=$9
+    SEED=$RANDOM
+    OUTDIR="introgression_fixed_s_${1}_${2}_${3}_${4}_${5}_${6}_${7}_${8}_${9}_${SEED}"; mkdir -p $OUTDIR
+    /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
+        python3 $SCRIPT \
+                     --popsize $POPSIZE \
+                     --migr $(echo "scale=10; $RELATIVE_M / $POPSIZE" | bc) \
+                     --selection_coef $SELECTION_COEF" \
+                     --post_generations $((POPSIZE * POST_REL_GENS)) \
+                     --split_generations $((POPSIZE * SPLIT_REL_GENS)) \
+                     --pre_generations $((POPSIZE * PRE_REL_GENS)) \
+                     --gridwidth $GRIDWIDTH \
+                     --gridheight $GRIDWIDTH \
+                     --length 1e7 \
+                     --recomb_rate $RECOMB_RATE \
+                     --nloci $NSEL \
+                     --sel_mut_rate 1e-3 \
+                     --nsamples 200 \
+                     --ancestor_age 100 \
+                     --mut_rate 4e-7  \
+                     --seed $SEED \
+                     --treefile $OUTDIR/sim.trees  \
+                     --outfile $OUTDIR/sim.vcf \
+                     --logfile $OUTDIR/sim.log  \
+                     --samples_file $OUTDIR/samples.tsv  \
+                     --selloci_file $OUTDIR/sel_loci.txt  \
+            &> $OUTDIR/time.log
+    echo $OUTDIR
+}
+
+```
+
+Testing:
+```
+intro 50 1 0.1 10 10 10 3 100 1e-8
+
+# larger N*s
+intro 200 4 0.01 10 10 10 4 100 1e-8 &
+intro 200 4 0.01 10 10 10 4 500 1e-8 &
 
 ```
 
@@ -922,13 +980,6 @@ treestats () {
         python3 ../tree-stats.py --treefile $OUTDIR/sim.trees --samples_file $OUTDIR/samples.tsv \
         --n_window 100 --outfile $OUTDIR/divergences.tsv &>> $OUTDIR/time.log
     echo $OUTDIR
-}
-
-f () {
-    X=$1
-    shift
-    W=${@:-2000 20000}
-    for w in $W; do echo $w; done
 }
 
 lostruct () {
