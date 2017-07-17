@@ -343,10 +343,16 @@ intro () {
 
 ```
 
-Testing
+Testing:
 ```
 intro 50 1 0.1 10 10 10 3 100 1e-8
+
+# larger N*s
+intro 200 4 0.01 10 10 10 4 100 1e-8 &
+
 ```
+
+
 
 
 
@@ -918,15 +924,23 @@ treestats () {
     echo $OUTDIR
 }
 
+f () {
+    X=$1
+    shift
+    W=${@:-2000 20000}
+    for w in $W; do echo $w; done
+}
+
 lostruct () {
-    OUTDIR=$1
+    OUTDIR=$1; shift
+    WINLENBPS=${@:-2000 20000}
     for VCF in $OUTDIR/*.vcf
     do
         [ -f $VCF ] || continue
         bcftools convert -O b -o ${VCF%vcf}bcf $VCF
         bcftools index ${VCF%vcf}bcf
     done
-    for WINLENBP in 2000 20000
+    for WINLENBP in $WINLENBPS
     do
         for NPC in 2 3; do
             (LODIR=${OUTDIR}/bp_${WINLENBP}_npc_${NPC};
