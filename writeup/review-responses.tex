@@ -176,7 +176,7 @@ approach has (though I agree there may be benefits to the approach described her
 \end{point}
 
 \reply{
-    Good point: we now reference this work \refref.
+    Good point: we now reference this work \revref.
 }
 
 %%%%%%%%%%%%%%
@@ -274,17 +274,22 @@ are MDS coordinates correlated with recombination rates in this case?
 
 \reply{
     We made a stab at checking this,
-    and obtained the best current version of the Medicago recombination map
+    and obtained the best version to date of the Medicago recombination map
     from Tim Paape and Peter Tiffin.
     There are two versions: a very coarse physical map, and a fine-scale map estimated using LDhat.
-    Both are on a previous version of the assembly, 
-    and the LDhat estimates from only three chromosomes
-    have been published.
-    Given uncertainties in using and interpreting these data,
-    and the further uncertainty in what the relevant window size should be
-    (strength of background selection depends on ``nearby'' density of sites under selection,
-    but how close ``nearby'' is depends on many factors),
-    we decided not to carry though this analysis.
+    However, both are on version 3.0 of the assembly,
+    while all other coordinates (sequencing data; gene annotations) are in version 4.0.
+    Furthermore, as Peter Tiffin told us,
+    ``apparently there are no files that translate Mt3.0 to Mt4.0 locations (yes, seems a bit silly)."
+    There is a liftOver chain file for translating 3.5 to 4.0, and
+    ``the differences in the Mt3.0 and Mt3.5 assemblies are, however, apparently relatively minor''.
+    On this basis, we produced the desired figure assuming that Mt3.0 coordinates
+    are the same as Mt3.5 coordinates, included to satisfy the reviewers' curiosity: \\
+    \includegraphics{../medicago/recomb_rates/recomb_and_mds} \\
+    However, given uncertainties in this mapping, the relatively poor match of window sizes,
+    the large number of unmappable windows, and the nature of the recombination data
+    (produced with LDhat, not with actual observations of recombiations),
+    we decided not to include this (but have provided a note, \revref).
 }
 
 \begin{point}{Application:}

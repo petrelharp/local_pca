@@ -15,19 +15,47 @@
 # 
 # cheers
 # Tim
+####
+# 
+# In short, the LDhat estimates are from the 3.0 assembly, while annotations are from 4.0.
+# There exists a 3.5 -> 4.0 liftOver chain file, obtained from
+#   https://de.cyverse.org/dl/d/7D271AC5-463F-4840-B1E3-25FC2D5AE015/Mt35.liftover.chain
+# (linked to from http://www.medicagogenome.org/downloads )
+#
+####
+# ... BUT as Peter Tiffin says, 8/21/16:
+# 
+# I checked with Joseph and Peng.  Apparently there are no files that translate
+# Mt3.0 to Mt4.0 locations (yes, seems a bit silly).  
+# 
+# The differences in the Mt3.0 and Mt3.5 assemblies are, however, apparently
+# relatively minor and although there is not a liftOver file 3.5 --> 4.0 there
+# is a gene conversion table at JCVI Medicago downloads page.  I'm not sure it
+# is worth it, but I suppose one could use the Mt3.0 gene names (which should
+# be unchanged for Mt3.5 -- just more genes added) and then use for a rough
+# translation between 3.0 and 4.0 locations.
+#
+####
 
 recomb <- read.table("from_paape/07_recom.txt",header=TRUE)
-recomb$mid <- (recomb$sStart + recomb$sEnd)/2
 levels(recomb$chr) <- gsub("MtChr","chr",levels(recomb$chr))
 
 # convert to BED
 recomb_bed <- data.frame(chrom=recomb$chr,
                          chromStart=recomb$sStart,
-                         chromEnd=recomb$sEnd)
+                         chromEnd=recomb$sEnd,
+                         name=1:nrow(recomb))
 write.table(recomb_bed, file="from_paape/07_recomb.bed", row.names=FALSE, quote=FALSE, col.names=FALSE, sep='\t')
 # then did liftOver - from source as at http://genome-source.cse.ucsc.edu/gitweb/?p=kent.git;a=blob;f=src/userApps/README
 # and 
-#  liftOver from_paape/07_recomb.bed from_paape/07_recomb.bed liftOver/Mt35.liftover.chain from_paape/07_recomb.bedfrom_paape/07_recomb_mt35.bed from_paape/07_recomb.bedfrom_paape/07_recomb_unmapped.bed 
+#  liftOver from_paape/07_recomb.bed liftOver/Mt35.liftover.chain from_paape/07_recomb_mt35.bed from_paape/07_recomb_unmapped.bed 
+# producing from_paape/07_recomb_mt35.bed
+recomb_mt35 <- read.table("from_paape/07_recomb_mt35.bed", header=FALSE)
+names(recomb_mt35) <- c('chrom', 'start', 'end', 'row')
+recomb$start <- recomb$end <- rep(NA, nrow(recomb))
+recomb$start[recomb_mt35$row] <- recomb_mt35$start
+recomb$end[recomb_mt35$row] <- recomb_mt35$end
+recomb$mid <- (recomb$start + recomb$end)/2
 
 # map <- read.csv("from_paape/Mtruncatula_mapbased_recomb_2may_b.csv",header=TRUE)
 # map <- map[,c("chr","start","end","cM","cm.bp...1.000.000","ave.cM...Mbp....3.window.moving.average")]
@@ -38,7 +66,7 @@ mds <- do.call( rbind, lapply( 1:8, function (k) {
 mds$mid <- (mds$start+mds$end)/2
 levels(mds$chrom) <- tolower(levels(mds$chrom))
 
-xlims <- lapply(levels(mds$chrom), function (this.chrom) { range(subset(recomb,chr==this.chrom)$mid, subset(mds,chrom==this.chrom)$mid) } )
+xlims <- lapply(levels(mds$chrom), function (this.chrom) { range(subset(recomb,chr==this.chrom)$mid, subset(mds,chrom==this.chrom)$mid, finite=TRUE) } )
 names(xlims) <- levels(mds$chrom)
 
 pdf(file="recomb_and_mds.pdf", width=6, height=6, pointsize=10)
@@ -46,21 +74,22 @@ layout( matrix(1:16,nrow=4), heights=c(1,1.2,1,1.2), widths=c(1.2,1,1,1) )
 for (this.chrom in paste0('chr',1:8)) {
     left.mar <- if (this.chrom %in% paste0('chr',1:2)) { 4} else {0}
     par(mar=c(0.25,left.mar,2,2)+.1)
-    with( subset(recomb,chr==this.chrom), {
-         plot(mid, rho.mean./1000, pch=20,
-              xlim=xlims[[this.chrom]],
-              xaxt='n',
-              ylab='recomb rate (cM/Mb)')
-         mtext(3,text=this.chrom)
-    } )
-    par(mar=c(5,left.mar,0.25,2)+.1)
-    with( subset(mds,chrom==this.chrom),
+    with( subset(mds,chrom==this.chrom), {
          plot(mid,MDS1,col='red',
               xlim=xlims[[this.chrom]],
               ylab='MDS 1',
-              xlab='position (bp)',
+              xaxt='n', 
               pch=20)
-     )
+         mtext(3,text=this.chrom)
+    } )
+    par(mar=c(5,left.mar,0.25,2)+.1)
+    with( subset(recomb,chr==this.chrom), {
+         plot(mid, rho.mean./1000, pch=20,
+              xlim=xlims[[this.chrom]],
+              xlab='position (bp)',
+              col='blue',
+              ylab='recomb rate (cM/Mb)')
+    } )
 }
 dev.off()
 
@@ -84,7 +113,7 @@ stats <- do.call( rbind, lapply( levels(mds$chrom), function (this.chrom) {
                            start=this.start,
                            end=this.end,
                            recomb = with( subset(recomb,chr==this.chrom), 
-                                         average_windows( sStart, sEnd, rho.mean., this.start, this.end ) ),
+                                         average_windows( start, end, rho.mean., this.start, this.end ) ),
                            MDS1 = with( subset(mds,chrom==this.chrom), 
                                        average_windows( start, end, MDS1, this.start, this.end ) )
                        )
