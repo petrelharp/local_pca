@@ -153,8 +153,6 @@ can have on observed patterns of genetic variation.
 
 \section{Introduction}
 
-To-do: cite \citet{duforetfrebourg2015detecting}.
-
 % NOTE on historical uses of 'population structure'
 % Population Structure in Toads, Albert P. Blair, The American Naturalist, Vol. 77, No. 773 (Nov. - Dec., 1943), pp. 563-568
 % "In the last decade it has become increasingly apparent that the development of diversity within species populations is intimately concerned with such factors as size of breeding populations, periodic fluctuation of population size, sex ratio, activity range and differential survival of progeny. The sum total of these factors, population structure, determines to a great extent the relative importance of the roles which mutation, natural selection and random fluctuation of gene frequency play in the genetic configuration of the species."
@@ -181,7 +179,8 @@ For instance, strongly locally adapted alleles of a gene will be selected agains
 increasing genetic differentiation between populations near to this gene.
 Similarly, newly adaptive alleles spread first in local populations.
 These observations motivate many methods to search for genetic loci under selection,
-as for example in \citet{huertasnchez2013genetic} and \citet{martin2016natural}.
+as for example in \citet{huertasnchez2013genetic}, \citet{martin2016natural}, 
+and \citet{duforetfrebourg2015detecting}.
 
 % The phrase ``population structure'',
 % used to describe patterns in genome-wide mean kinship,
@@ -231,14 +230,14 @@ many species show chromosome-scale variation in diversity and divergence
 species phylogenies can differ along the genome 
 due to incomplete lineage sorting,
 adaptive introgression and/or local adaptation 
-(e.g., \citep{pease2013accurate,ellegren2012genomic,nadeau2012genomic,pool2015natural,vernot2014resurrecting});
+(e.g., \citet{pease2013accurate,ellegren2012genomic,nadeau2012genomic,pool2015natural,vernot2014resurrecting});
 and theoretical expectations predict that geographic patterns of relatedness should depend on selection
 \citep{charlesworth2003review}.
 
 Patterns in genome-wide relatedness are often summarized
-by applying principal components analysis (PCA, \citep{patterson2006population}) 
+by applying principal components analysis (PCA, \citet{patterson2006population}) 
 to the genetic covariance matrix,
-as pioneered by \citetx[Menozzi et al]{menozzi1978synthetic}.
+as pioneered by \citet{menozzi1978synthetic}.
 % About 37 years ago, \citet{menozzi1978synthetic} first applied principal component analysis (PCA) in population genetics to construct maps summarizing genetic variation \citep{menozzi1978synthetic}. 
 % Nowadays, PCA is a widely used powerful non-parametric method to extract information from genetic data.
 The results of PCA can be related to the genealogical history of the samples, 
@@ -253,7 +252,7 @@ that reflect the samples' geographic origin distorted by rates of gene flow
 % However this relatedness is limited while there's recent migration or for group with nongeographic kinship patterns,for example, social or religious groups. \citep{astle2009population}
 
 Modeling such ``background'' kinship between samples
-is essential to genome-wide association studies (GWAS, \citep{price2006principal,astle2009population}),
+is essential to genome-wide association studies (GWAS, \citet{price2006principal,astle2009population}),
 % and PCA has often been used in this context \citep{price2006principal}.
 and so understanding variation in kinship along the genome 
 % can help us to have a better understanding of the relation between genome structure and population structure, 
@@ -277,11 +276,16 @@ and may be essential for doing GWAS in species with substantial heterogeneity in
 % lower dimension while preserving the distance information between windows as
 % well as possible \citep{borg2005modern}.  
 
+PCA has been applied to genomic windows in methods to infer
+tracts of local ancestry in recently admixed populations
+\citep{bryc2010genomewide,brisbin2012pcadmix},
+and to identify putative chromosomal inversions \citep{ma2012investigation}.
+\revpoint{1}{8}
 
 A note on nomenclature: In this work we describe variation in patterns of relatedness using local PCA,
 where ``local'' refers to proximity along the genome.
 A number of general methods for dimensionality reduction also use a strategy of ``local PCA''
-(e.g., \citep{manjon2013diffusion,kambhatla1997dimension,weingessel2000local,roweis2000nonlinear}),
+(e.g., \citet{manjon2013diffusion,kambhatla1997dimension,weingessel2000local,roweis2000nonlinear}),
 performing PCA not on the entire dataset but instead on subsets of observations,
 providing local pictures which are then stitched back together to give a global picture.
 At first sight,
@@ -296,9 +300,9 @@ as we aim to identify similar regions that may be distant.
 
 It is common to describe variation along the genome of simple statistics such as $F_{ST}$
 and to interpret the results in terms of the action of selection 
-\citep{speciation_islands,differentiation_islands,flycatchers}.
-However, it has been pointed out that a given pattern (e.g., valleys of $F_{ST}$)
-can be caused by more than one biological process \citep{hahn_fst,flycatchers2},
+(e.g., \citet{turner2005genomic,ellegren2012genomic}).
+However, a given pattern (e.g., valleys of $F_{ST}$)
+can be caused by more than one biological process \citep{cruickshank2014reanalysis,burri2015linked},
 which in retrospect is unsuprising given that we are using a single statistic
 to describe a complex process.
 It is also common to use methods such as PCA to visualize large-scale patterns in 
@@ -311,6 +315,7 @@ Our aim is not to identify outlier loci,
 but rather to describe larger-scale variation shared by many parts of the genome;
 correlation of this variation with known genomic features
 can then be used to uncover its source. \revpoint{2}{1}
+
 
 
 %%%%%%%%%%%%%%%%%
