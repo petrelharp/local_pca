@@ -9,7 +9,7 @@ from optparse import OptionParser
 import math
 import time
 import random
-from ftprime import RecombCollector, ind_to_chrom, mapa_labels
+from ftprime import RecombCollector
 import msprime
 
 def fileopt(fname,opts):
@@ -44,7 +44,7 @@ parser.add_option("-k","--nsamples",dest="nsamples",help="number of *diploid* sa
 parser.add_option("-A","--ancestor_age",dest="ancestor_age",help="time to ancestor above beginning of sim")
 parser.add_option("-U","--mut_rate",dest="mut_rate",help="mutation rate",default=1e-7)
 parser.add_option("-t","--treefile",dest="treefile",help="name of output file for trees (default: not output)",default=None)
-
+parser.add_option("-I","--simplify_interval",dest="simplify_interval",default=500)
 parser.add_option("-o","--outfile",dest="outfile",help="name of output VCF file (default: not output)",default=None)
 parser.add_option("-g","--logfile",dest="logfile",help="name of log file (or '-' for stdout)",default="-")
 parser.add_option("-s","--selloci_file",dest="selloci_file",help="name of file to output selected locus information",default="sel_loci.txt")
@@ -173,35 +173,38 @@ pop.evolve(
         ] ),
     postOps=[
         sim.Stat(numOfSegSites=sim.ALL_AVAIL, step=50),
-        sim.PyEval(r"'Gen: %2d #seg sites: %d\n' % (gen, numOfSegSites)", step=50)
+        sim.PyEval(r"'Gen: %2d #seg sites: %d\n' % (gen, numOfSegSites)", step=50),
+        sim.PyOperator(lambda pop: rc.simplify(pop.indInfo("ind_id")) or True, 
+                       step=options.simplify_interval),
     ],
     gen = generations
 )
-
 
 logfile.write("Done simulating!\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
-# writes out events in this form:
-# offspringID parentID startingPloidy rec1 rec2 ....
-
 locations = [pop.subPopIndPair(x)[0] for x in range(pop.popSize())]
-rc.add_diploid_samples(nsamples=args.nsamples, sample_ids=pop.indInfo("ind_id"),
-                       populations=locations)
+rc.add_locations(pop.indInfo("ind_id"), locations)
+
+logfile.write("Collecting samples:\n")
+logfile.write("  " + str(options.nsamples) + " of them")
+logfile.write("  " + "ids:" + str(pop.indInfo("ind_id")))
+logfile.write("  " + "locations:" + str(locations))
+
+diploid_samples = random.sample(pop.indInfo("ind_id"), args.nsamples)
+rc.simplify(diploid_samples)
 
 del pop
 
-ts = rc.args.tree_sequence()
-
-logfile.write("Loaded into tree sequence!\n")
-logfile.write(time.strftime('%X %x %Z')+"\n")
+logfile.write("Samples:\n")
+logfile.write(str(rc.diploid_samples)+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
-minimal_ts = ts.simplify()
-del ts
+ts = rc.args.tree_sequence()
+del rc
 
 logfile.write("Simplified; now writing to treefile (if specified).\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
@@ -209,21 +212,19 @@ logfile.write("----------\n")
 logfile.flush()
 
 if options.treefile is not None:
-    minimal_ts.dump(options.treefile)
+    ts.dump(options.treefile)
 
 logfile.write("Now generating mutations.\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
+ts.dump_samples_text(samples_file)
 
 logfile.write("Writing out samples.\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("----------\n")
 logfile.flush()
-
-minimal_ts.dump_samples_text(samples_file)
-
 
 mut_seed=random.randrange(1,1000)
 logfile.write("Generating mutations with seed "+str(mut_seed)+"\n")
@@ -232,13 +233,13 @@ nodes = msprime.NodeTable()
 edgesets = msprime.EdgesetTable()
 sites = msprime.SiteTable()
 mutations = msprime.MutationTable()
-minimal_ts.dump_tables(nodes=nodes, edgesets=edgesets)
+ts.dump_tables(nodes=nodes, edgesets=edgesets)
 mutgen = msprime.MutationGenerator(rng, mut_rate)
 mutgen.generate(nodes, edgesets, sites, mutations)
 mutated_ts = msprime.load_tables(
     nodes=nodes, edgesets=edgesets, sites=sites, mutations=mutations)
 
-del minimal_ts
+del ts
 
 logfile.write("Generated mutations!\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")

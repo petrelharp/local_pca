@@ -576,12 +576,13 @@ We did not use the mitochondria or chloroplasts.
 \end{tabular}
 \caption{
     Descriptive statistics for each dataset used.
-    % with the chosen window sizes.
-    % See text for how window sizes were chosen;
-    Columns 2--4 give statistics describing the window sizes used for most analyses for each dataset
-    (windows had a fixed number of SNPs).
-    The final column gives the percent variance explained by the top two principal components,
-    averaged across independent PCA of each window.
+    \revpoint{2}{18}
+    % % with the chosen window sizes.
+    % % See text for how window sizes were chosen;
+    % Columns 2--4 give statistics describing the window sizes used for most analyses for each dataset
+    % (windows had a fixed number of SNPs).
+    % The final column gives the percent variance explained by the top two principal components,
+    % averaged across independent PCA of each window.
     \label{tab:data_stats}
 }
 \end{table}
@@ -611,6 +612,20 @@ This implies that variation is due to meaningful heterogeneity in a biological p
 since noise due to randomness in choice of local genealogical trees
 is not expected to show long distance correlations. 
 Below, we discuss the results and likely underlying causes.
+
+
+
+
+%%%%%%%%%%%
+\subsection{Validation}
+
+Address
+mutation rate variation;
+recombination rate variation;
+choice of number of PCs;
+choice of window size;
+variation in missingness;
+maybe differing sample sizes and reweighting.
 
 
 %%%%%%%%%%%

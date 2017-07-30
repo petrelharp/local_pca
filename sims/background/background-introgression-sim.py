@@ -8,7 +8,7 @@ import sys, os
 import math
 import time
 import random
-from ftprime import RecombCollector, ind_to_chrom, mapa_labels
+from ftprime import RecombCollector
 import msprime
 import argparse
 
@@ -64,7 +64,10 @@ parser.add_argument("--mut_rate","-U", type=float, dest="mut_rate",
         help="mutation rate",default=1e-7)
 parser.add_argument("--treefile","-t", type=str, dest="treefile",
         help="name of output file for trees (default: not output)",default=None)
-parser.add_argument("--seed", "-d", type=int, help="random seed", default=random.randrange(1,1000))
+parser.add_argument("--simplify_interval", "-I", dest="simplify_interval", type=int,
+        help="Interval between simplify steps.", default=500)
+parser.add_argument("--seed", "-d", dest="seed", type=int,
+        help="random seed", default=random.randrange(1,1000))
 
 parser.add_argument("--outfile","-o", type=str, dest="outfile",
         help="name of output VCF file (default: not output)",default=None)
@@ -178,11 +181,15 @@ pop = sim.Population(
 id_tagger = sim.IdTagger()
 id_tagger.apply(pop)
 
-# record recombinations
-rc = RecombCollector(
-        first_gen=pop.indInfo("ind_id"), ancestor_age=args.ancestor_age, 
-                              length=args.length, 
-                              locus_position=locus_position)
+# set up recomb collector
+first_gen = pop.indInfo("ind_id")
+init_ts = msprime.simulate(2*len(first_gen),
+                           length=max(locus_position))
+haploid_labels = [(k,p) for k in first_gen 
+                        for p in (0,1)]
+node_ids = {x:j for x, j in zip(haploid_labels, init_ts.samples())}
+rc = RecombCollector(ts=init_ts, node_ids=node_ids,
+                     locus_position=locus_position)
 
 migr_rates = migrRates(args.migr, m=args.gridwidth, n=args.gridheight, barrier=False)
 barrier_rates = migrRates(args.migr, m=args.gridwidth, n=args.gridheight, barrier=True)
@@ -221,7 +228,9 @@ pop.evolve(
         ] ),
     postOps=[
         sim.Stat(numOfSegSites=sim.ALL_AVAIL, step=50),
-        sim.PyEval(r"'Gen: %2d #seg sites: %d\n' % (gen, numOfSegSites)", step=50)
+        sim.PyEval(r"'Gen: %2d #seg sites: %d\n' % (gen, numOfSegSites)", step=50),
+        sim.PyOperator(lambda pop: rc.simplify(pop.indInfo("ind_id")) or True, 
+                       step=args.simplify_interval),
     ],
     gen = args.split_generations + args.pre_generations + args.post_generations
 )
@@ -232,15 +241,15 @@ logfile.write("----------\n")
 logfile.flush()
 
 locations = [pop.subPopIndPair(x)[0] for x in range(pop.popSize())]
+rc.add_locations(pop.indInfo("ind_id"), locations)
 
 logfile.write("Collecting samples:\n")
 logfile.write("  " + str(args.nsamples) + " of them")
 logfile.write("  " + "ids:" + str(pop.indInfo("ind_id")))
 logfile.write("  " + "locations:" + str(locations))
 
-rc.add_diploid_samples(nsamples=args.nsamples, 
-                       sample_ids=pop.indInfo("ind_id"),
-                       populations=locations)
+diploid_samples = random.sample(pop.indInfo("ind_id"), args.nsamples)
+rc.simplify(diploid_samples)
 
 del pop
 
@@ -257,23 +266,15 @@ logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
-minimal_ts = ts.simplify()
-del ts
-
-logfile.write("Simplified; now writing to treefile (if specified).\n")
-logfile.write(time.strftime('%X %x %Z')+"\n")
-logfile.write("----------\n")
-logfile.flush()
-
 if args.treefile is not None:
-    minimal_ts.dump(args.treefile)
+    ts.dump(args.treefile)
 
 logfile.write("Writing out samples.\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
 logfile.write("----------\n")
 logfile.flush()
 
-minimal_ts.dump_samples_text(samples_file)
+ts.dump_samples_text(samples_file)
 
 mut_seed=args.seed
 logfile.write(time.strftime('%X %x %Z')+"\n")
@@ -285,13 +286,13 @@ nodes = msprime.NodeTable()
 edgesets = msprime.EdgesetTable()
 sites = msprime.SiteTable()
 mutations = msprime.MutationTable()
-minimal_ts.dump_tables(nodes=nodes, edgesets=edgesets)
+ts.dump_tables(nodes=nodes, edgesets=edgesets)
 mutgen = msprime.MutationGenerator(rng, args.mut_rate)
 mutgen.generate(nodes, edgesets, sites, mutations)
 mutated_ts = msprime.load_tables(
     nodes=nodes, edgesets=edgesets, sites=sites, mutations=mutations)
 
-del minimal_ts
+del ts
 
 logfile.write("Generated mutations!\n")
 logfile.write(time.strftime('%X %x %Z')+"\n")
