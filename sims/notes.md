@@ -351,6 +351,7 @@ intro () {
 
 Testing:
 ```
+# elapsed: 4:34.32 / kernel: 0.67 / user: 274.18 / mem: 301632
 intro 50 1 0.1 10 10 10 3 100 1e-8
 
 # larger N*s
