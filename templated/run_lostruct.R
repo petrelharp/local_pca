@@ -24,8 +24,9 @@ option_list <- list(
         make_option( c("-t","--type"),   type="character",             help="Window by SNP or by bp? (REQUIRED)"),
         make_option( c("-s","--size"),   type="integer",               help="Size of the window, in units of type. (REQUIRED)"),
         make_option( c("-k","--npc"),   type="integer",   default=2L,  help="Number of principal components to compute for each window. [default: %default]"),
-        make_option( c("-w","--weightfile"), type="character",            help="File name containing weights to apply to PCA."),
+        make_option( c("-w","--weightfile"), type="character",         help="File name containing weights to apply to PCA."),
         make_option( c("-m","--nmds"),   type="integer",   default=2L, help="Number of principal coordinates (MDS variables) to compute. [default: %default]"),
+        make_option( c("-M","--missing"),   type="float",              help="Percent data to introduce as missing.  [default: none]"),
         make_option( c("-o","--outdir"), type="character",             help="Directory to save results to.  [default: lostruct_results/type_%type_size_%size_jobid_%jobid/]"),
         make_option( c("-j","--jobid"),  type="character", default=formatC(1e6*runif(1),width=6,format="d",flag="0"),   help="Unique job id. [default random]")
     )
@@ -76,6 +77,21 @@ opt$bcf_file_names <- names(bcf.files)
 
 dir.create( opt$outdir, showWarnings=FALSE, recursive=TRUE )
 cat( jsonlite::toJSON( opt, pretty=TRUE ), file=file.path( opt$outdir, "config.json" ) )
+
+# override vcf_windower to introduce missing data if desired
+if (is.numeric(opt$missing) && (opt$missing > 0)) {
+    vcf_windower <- function (...) {
+        f <- lostruct::vcf_windower(...)
+        g <- as.winfun(f=function (...) {
+                            out <- f(...);
+                            m <- (rbinom(length(out), size=1, prob=opt$missing) > 0);
+                            out[m] <- NA; return(out) },
+                       max.n=attr(f, "max.n"),
+                       samples=attr(f, "samples"),
+                       region=attr(f, "region"))
+        return(g)
+    }
+}
 
 # setup
 library(lostruct)

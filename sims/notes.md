@@ -312,16 +312,21 @@ intro () {
     NSEL=$8
     RECOMB_RATE=$9
     SEED=$RANDOM
+    MIGR="$(echo "scale=10; $RELATIVE_M / $POPSIZE" | bc)"
+    GAMMA_ALPHA="$(echo "scale=10; 5.34 * $SELECTION_COEF" | bc)"
+    POST_GENS="$(echo "scale=10; $POPSIZE * $POST_REL_GENS" | bc)"
+    SPLIT_GENS="$(echo "scale=10; $POPSIZE * $SPLIT_REL_GENS" | bc)"
+    PRE_GENS="$(echo "scale=10; $POPSIZE * $PRE_REL_GENS" | bc)"
     OUTDIR="introgression_${1}_${2}_${3}_${4}_${5}_${6}_${7}_${8}_${9}_${SEED}"; mkdir -p $OUTDIR
     /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
         python3 $SCRIPT \
                      --popsize $POPSIZE \
-                     --migr $(echo "scale=10; $RELATIVE_M / $POPSIZE" | bc) \
-                     --gamma_alpha $(echo "scale=10; 5.34 * $SELECTION_COEF" | bc) \
+                     --migr $MIGR \
+                     --gamma_alpha $GAMMA_ALPHA \
                      --gamma_beta 5.34 \
-                     --post_generations $((POPSIZE * POST_REL_GENS)) \
-                     --split_generations $((POPSIZE * SPLIT_REL_GENS)) \
-                     --pre_generations $((POPSIZE * PRE_REL_GENS)) \
+                     --post_generations $POST_GENS \
+                     --split_generations $SPLIT_GENS \
+                     --pre_generations $PRE_GENS \
                      --gridwidth $GRIDWIDTH \
                      --gridheight $GRIDWIDTH \
                      --length 1e7 \
@@ -337,6 +342,7 @@ intro () {
                      --logfile $OUTDIR/sim.log  \
                      --samples_file $OUTDIR/samples.tsv  \
                      --selloci_file $OUTDIR/sel_loci.txt  \
+                     --simplify_interval 500 \
             &> $OUTDIR/time.log
     echo $OUTDIR
 }
@@ -350,6 +356,9 @@ intro 50 1 0.1 10 10 10 3 100 1e-8
 # larger N*s
 intro 200 4 0.01 10 10 10 4 100 1e-8 &
 intro 200 4 0.01 10 10 10 4 500 1e-8 &
+
+# even larger
+intro 1000 4 0.001 1 10 0.01 5 500 1e-8 &
 
 ```
 
