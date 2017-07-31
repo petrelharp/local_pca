@@ -4,10 +4,11 @@ Simulate.
 '''
 
 import gzip
-import sys
-from optparse import OptionParser
+import sys, os
 import math
 import time
+import random
+import argparse
 
 import msprime
 
@@ -28,35 +29,56 @@ def fileopt(fname,opts):
         fobj = open(fname,opts)
     return fobj
 
-parser = OptionParser(description=description)
-parser.add_option("-k","--nsamples",dest="nsamples",help="number of samples, total")
-parser.add_option("-N","--popsize",dest="popsize",help="size of each subpopulation",default=100)
-parser.add_option("-w","--width",dest="width",help="width of square grid, in populations",default=3)
-parser.add_option("-L","--length",dest="length",help="number of bp in the chromosome",default=1e4)
-parser.add_option("-m","--migr",dest="migr",help="migration proportion between adjacent populations",default=.01)
-parser.add_option("-r","--min_recomb",dest="min_recomb",help="minimum recombination rate",default=2.5e-8)
-parser.add_option("-R","--max_recomb",dest="max_recomb",help="maximum recombination rate",default=2.5e-8)
-parser.add_option("-p","--mapfile",dest="mapfile",help="name of map file")
-parser.add_option("-u","--mut_rate",dest="mut_rate",help="mutation rate",default=1e-7)
-parser.add_option("-o","--outfile",dest="outfile",help="name of output file (or '-' for stdout)",default="-")
-parser.add_option("-g","--logfile",dest="logfile",help="name of log file (or '-' for stdout)",default="-")
-(options,args) =  parser.parse_args()
+parser = argparse.ArgumentParser(description=description)
+parser.add_argument("--nsamples", "-k", type=int, dest="nsamples", help="number of samples, total")
+parser.add_argument("--popsize", "-N", type=int, dest="popsize", help="size of each subpopulation", default=100)
+parser.add_argument("--width", "-w", type=int, dest="width", help="width of square grid, in populations", default=3)
+parser.add_argument("--length", "-L", type=float, dest="length", help="number of bp in the chromosome", default=1e4)
+parser.add_argument("--migr", "-m", type=float, dest="migr", help="migration proportion between adjacent populations", default=.01)
+parser.add_argument("--min_recomb", "-r", type=float, dest="min_recomb", help="minimum recombination rate", default=2.5e-8)
+parser.add_argument("--max_recomb", "-R", type=float, dest="max_recomb", help="maximum recombination rate", default=2.5e-8)
+parser.add_argument("--mapfile", "-p", type=str, dest="mapfile", help="name of map file")
+parser.add_argument("--mut_rate", "-u", type=float, dest="mut_rate", help="mutation rate", default=1e-7)
+parser.add_argument("--tree_file", "-t", type=str, dest="tree_file", help="name of file to save tree sequence to.")
+parser.add_argument("--samples_file", "-S", type=str, dest="samples_file", help="name of file to save sample information to.")
+parser.add_argument("--outfile", "-o", type=str, dest="outfile", help="name of output file (or '-' for stdout).")
+parser.add_argument("--logfile", "-g", type=str, dest="logfile", help="name of log file (or '-' for stdout)", default="-")
+parser.add_argument("--seed", "-d", dest="seed", type=int,
+        help="random seed", default=random.randrange(1,1000))
 
-outfile = fileopt(options.outfile, "w")
-logfile = fileopt(options.logfile, "w")
+args = parser.parse_args()
+
+if args.tree_file is None:
+    print(description)
+    raise(ValueError("Must specify output tree file."))
+
+if args.outfile is None:
+    args.outfile = os.path.join(os.path.dirname(args.tree_file),"sim.vcf")
+if args.logfile is None:
+    args.logfile = os.path.join(os.path.dirname(args.tree_file),"sim.log")
+if args.samples_file is None:
+    args.samples_file = os.path.join(os.path.dirname(args.tree_file),"samples.tsv")
+
+logfile = fileopt(args.logfile, "w")
 
 logfile.write("Options:\n")
-logfile.write(str(options)+"\n")
+logfile.write(str(args)+"\n")
 
-popsize = float(options.popsize)
-width = int(options.width)
-nsamples = int(options.nsamples)
-length = float(options.length)
-migr = float(options.migr)
-mut_rate = float(options.mut_rate)
-if options.mapfile is not None:
+outfile = fileopt(args.outfile, "w")
+samples_file = fileopt(args.samples_file, "w")
+
+sim.setRNG(seed=args.seed)
+random.seed(args.seed)
+
+popsize = float(args.popsize)
+width = int(args.width)
+nsamples = int(args.nsamples)
+length = float(args.length)
+migr = float(args.migr)
+mut_rate = float(args.mut_rate)
+if args.mapfile is not None:
     use_map = True
-    mapfile = fileopt(options.mapfile, "r")
+    mapfile = fileopt(args.mapfile, "r")
     positions=[]
     rates=[]
     mapfile.readline()
@@ -68,9 +90,9 @@ if options.mapfile is not None:
         rates.append(rate * 1e-8)
     recomb_map = msprime.RecombinationMap(positions,rates)
 else:
-    min_recomb = float(options.min_recomb)
-    max_recomb = float(options.max_recomb)
-    use_map = (min_recomb==max_recomb)
+    min_recomb = float(args.min_recomb)
+    max_recomb = float(args.max_recomb)
+    use_map = (min_recomb!=max_recomb)
     # recombination map
     n_recomb_steps = 100
     recomb_map = msprime.RecombinationMap(
@@ -130,7 +152,12 @@ logfile.write("Number of trees: {}\n".format(tree_sequence.get_num_trees()))
 logfile.write("Number of mutations: {}\n".format(tree_sequence.get_num_mutations()))
 logfile.flush()
 
-tree_sequence.write_vcf(outfile,ploidy=1)
+tree_sequence.dump_samples_text(samples_file)
+
+if args.tree_file is not None:
+    tree_sequence.dump(args.tree_file)
+
+tree_sequence.write_vcf(outfile, ploidy=1)
 logfile.close()
 
 outfile.close()

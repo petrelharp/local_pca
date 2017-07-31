@@ -369,13 +369,14 @@ fixedintro () {
     GRIDWIDTH=$7
     NSEL=$8
     RECOMB_RATE=$9
+    SIMPLIFY_INTERVAL=${10:-500}
     SEED=$RANDOM
     OUTDIR="introgression_fixed_s_${1}_${2}_${3}_${4}_${5}_${6}_${7}_${8}_${9}_${SEED}"; mkdir -p $OUTDIR
     /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
         python3 $SCRIPT \
                      --popsize $POPSIZE \
                      --migr $(echo "scale=10; $RELATIVE_M / $POPSIZE" | bc) \
-                     --selection_coef $SELECTION_COEF" \
+                     --selection_coef $SELECTION_COEF \
                      --post_generations $((POPSIZE * POST_REL_GENS)) \
                      --split_generations $((POPSIZE * SPLIT_REL_GENS)) \
                      --pre_generations $((POPSIZE * PRE_REL_GENS)) \
@@ -394,6 +395,7 @@ fixedintro () {
                      --logfile $OUTDIR/sim.log  \
                      --samples_file $OUTDIR/samples.tsv  \
                      --selloci_file $OUTDIR/sel_loci.txt  \
+                     --simplify_interval $SIMPLIFY_INTERVAL
             &> $OUTDIR/time.log
     echo $OUTDIR
 }
@@ -402,11 +404,11 @@ fixedintro () {
 
 Testing:
 ```
-intro 50 1 0.1 10 10 10 3 100 1e-8
+fixedintro 50 1 0.1 1 1 1 2 100 0.0 5
 
 # larger N*s
-intro 200 4 0.01 10 10 10 4 100 1e-8 &
-intro 200 4 0.01 10 10 10 4 500 1e-8 &
+fixedintro 200 4 0.01 2 4 10 4 100 1e-8 &
+fixedintro 200 4 0.002 2 4 10 4 100 1e-8 &
 
 ```
 
