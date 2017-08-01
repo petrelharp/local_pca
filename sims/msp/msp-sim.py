@@ -18,6 +18,7 @@ import math
 import time
 import random
 import argparse
+import multiprocessing
 
 import msprime
 
@@ -55,6 +56,7 @@ parser.add_argument("--samples_file", "-S", type=str, dest="samples_file", help=
 parser.add_argument("--vcffile", "-v", type=str, dest="vcffile", help="name of VCF output file.")
 parser.add_argument("--logfile", "-g", type=str, dest="logfile", help="name of log file")
 parser.add_argument("--seed", "-d", dest="seed", type=int, help="random seed", default=random.randrange(1,1000))
+parser.add_argument("--njobs", "-j", dest="njobs", type=int, help="number of parallel jobs", default=1)
 
 args = parser.parse_args()
 
@@ -104,9 +106,12 @@ logfile.write(str(args)+"\n")
 samples_file = fileopt(args.samples_file, "w")
 
 random.seed(args.seed)
+seeds = [random.randrange(1,1000) for _ in range(args.nchroms)]
 
-for chrom_num in range(args.nchroms):
+# for chrom_num in range(args.nchroms):
+def sim_chrom(chrom_num):
 
+    random.seed(seeds[chrom_num])
     vcffile = fileopt(args.vcffile % chrom_num, "w")
     tree_file = args.tree_file % chrom_num
 
@@ -173,20 +178,19 @@ for chrom_num in range(args.nchroms):
     logfile.write("Number of mutations: {}\n".format(tree_sequence.get_num_mutations()))
     logfile.flush()
 
-    if chrom_num == 0:
-        tree_sequence.dump_samples_text(samples_file)
-        sample_info = [tree_sequence.node(x) for x in tree_sequence.samples()]
-    else:
-        these_samples = tree_sequence.samples()
-        assert len(these_samples) == len(sample_info)
-        for j in range(len(sample_info)):
-            assert sample_info[j].population == tree_sequence.node(these_samples[j]).population
+    tree_sequence.dump_samples_text(samples_file)
+    sample_info = [tree_sequence.node(x) for x in tree_sequence.samples()]
 
     tree_sequence.dump(tree_file)
 
     tree_sequence.write_vcf(vcffile, ploidy=1)
 
     vcffile.close()
+
+    return True
+
+p = multiprocessing.Pool(args.njobs)
+p.map(sim_chrom, range(args.nchroms))
 
 logfile.close()
 
