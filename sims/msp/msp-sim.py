@@ -96,14 +96,12 @@ if args.tree_file is None:
 if args.vcffile is None:
     args.vcffile = os.path.join(args.basedir, "sim%02d.vcf")
 if args.samples_file is None:
-    args.samples_file = os.path.join(args.basedir, "samples.tsv")
+    args.samples_file = os.path.join(args.basedir, "samples%02d.tsv")
 
 logfile = fileopt(args.logfile, "w")
 
 logfile.write("Options:\n")
 logfile.write(str(args)+"\n")
-
-samples_file = fileopt(args.samples_file, "w")
 
 random.seed(args.seed)
 seeds = [random.randrange(1,1000) for _ in range(args.nchroms)]
@@ -113,6 +111,7 @@ def sim_chrom(chrom_num):
 
     random.seed(seeds[chrom_num])
     vcffile = fileopt(args.vcffile % chrom_num, "w")
+    samples_file = fileopt(args.samples_file % chrom_num, "w")
     tree_file = args.tree_file % chrom_num
 
     popsize = float(args.popsize[chrom_num])
@@ -179,12 +178,12 @@ def sim_chrom(chrom_num):
     logfile.flush()
 
     tree_sequence.dump_samples_text(samples_file)
-    sample_info = [tree_sequence.node(x) for x in tree_sequence.samples()]
 
     tree_sequence.dump(tree_file)
 
     tree_sequence.write_vcf(vcffile, ploidy=1)
 
+    samples_file.close()
     vcffile.close()
 
     return True
