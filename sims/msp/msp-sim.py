@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 description = '''
 Simulate a sequence of chromosomes, separately, using msprime, at different
 parameter values.  The parameters that can vary between chromosomes are:
@@ -50,7 +50,7 @@ parser.add_argument("--min_recomb", "-r", type=float, nargs="*", dest="min_recom
 parser.add_argument("--max_recomb", "-R", type=float, nargs="*", dest="max_recomb", help="maximum recombination rate", default=[2.5e-8])
 parser.add_argument("--mapfile", "-p", type=str, dest="mapfile", help="name of map file")
 parser.add_argument("--mut_rate", "-u", type=float, nargs="*", dest="mut_rate", help="mutation rate", default=[1e-8])
-parser.add_argument("--basedir", "-o", type=str, dest="basedir", help="name of directory to save output files to. [default: msp_sim_%seed]")
+parser.add_argument("--basedir", "-o", type=str, dest="basedir", help="name of directory to save output files to. [default: msp_sim_$seed]")
 parser.add_argument("--tree_file", "-t", type=str, dest="tree_file", help="name of file to save tree sequence to.")
 parser.add_argument("--samples_file", "-S", type=str, dest="samples_file", help="name of file to save sample information to.")
 parser.add_argument("--vcffile", "-v", type=str, dest="vcffile", help="name of VCF output file.")
@@ -102,6 +102,7 @@ logfile = fileopt(args.logfile, "w")
 
 logfile.write("Options:\n")
 logfile.write(str(args)+"\n")
+logfile.flush()
 
 random.seed(args.seed)
 seeds = [random.randrange(1,1000) for _ in range(args.nchroms)]
