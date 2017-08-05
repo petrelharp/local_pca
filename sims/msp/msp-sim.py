@@ -75,10 +75,10 @@ argdict = vars(args)
 vector_args = ['popsize', 'migr', 'min_recomb', 'max_recomb', 'mut_rate']
 for a in vector_args:
     x = argdict[a]
-    if (len(x) == 1):
+    if x is not None and (len(x) == 1):
         argdict[a] = x * args.nchroms
     else: 
-        if (len(x) != args.nchroms):
+        if x is None or (len(x) != args.nchroms):
             raise ValueError(", ".join(vector_args) + "must all be of length 1 or of length nchroms.")
 
 for a in ["tree_file", "logfile", "vcffile"]:
