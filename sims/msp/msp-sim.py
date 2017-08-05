@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/bin/env python3
 description = '''
 Simulate a sequence of chromosomes, separately, using msprime, at different
 parameter values.  The parameters that can vary between chromosomes are:
