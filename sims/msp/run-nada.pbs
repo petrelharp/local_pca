@@ -1,0 +1,21 @@
+#PBS -S /bin/bash
+#PBS -q cmb
+#PBS -l nodes=1:ppn=16
+#PBS -l walltime=200:00:00
+#PBS -l mem=48000mb
+#PBS -l vmem=48000mb
+#PBS -l pmem=3000mb
+
+# for msprime
+source /usr/usc/hdf5/1.8.12/setup.sh
+# apparently pyvcf uses rpy
+source ~/cmb/bin/R-setup-usc.sh 
+
+source $HOME/cmb/bin/python3_setup.sh
+
+cd $PBS_O_WORKDIR
+
+SEED=$(printf "%06d" $RANDOM); mkdir nada_$SEED; 
+(/usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
+    ./msp-sim.py -n 16 -k 2000 -N 1e4 -w 10 -m 1e-4 -o nada_$SEED -d $SEED -u 0.0 -j 16\
+        | grep -v REJECTING &> nada_$SEED/run.log
