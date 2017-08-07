@@ -26,7 +26,18 @@ cov_pca <- function (x,k,w=1,
     if(any(is.na(covmat))) { return(rep(NA,1+k*(nrow(covmat)+1))) }
     # PCA <- eigen(covmat)
     # return( c( sum(covmat^2), PCA$values[1:k], PCA$vectors[,1:k] ) )
-    PCA <- if (k==ncol(covmat)) { eigen(covmat) } else { RSpectra::eigs_sym(covmat,k=k) }
+    if (k==ncol(covmat)) { 
+        PCA <- eigen(covmat) 
+    } else { 
+        PCA <- tryCatch({
+                    RSpectra::eigs_sym(covmat,k=k) 
+                }, error=function(e) { 
+                    message("Rspectra failed to compute eigenvalues, with error:")
+                    message(e)
+                    message("Falling back to base::eigen (may be slow).")
+                    return(eigen(covmat))
+                })
+    }
     PCA$vectors <- sweep( PCA$vectors, 1, sqrt.w, "/" )
     # returns in order (total sumsq, values, vectors)
     return( c( sum(covmat^2), PCA$values, PCA$vectors ) )
