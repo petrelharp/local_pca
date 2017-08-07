@@ -35,7 +35,10 @@ cov_pca <- function (x,k,w=1,
                     message("Rspectra failed to compute eigenvalues, with error:")
                     message(e)
                     message("Falling back to base::eigen (may be slow).")
-                    return(eigen(covmat))
+                    out <- eigen(covmat)
+                    out$vectors <- out$vectors[,1:k]
+                    out$values <- out$values[,1:k]
+                    return(out)
                 })
     }
     PCA$vectors <- sweep( PCA$vectors, 1, sqrt.w, "/" )
