@@ -47,8 +47,8 @@ parser.add_argument("--popsize", "-N", type=float, nargs="*", dest="popsize", he
 parser.add_argument("--width", "-w", type=int, dest="width", help="width of square grid, in populations")
 parser.add_argument("--length", "-L", type=float, dest="length", help="number of bp in the chromosome", default=1e8)
 parser.add_argument("--migr", "-m", type=float, nargs="*", dest="migr", help="migration proportion between adjacent populations")
-parser.add_argument("--min_recomb", "-r", type=float, nargs="*", dest="min_recomb", help="minimum recombination rate", default=[2.5e-8])
-parser.add_argument("--max_recomb", "-R", type=float, nargs="*", dest="max_recomb", help="maximum recombination rate", default=[2.5e-8])
+parser.add_argument("--min_recomb", "-r", type=float, nargs="*", dest="min_recomb", help="minimum recombination rate", default=[1e-8])
+parser.add_argument("--max_recomb", "-R", type=float, nargs="*", dest="max_recomb", help="maximum recombination rate", default=[1e-8])
 parser.add_argument("--mapfile", "-p", type=str, dest="mapfile", help="name of map file")
 parser.add_argument("--mut_rate", "-u", type=float, nargs="*", dest="mut_rate", help="mutation rate", default=[1e-8])
 parser.add_argument("--basedir", "-o", type=str, dest="basedir", help="name of directory to save output files to. [default: msp_sim_$seed]")
@@ -109,18 +109,19 @@ random.seed(args.seed)
 seeds = [random.randrange(1,1000) for _ in range(args.nchroms)]
 
 def sim_chrom(chrom_num):
+    chrom_index = chrom_num - args.chrom_start
 
-    random.seed(seeds[chrom_num])
+    random.seed(seeds[chrom_index])
     vcffile = fileopt(args.vcffile % chrom_num, "w")
     samples_file = fileopt(args.samples_file % chrom_num, "w")
     tree_file = args.tree_file % chrom_num
 
-    popsize = float(args.popsize[chrom_num])
+    popsize = float(args.popsize[chrom_index])
     width = int(args.width)
     nsamples = int(args.nsamples)
     length = float(args.length)
-    migr = float(args.migr[chrom_num])
-    mut_rate = float(args.mut_rate[chrom_num])
+    migr = float(args.migr[chrom_index])
+    mut_rate = float(args.mut_rate[chrom_index])
     if args.mapfile is not None:
         use_map = True
         mapfile = fileopt(args.mapfile, "r")
@@ -135,8 +136,8 @@ def sim_chrom(chrom_num):
             rates.append(rate * 1e-8)
         recomb_map = msprime.RecombinationMap(positions,rates)
     else:
-        min_recomb = float(args.min_recomb[chrom_num])
-        max_recomb = float(args.max_recomb[chrom_num])
+        min_recomb = float(args.min_recomb[chrom_index])
+        max_recomb = float(args.max_recomb[chrom_index])
         use_map = (min_recomb!=max_recomb)
         # recombination map
         n_recomb_steps = 100

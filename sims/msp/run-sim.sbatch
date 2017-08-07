@@ -1,4 +1,10 @@
 #!/bin/bash
+#SBATCH -p long
+#SBATCH -n 1
+#SBATCH -t 40:00:00
+#SBATCH --mem-per-cpu=4G
+#SBATCH --ntasks-per-core=1
+
 
 module load gcc
 module load python3
@@ -14,10 +20,14 @@ then
     exit 1
 fi
 
-echo "$PARAMS"
+SEED=$(printf "%06d" $RANDOM); 
+
+echo "Chrom number $SLURM_ARRAY_TASK_ID - seed $SEED"
+ALL_PARAMS="$PARAMS -d $SEED"
+echo "$ALL_PARAMS"
 
 /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
-     ./msp-sim.py $PARAMS | grep -v REJECTING
+     ./msp-sim.py $ALL_PARAMS | grep -v REJECTING
 
 echo "Done!"
 
