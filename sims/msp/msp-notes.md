@@ -1,23 +1,41 @@
 # Timing
 
+With migration at 1e-3, on a `10x10` grid, with `N` number per deme, recombination rate `2.5e-8` per bp, `time` in seconds, and `mem` in Kb:
+```
+L     N     time     mem
+10e4  1000  26.10    59984
+10e4  2000  92.40    60840
+10e4  500   8.93     56216
+10e5  1000  179.54   103048
+10e5  2000  592.29   149404
+10e5  500   60.58    77736
+10e6  1000  5969.11  536168
+2e6   1000  471.36   150432
+4e6   1000  1354.48  246456
+5e4   1000  13.17    58104
+5e4   2000  46.03    60268
+5e4   500   6.24     61340
+5e5   1000  77.93    77392
+5e5   2000  255.87   100880
+5e5   500   27.36    67292
+5e6   1000  1912.20  292120
+7e4   1000  18.50    56896
+7e4   2000  64.98    61832
+7e4   500   7.26     53760
+7e5   1000  118.36   86792
+7e5   2000  365.53   118672
+7e5   500   39.84    73420
+8e4   1000  20.56    57240
+8e4   2000  76.11    62488
+8e4   500   8.24     53756
+8e5   1000  135.46   91124
+8e5   2000  450.49   129576
+8e5   500   46.21    74836
 ```
 
-X="_parallel"
-L=1e4
-W=10
-for K in 100 400 1000
-do
-  (S=$RANDOM; O=test${X}_$S; mkdir $O;
-   (echo "L=$L; K=$K; W=$W; ./msp-sim.py -n 16 -k $K -N 1e4 -w $W -m 1e-4 -o $O -d $S -u 0.0 -L $L";
-    /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
-       ./msp-sim.py -n 12 -k $K -N 1e4 -w 10 -m 1e-4 -o $O -d $S -u 0.0 -L $L -j 4) \
-           &>> $O/timing_runs${X}.log ) &
-done
+This predicts that at 1000 individuals per deme (1e5 total),
+doing one Morgan would require 1.89G and take 21.15 hours.
 
-(for x in test_*/timing_runs${X}.log; do 
-    cat $x | tr '\n' ' ' | awk '{ print $1,$2,$3,$24}' | sed -e 's/;//g'; done) | sort -k 4 >> timing_runs$X.log
-
-```
 
 
 # Main simulations

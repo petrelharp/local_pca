@@ -41,6 +41,7 @@ def fileopt(fname,opts):
 
 parser = argparse.ArgumentParser(description=description)
 parser.add_argument("--nchroms", "-n", type=int, dest="nchroms", help="number of chromosomes")
+parser.add_argument("--chrom_start", "-C", type=int, dest="chrom_start", help="index of first chromosome", default=0)
 parser.add_argument("--nsamples", "-k", type=int, dest="nsamples", help="number of samples, total")
 parser.add_argument("--popsize", "-N", type=float, nargs="*", dest="popsize", help="size of each subpopulation")
 parser.add_argument("--width", "-w", type=int, dest="width", help="width of square grid, in populations")
@@ -107,7 +108,6 @@ logfile.flush()
 random.seed(args.seed)
 seeds = [random.randrange(1,1000) for _ in range(args.nchroms)]
 
-# for chrom_num in range(args.nchroms):
 def sim_chrom(chrom_num):
 
     random.seed(seeds[chrom_num])
@@ -189,8 +189,12 @@ def sim_chrom(chrom_num):
 
     return True
 
-p = multiprocessing.Pool(args.njobs)
-p.map(sim_chrom, range(args.nchroms))
+if args.njobs > 1:
+    p = multiprocessing.Pool(args.njobs)
+    p.map(sim_chrom, range(args.chrom_start, args.chrom_start+args.nchroms))
+else:
+    for j in range(args.chrom_start, args.chrom_start+args.nchroms):
+        sim_chrom(j)
 
 logfile.close()
 
