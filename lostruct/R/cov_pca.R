@@ -37,7 +37,7 @@ cov_pca <- function (x,k,w=1,
                     message("Falling back to base::eigen (may be slow).")
                     out <- eigen(covmat)
                     out$vectors <- out$vectors[,1:k]
-                    out$values <- out$values[,1:k]
+                    out$values <- out$values[1:k]
                     return(out)
                 })
     }

@@ -1,0 +1,1 @@
+../../templated/bcf_and_index.sh

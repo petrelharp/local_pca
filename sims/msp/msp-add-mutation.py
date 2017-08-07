@@ -20,7 +20,7 @@ parser.add_argument("--mut_rate", "-u", type=float, nargs="*", dest="mut_rate",
                     help="mutation rate", default=[1e-8])
 
 parser.add_argument("--basedir", "-o", type=str, dest="basedir", 
-                    help="name of directory to save output files to. [default: same as tree files]")
+                    help="name of directory to save output files to.")
 parser.add_argument("--vcffile", "-v", type=str, nargs="*", dest="vcffile", 
                     help="name of VCF output files [default: as trees but with .vcf]")
 parser.add_argument("--logfile", "-g", type=str, dest="logfile", 
@@ -47,7 +47,7 @@ if args.vcffile is None or len(args.vcffile) == 0:
     args.vcffile = [re.sub("[.]trees$", "", x) + ".vcf" for x in args.tree_file]
 
 if args.logfile is None:
-    args.logfile = os.path.join(args.basedir, "sim.log")
+    args.logfile = os.path.join(args.basedir, "add_muts.log")
 
 vector_args = ['mut_rate']
 for a in vector_args:
@@ -87,7 +87,7 @@ def write_vcf(chrom):
 
     return True
 
-logfile.write("Beginning simulating mutations on" + str(len(args.tree_file)) + "chromosomes.\n")
+logfile.write("Beginning simulating mutations on " + str(len(args.tree_file)) + " chromosomes.\n")
 
 p = multiprocessing.Pool(args.njobs)
 p.map(write_vcf, range(len(args.vcffile)))
