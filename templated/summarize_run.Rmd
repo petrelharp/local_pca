@@ -10,7 +10,8 @@ library(jsonlite)
 library(RColorBrewer)
 fig.dim <- 4
 knitr::opts_chunk$set(fig.width=2*fig.dim,fig.height=fig.dim,fig.align='center')
-do.pdfs <- FALSE
+# set do.pdfs to TRUE to output PDFs of figures as well
+if (!exists("do.pdfs")) { do.pdfs <- FALSE }
 ```
 ```{r plot_setup, include=FALSE}
 layout_heights <- function (k,dl=0,ncol=1) {
