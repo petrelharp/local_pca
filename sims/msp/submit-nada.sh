@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NAME="local_modest"
+NAME="nada"
 TAG=$(printf "%06d" $RANDOM); 
 DIR="${NAME}_${TAG}"
 mkdir -p $DIR
