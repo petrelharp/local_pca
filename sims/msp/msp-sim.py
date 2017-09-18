@@ -99,7 +99,7 @@ if args.vcffile is None:
 if args.samples_file is None:
     args.samples_file = os.path.join(args.basedir, "samples%02d.tsv")
 
-logfile = fileopt(args.logfile, "w")
+logfile = fileopt(args.logfile, "a")
 
 logfile.write("Options:\n")
 logfile.write(str(args)+"\n")

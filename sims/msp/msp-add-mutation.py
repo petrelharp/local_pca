@@ -36,7 +36,7 @@ argdict = vars(args)
 
 if args.basedir is None or args.mut_rate is None:
     print(description)
-    raise ValueError("Must specify more arguments (run with -h for help).")
+    raise ValueError("Must specify at least basedir and mut_rate (run with -h for help).")
 
 if args.tree_file is None or len(args.tree_file) == 0:
     args.tree_file = glob.glob(os.path.join(args.basedir, "*.trees"))
@@ -44,7 +44,7 @@ if args.tree_file is None or len(args.tree_file) == 0:
 args.nchroms = len(args.tree_file)
 
 if args.vcffile is None or len(args.vcffile) == 0:
-    args.vcffile = [re.sub("[.]trees$", "", x) + ".vcf" for x in args.tree_file]
+    args.vcffile = [os.path.join(args.basedir, re.sub("[.]trees$", "", os.path.basename(x))) + ".vcf" for x in args.tree_file]
 
 if args.logfile is None:
     args.logfile = os.path.join(args.basedir, "add_muts.log")

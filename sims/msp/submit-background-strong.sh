@@ -6,7 +6,8 @@ DIR="${NAME}_${TAG}"
 mkdir -p $DIR
 echo "Directory: $DIR"
 BASE_PARAMS="-n 1 -j 1 -k 2000 -w 10 -m 1e-3 -u 0.0 -o $DIR"
-MORE_PARAMS=("-N 200" "-N 200" "-N 400" "-N 400" "-N 600" "-N 600" "-N 800" "-N 800" "-N 1000" "-N 1000" "-N 1200" "-N 1200")
+# MORE_PARAMS=("-N 200" "-N 200" "-N 400" "-N 400" "-N 600" "-N 600" "-N 800" "-N 800" "-N 1000" "-N 1000" "-N 1200" "-N 1200")
+MORE_PARAMS=("-N 600" "-N 600" "-N 800" "-N 800" "-N 1000" "-N 1000" "-N 1200" "-N 1200")
 NPARAMS=${#MORE_PARAMS[@]}
 echo "$NPARAMS chromosomes."
 for CHROM_NUM in $(seq $((NPARAMS)))
