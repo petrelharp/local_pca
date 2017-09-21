@@ -26,7 +26,8 @@ option_list <- list(
         make_option( c("-k","--npc"),   type="integer",   default=2L,  help="Number of principal components to compute for each window. [default: %default]"),
         make_option( c("-w","--weightfile"), type="character",         help="File name containing weights to apply to PCA."),
         make_option( c("-m","--nmds"),   type="integer",   default=2L, help="Number of principal coordinates (MDS variables) to compute. [default: %default]"),
-        make_option( c("-M","--missing"),   type="float",              help="Percent data to introduce as missing.  [default: none]"),
+        make_option( c("-M","--missing"),   type="float", default=0.0, help="Percent data to introduce as missing.  [default: %default]"),
+        make_option( c("-S","--subsample"), type="float", default=1.0, help="Percent of individuals to retain, uniformly across populations.  [default: %default]"),
         make_option( c("-o","--outdir"), type="character",             help="Directory to save results to.  [default: lostruct_results/type_%type_size_%size_jobid_%jobid/]"),
         make_option( c("-j","--jobid"),  type="character", default=formatC(1e6*runif(1),width=6,format="d",flag="0"),   help="Unique job id. [default random]")
     )
@@ -48,6 +49,17 @@ if (is.null(opt$sample_info)) {
     stop(sprintf("Sample info file %s does not exist.",opt$sample_info))
 } else {
     opt$sample_info <- normalizePath(opt$sample_info)
+}
+
+# subsamples
+if (opt$subsample < 1.0) {
+    if (is.null(opt$sample_info)) { stop("Cannot subsample without a sample file.") }
+    samps <- read.table(opt$sample_info, sep="\t", header=TRUE)
+    names(samps) <- tolower(names(samps))
+    # hack for msprime output
+    if (is.numeric(samps$id)) { samps$id <- factor(paste0("msp_", samps$id)) }
+    subsamps <- as.character(samps$id)[sort(unlist(tapply(1:nrow(samps), samps$population, 
+                    function (x) sample(x, ceiling(opt$subsample*length(x))))))]
 }
 
 # weights
@@ -111,7 +123,12 @@ for (k in seq_along(bcf.files)) {
         these.regions <- data.table::fread(regions.file,header=TRUE)
     } else {
         cat("Finding PCs for", bcf.file, "and writing out to", pca.file, "and", regions.file, "\n")
-        win.fn <- vcf_windower(bcf.file, size=opt$size, type=tolower(opt$type) )
+        if (opt$subsample < 1.0) {
+            win.fn <- vcf_windower(bcf.file, size=opt$size, type=tolower(opt$type),
+                                   samples=subsamps)
+        } else {
+            win.fn <- vcf_windower(bcf.file, size=opt$size, type=tolower(opt$type))
+        } 
         these.regions <- region(win.fn)()
         system.time( 
                     pca.stuff <- eigen_windows( win.fn, k=opt$npc, w=opt$weights ) 
