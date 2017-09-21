@@ -26,8 +26,8 @@ option_list <- list(
         make_option( c("-k","--npc"),   type="integer",   default=2L,  help="Number of principal components to compute for each window. [default: %default]"),
         make_option( c("-w","--weightfile"), type="character",         help="File name containing weights to apply to PCA."),
         make_option( c("-m","--nmds"),   type="integer",   default=2L, help="Number of principal coordinates (MDS variables) to compute. [default: %default]"),
-        make_option( c("-M","--missing"),   type="float", default=0.0, help="Percent data to introduce as missing.  [default: %default]"),
-        make_option( c("-S","--subsample"), type="float", default=1.0, help="Percent of individuals to retain, uniformly across populations.  [default: %default]"),
+        make_option( c("-M","--missing"),   type="double", default=0.0, help="Percent data to introduce as missing.  [default: %default]"),
+        make_option( c("-S","--subsample"), type="double", default=1.0, help="Percent of individuals to retain, uniformly across populations.  [default: %default]"),
         make_option( c("-o","--outdir"), type="character",             help="Directory to save results to.  [default: lostruct_results/type_%type_size_%size_jobid_%jobid/]"),
         make_option( c("-j","--jobid"),  type="character", default=formatC(1e6*runif(1),width=6,format="d",flag="0"),   help="Unique job id. [default random]")
     )
