@@ -4,7 +4,7 @@
 #SBATCH -n 1
 #SBATCH -c 1
 #SBATCH -t 4:00:00
-#SBATCH --mem=100M
+#SBATCH --mem=8G
 
 module load R/3.4.1 bcftools
 
@@ -27,6 +27,7 @@ OUTDIR=$PARAMS
 date
 echo "Writing lostruct results to $OUTDIR"
 echo "Running:"
+echo "Rscript -e "templater::render_template('summarize_run.Rmd', change.rootdir=TRUE, output='${OUTDIR}/run_summary.html')""
 
 Rscript -e "templater::render_template('summarize_run.Rmd', change.rootdir=TRUE, output='${OUTDIR}/run_summary.html')"
 

@@ -33,7 +33,7 @@ date
 echo "Writing out to $OUTDIR"
 
 TREEFILES=($BASEDIR/*trees)
-MUTRATES=$(seq 1e6 $((9000000/(${#TREEFILES[@]}-1))) 1e7)
+MUTRATES=$(seq .00000001 $(echo "scale=9; .00000009/(${#TREEFILES[@]}-1)" | bc) .0000001)
 
 mkdir -p $OUTDIR
 ./msp-add-mutation.py --basedir $OUTDIR --tree_file ${TREEFILES[@]} --njobs 1 --mut_rate $MUTRATES
