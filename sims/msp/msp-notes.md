@@ -1,3 +1,13 @@
+#
+
+```
+for DIR in nada_015374/flat_mut_024499 local_strong_004148/flat_mut_010003 local_modest_015964/flat_mut_032640 background_modest_024746/flat_mut_017434 background_strong_021863/flat_mut_008039
+do
+    export PARAMS=$DIR/lostruct_1e6_bp_k2_m_0.0; sbatch -o $PARAMS/summarize_run_$(date +"%Y_%m_%d_%H_%M").out summarize_run.sbatch
+done
+```
+
+
 # Timing
 
 With migration at 1e-3, on a `10x10` grid, with `N` number per deme, recombination rate `2.5e-8` per bp, `time` in seconds, and `mem` in Kb:

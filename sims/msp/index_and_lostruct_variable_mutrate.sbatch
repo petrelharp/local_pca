@@ -3,7 +3,7 @@
 #SBATCH -N 1
 #SBATCH -n 1
 #SBATCH -c 1
-#SBATCH -t 24:00:00
+#SBATCH -t 32:00:00
 #SBATCH --mem=8G
 
 module load gcc
@@ -21,7 +21,12 @@ then
     exit 1
 fi
 
-TAG=$(printf "%06d" $RANDOM);
+if [ -z ${TAG+x} ]; 
+then 
+    TAG=$(printf "%06d" $RANDOM);
+else
+    echo "using existing tag $TAG"
+fi
 
 echo "task number $SLURM_ARRAY_TASK_ID and tag $TAG"
 echo "looking for tree files in directory $PARAMS"
@@ -32,8 +37,19 @@ OUTDIR=$BASEDIR/step_mut_$TAG
 date
 echo "Writing out to $OUTDIR"
 
-TREEFILES=($BASEDIR/*trees)
-MUTRATES=$(seq .00000001 $(echo "scale=9; .00000009/(${#TREEFILES[@]}-1)" | bc) .0000001)
+ALL_TREEFILES=($BASEDIR/*trees)
+ALL_MUTRATES=$(seq .00000001 $(echo "scale=9; .00000009/(${#ALL_TREEFILES[@]}-1)" | bc) .0000001)
+TREEFILES=()
+MUTRATES=()
+for k in $(seq ${#ALL_TREEFILES[@]})
+do
+    TF=${ALL_TREEFILES[k]}
+    if [ ! -f $OUTDIR/$(basename ${TF%trees}vcf) ]
+    then
+        TREEFILES+=($TF)
+        MUTRATES+=(${ALL_MUTRATES[k]})
+    fi
+done
 
 mkdir -p $OUTDIR
 ./msp-add-mutation.py --basedir $OUTDIR --tree_file ${TREEFILES[@]} --njobs 1 --mut_rate $MUTRATES
@@ -53,14 +69,6 @@ do
         rm $VCF
     fi
 done
-
-date
-echo "Done generating mutations."
-
-LODIR=$OUTDIR/lostruct_1e6_bp_k2; mkdir -p $LODIR
-echo "Writing lostruct results to $LODIR"
-
-./run_lostruct.R --input_dir $OUTDIR --sample_info $BASEDIR/samples01.tsv -t bp -s 1e6 -k 2 -o $LODIR
 
 
 date

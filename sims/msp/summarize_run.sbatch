@@ -27,7 +27,7 @@ OUTDIR=$PARAMS
 date
 echo "Writing lostruct results to $OUTDIR"
 echo "Running:"
-echo "Rscript -e "templater::render_template('summarize_run.Rmd', change.rootdir=TRUE, output='${OUTDIR}/run_summary.html')""
+echo "Rscript -e \"templater::render_template('summarize_run.Rmd', change.rootdir=TRUE, output='${OUTDIR}/run_summary.html')\""
 
 Rscript -e "templater::render_template('summarize_run.Rmd', change.rootdir=TRUE, output='${OUTDIR}/run_summary.html')"
 
