@@ -2,9 +2,9 @@
 #SBATCH -p long
 #SBATCH -N 1
 #SBATCH -n 1
-#SBATCH -c 1
+#SBATCH -c 4
 #SBATCH -t 32:00:00
-#SBATCH --mem=8G
+#SBATCH --mem=32G
 
 module load gcc
 module load python3
@@ -38,21 +38,28 @@ date
 echo "Writing out to $OUTDIR"
 
 ALL_TREEFILES=($BASEDIR/*trees)
-ALL_MUTRATES=$(seq .00000001 $(echo "scale=9; .00000009/(${#ALL_TREEFILES[@]}-1)" | bc) .0000001)
+ALL_MUTRATES=($(seq .00000001 $(echo "scale=9; .00000009/(${#ALL_TREEFILES[@]}-1)" | bc) .0000001))
 TREEFILES=()
 MUTRATES=()
-for k in $(seq ${#ALL_TREEFILES[@]})
+for k in $(seq 0 $((${#ALL_TREEFILES[@]}-1)) )
 do
-    TF=${ALL_TREEFILES[k]}
+    TF=${ALL_TREEFILES[$k]}
+    MR=${ALL_MUTRATES[$k]}
+    echo "Checking if we've already done $TF"
     if [ ! -f $OUTDIR/$(basename ${TF%trees}vcf) ]
     then
+        echo "We haven't!  Will do with mut rate $MR"
         TREEFILES+=($TF)
-        MUTRATES+=(${ALL_MUTRATES[k]})
+        MUTRATES+=($MR)
     fi
 done
 
 mkdir -p $OUTDIR
-./msp-add-mutation.py --basedir $OUTDIR --tree_file ${TREEFILES[@]} --njobs 1 --mut_rate $MUTRATES
+
+echo "Doing:"
+echo "./msp-add-mutation.py --basedir $OUTDIR --tree_file ${TREEFILES[@]} --njobs 4 --mut_rate ${MUTRATES[@]}"
+
+./msp-add-mutation.py --basedir $OUTDIR --tree_file ${TREEFILES[@]} --njobs 4 --mut_rate ${MUTRATES[@]}
 
 date
 echo "Indexing and converting to BCF"

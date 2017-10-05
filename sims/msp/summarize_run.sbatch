@@ -3,7 +3,7 @@
 #SBATCH -N 1
 #SBATCH -n 1
 #SBATCH -c 1
-#SBATCH -t 4:00:00
+#SBATCH -t 12:00:00
 #SBATCH --mem=8G
 
 module load R/3.4.1 bcftools
