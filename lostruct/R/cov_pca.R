@@ -53,6 +53,8 @@ cov_pca <- function (x,k,w=1,
 #'
 #' @param f A function such that f(k) returns the k-th chunk of data.
 #' @param n The number of chunks of data, or a vector of indices.
+#' @param normalize.rows Whether to subtract row means.
+#"
 #' @return A numeric matrix:
 #' If a and b are vectors, then
 #'    mean(a[1:(n+m)]) == (n/(n+m)) * mean(a[1:n]) + (1/(n+m)) * sum(a[(n+1):(n+m)])
@@ -60,9 +62,12 @@ cov_pca <- function (x,k,w=1,
 #'    cov(a,b) = sum(a*b)/(n-1) - sum(a)*sum(b)/(n*(n-1))
 #' where the sums are over the n shared nonmissings.
 #' @export
-running_cov <- function (f,n) {
+running_cov <- function (f, n, normalize.rows=TRUE) {
     if (is.numeric(n) && length(n)==1) { n <- seq_len(n) }
     x <- f(n[1])
+    if (normalize.rows){
+        x <- sweep(x, 1, rowMeans(x,na.rm=TRUE))
+    }
     z <- !is.na(x)
     colm <- colMeans(x,na.rm=TRUE)  # estimate of the column means
     x <- sweep(x,2,colm,"-")

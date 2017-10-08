@@ -188,17 +188,20 @@ Now, we'll look at PCA plots from the extracted corners.
 (this is done without a ton of memory by accumulating the covariance matrix in `running_cov`):
 ```{r corner_pca, cache=TRUE}
 corner.npc <- 4
-corner.regions <- lapply( 1:ncol(mds.corners), function (k) {
-            regions[ mds.corners[,k],]
-    } )
-corner.covmats <- lapply( 1:ncol(mds.corners), function (k) {
-            reg <- regions[ mds.corners[,k], ]
-            qfun <- multi_vcf_query_fn( chrom.list=chroms, file=bcf.files, regions=reg )
-            running_cov(qfun,1:nrow(reg))
-        } )
-corner.pca <- lapply( corner.covmats, function (covmat) {
-            cov_pca(covmat=covmat,k=corner.npc,w=opt$weights)
-    } )
+corner.regions <- vector(mode='list', length=ncol(mds.corners))
+for (k in seq_along(corner.regions)) {
+    corner.regions[[k]] <- regions[ mds.corners[,k],]
+}
+corner.covmats <- vector(mode='list', length=ncol(mds.corners))
+for (k in seq_along(corner.covmats)) {
+    reg <- regions[ mds.corners[,k], ]
+    qfun <- multi_vcf_query_fn( chrom.list=chroms, file=bcf.files, regions=reg )
+    corner.covmats[[k]] <- running_cov(qfun,1:nrow(reg), normalize.rows=TRUE)
+}
+corner.pca <- vector(mode='list', length=ncol(mds.corners))
+for (k in seq_along(corner.pca)) {
+    corner.pca[[k]] <- cov_pca(covmat=covmat, k=corner.npc, w=opt$weights)
+}
 ```
 
 Here is the color scheme:
