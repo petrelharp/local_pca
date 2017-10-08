@@ -205,7 +205,8 @@ Here is the color scheme:
 ```{r pop_colors, fig.height=2*fig.dim}
 pop.names <- levels(samps$population)
 pop.cols <- rainbow_hcl(nlevels(samps$population))
-pop.pch <- seq_len(nlevels(samps$population))
+# max pch value is 25
+pop.pch <- seq_len(nlevels(samps$population)) %% 25
 plot( rep(1,length(pop.names)), seq_along(pop.names), 
        cex=4, pch=pop.pch, col=pop.cols, xlim=c(0,length(pop.names)),
        xlab='', ylab='', xaxt='n', yaxt='n' )
