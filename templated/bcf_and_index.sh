@@ -14,7 +14,7 @@ do
         echo "File $1 does not exist."
     else 
         OUT=${1%.vcf}.bcf
-        echo "Converting $! to $OUT (and indexing)."
+        echo "Converting $1 to $OUT (and indexing)."
         bcftools convert -o $OUT -O b $1
         bcftools index $OUT
     fi

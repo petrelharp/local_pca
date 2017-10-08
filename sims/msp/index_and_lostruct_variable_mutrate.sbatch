@@ -2,9 +2,9 @@
 #SBATCH -p long
 #SBATCH -N 1
 #SBATCH -n 1
-#SBATCH -c 4
-#SBATCH -t 32:00:00
-#SBATCH --mem=32G
+#SBATCH -c 1
+#SBATCH -t 48:00:00
+#SBATCH --mem=64G
 
 module load gcc
 module load python3
@@ -57,9 +57,9 @@ done
 mkdir -p $OUTDIR
 
 echo "Doing:"
-echo "./msp-add-mutation.py --basedir $OUTDIR --tree_file ${TREEFILES[@]} --njobs 4 --mut_rate ${MUTRATES[@]}"
+echo "./msp-add-mutation.py --basedir $OUTDIR --tree_file ${TREEFILES[@]} --njobs 1 --mut_rate ${MUTRATES[@]}"
 
-./msp-add-mutation.py --basedir $OUTDIR --tree_file ${TREEFILES[@]} --njobs 4 --mut_rate ${MUTRATES[@]}
+./msp-add-mutation.py --basedir $OUTDIR --tree_file ${TREEFILES[@]} --njobs 1 --mut_rate ${MUTRATES[@]}
 
 date
 echo "Indexing and converting to BCF"
