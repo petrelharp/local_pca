@@ -1,12 +1,12 @@
 
 context("Testing pc_dist")
 
-expect_almost_equal <- function (object,expected,tol=10*sqrt(.Machine$double.eps),...) {
+expect_almost_equal <- function (object,expected,tol=40*sqrt(.Machine$double.eps),...) {
     expect_true( all(abs(object-expected)<tol), ... )
 }
 
 set.seed(42)
-n <- 10
+n <- 100
 
 x <- cov( matrix(rnorm(2*n^2), ncol=n) )
 y <- cov( matrix(rnorm(2*n^2), ncol=n) )
