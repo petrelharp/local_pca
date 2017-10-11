@@ -65,11 +65,11 @@ cov_pca <- function (x,k,w=1,
 running_cov <- function (f, n, normalize.rows=TRUE) {
     if (is.numeric(n) && length(n)==1) { n <- seq_len(n) }
     x <- f(n[1])
-    if (normalize.rows){
-        x <- sweep(x, 1, rowMeans(x,na.rm=TRUE))
-    }
     z <- !is.na(x)
-    colm <- colMeans(x,na.rm=TRUE)  # estimate of the column means
+    # subtract an ESTIMATE of the column means based on the first block:
+    # subtracting a constant doesn't change the covariance
+    # but may make this more numerically stable
+    colm <- colMeans(x,na.rm=TRUE)
     x <- sweep(x,2,colm,"-")
     x[!z] <- 0
     nn <- crossprod(z)       # matrix of number of shared nonmissings
@@ -83,6 +83,11 @@ running_cov <- function (f, n, normalize.rows=TRUE) {
         sums <- sums + crossprod(x,z)
         sumsq <- sumsq + crossprod(x)
     }
-    return( (1/(nn-1))*sumsq - sums*t(sums)/(nn*(nn-1)) )
+    out <- ( (1/(nn-1))*sumsq - sums*t(sums)/(nn*(nn-1)) )
+    if (normalize.rows){
+        Imat <- diag(ncol(x)) - 1/ncol(x)
+        out <- Imat %*% out %*% Imat
+    }
+    return(out)
 }
 
