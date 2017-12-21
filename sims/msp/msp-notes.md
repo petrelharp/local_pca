@@ -1,9 +1,40 @@
-#
+# What's been done
+
+* `--nchroms NCHROMS, -n NCHROMS`
+                       number of chromosomes
+* `--chrom_start CHROM_START, -C CHROM_START`
+                       index of first chromosome
+* `--nsamples NSAMPLES, -k NSAMPLES`
+                       number of samples, total
+* `--popsize [POPSIZE [POPSIZE ...]], -N [POPSIZE [POPSIZE ...]]`
+                       size of each subpopulation
+* `--width WIDTH, -w WIDTH`
+                       width of square grid, in populations
+* `--migr [MIGR [MIGR ...]], -m [MIGR [MIGR ...]]`
+                       migration proportion between adjacent populations
+* `--min_recomb [MIN_RECOMB [MIN_RECOMB ...]], -r [MIN_RECOMB [MIN_RECOMB ...]]`
+                       minimum recombination rate
+* `--max_recomb [MAX_RECOMB [MAX_RECOMB ...]], -R [MAX_RECOMB [MAX_RECOMB ...]]`
+                       maximum recombination rate
+* `--mapfile MAPFILE, -p MAPFILE`
+                       name of map file
+* `--mut_rate [MUT_RATE [MUT_RATE ...]], -u [MUT_RATE [MUT_RATE ...]]`
+                    mutation rate
+
+
 
 ```
-for DIR in nada_015374/flat_mut_024499 local_strong_004148/flat_mut_010003 local_modest_015964/flat_mut_032640 background_modest_024746/flat_mut_017434 background_strong_021863/flat_mut_008039
+cat $(find . -name "run_*.out") | grep "^.n" | column -t  | sort -V -k 14,20
+```
+
+## operations
+
+```
+for DIR in nada_015374 background_modest_024746 background_strong_021863 local_strong_004148 local_modest_015964
 do
-    export PARAMS=$DIR/lostruct_1e6_bp_k2_m_0.0; sbatch -o $PARAMS/summarize_run_$(date +"%Y_%m_%d_%H_%M").out summarize_run.sbatch
+    now=$(date +"%Y_%m_%d_%H_%M")
+    export PARAMS=$DIR
+    sbatch -o $DIR/lostruct_run_${now}.out -e $DIR/lostruct_run_${now}.out ./index_and_lostruct.sbatch
 done
 ```
 
