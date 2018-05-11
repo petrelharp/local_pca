@@ -1,0 +1,93 @@
+// set up a simple neutral simulation
+initialize() {
+	initializeSLiMModelType("nonWF");
+	initializeSLiMOptions(dimensionality="xy");
+	
+	defineConstant("S", 0.1);  // sigma_S, the spatial interaction and dispersal distance
+	defineConstant("K", 1000); // the total carrying-capacity
+	defineConstant("L", 4);    // mean lifetime at stationarity
+	defineConstant("Q", ((L-1)/(L+1))/(2 * PI * S^2));    // useful below
+	
+	
+	initializeMutationType("m1", 0.5, "n", 0.0, 0.001);
+	m1.convertToSubstitution = T;
+	
+	initializeGenomicElementType("g1", m1, 1.0);
+	initializeGenomicElement(g1, 0, 1e8-1);
+	initializeMutationRate(1e-7);
+	initializeRecombinationRate(1e-8);
+	
+	// spatial competition and mate choice
+	initializeInteractionType(1, "xy", reciprocal=T, maxDistance=S * 3);
+	i1.setInteractionFunction("n", 1.0, S);
+}
+
+reproduction() {
+	// choose our nearest neighbor as a mate, within the max distance
+	mate = i1.nearestNeighbors(individual, 1);
+	if (mate.size()) {
+		for (i in seqLen(rpois(1, 1/L))) {
+			offspring = subpop.addCrossed(individual, mate);
+			pos = individual.spatialPosition + rnorm(2, 0, S);
+			offspring.setSpatialPosition(p1.pointReflected(pos));
+		}
+	}
+	return NULL;
+}
+
+1 early() {
+	sim.addSubpop("p1", 100);
+	// random initial positions
+	for (ind in p1.individuals)
+		ind.setSpatialPosition(p1.pointUniform());
+	i1.evaluate();
+	catn("Q: " + Q);
+}
+
+early() {
+	i1.evaluate(p1);
+	catn(sim.generation + " : Number of individuals: " + size(p1.individuals));
+	
+	// pre-calculate adult density matrix for faster queries
+	bounds = p1.spatialBounds;
+	m = float(100);
+	i = 0;
+	for (y in seq(from=bounds[1], to=bounds[3], length=10))
+	{
+		for (x in seq(from=bounds[0], to=bounds[2], length=10))
+		{
+			mPoint = c(x,y);
+			neighbors = i1.nearestNeighborsOfPoint(p1, mPoint, count=1000000);
+			distances = i1.distanceToPoint(neighbors, mPoint);
+			strengths = dnorm(distances, mean=0.0, sd=S);
+			density = sum(strengths);
+			m[i] = density;
+			i = i + 1;
+		}
+	}
+	p1.defineSpatialMap("density", "xy", c(10,10), m, interpolate=T);
+	
+	for (ind in p1.individuals) {
+		density = p1.spatialMapValue("density", ind.spatialPosition);
+
+		// DEBUG:		
+		neighbors = i1.nearestNeighborsOfPoint(p1, ind.spatialPosition, count=1000000);
+		distances = i1.distanceToPoint(neighbors[neighbors != ind], mPoint);
+		strengths = dnorm(distances, mean=0.0, sd=S) * (2 * PI * S^2);
+		catn(paste(ind.spatialPosition) + " (" + size(neighbors) + ") :: " + density + " -- " + i1.totalOfNeighborStrengths(ind) + " -- " + sum(strengths));
+		
+		ind.fitnessScaling = 2 / (1 + Q * density);
+	}
+		catn(p1.individuals.fitnessScaling);
+
+}
+
+1: late() {
+	catn("Generation " + sim.generation);
+	catn(clock());
+	i1.evaluate(p1);
+}
+
+2000 late() {
+	sim.outputFixedMutations();
+}

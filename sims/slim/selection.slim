@@ -1,0 +1,74 @@
+// set up a simple neutral simulation
+initialize() {
+    initializeSLiMModelType("nonWF");
+    initializeSLiMOptions(dimensionality="xy");
+    initializeTreeSeq();
+    
+    defineConstant("K", 100);  // carrying-capacity per unit square
+    defineConstant("S", 0.1);  // sigma_S, the spatial interaction and dispersal distance
+    defineConstant("L", 4);    // mean lifetime at stationarity
+    defineConstant("W", 8.0);  // width and height of the simulated area
+
+    // read chromosome map (just so we know how long to make it)
+    lines = readFile("step_recomb.endpoints.txt");
+    values = asInteger(lines);
+    defineConstant("X", values);
+    lines = readFile("step_recomb.rates.txt");
+    values = asFloat(lines);
+    defineConstant("R", values);
+    
+    initializeMutationType("m1", 0.5, "g", -0.005, 2);
+    initializeMutationType("m2", 0.5, "g", 0.005, 2);
+    m1.convertToSubstitution = T;
+    
+    initializeGenomicElementType("g1", c(m1, m2), c(10.0, 1.0));
+    initializeGenomicElement(g1, 0, max(X));
+    initializeMutationRate(1e-9);
+    initializeRecombinationRate(mean(R));
+    
+    // spatial competition and mate choice
+    initializeInteractionType(1, "xy", reciprocal=T, maxDistance=S * 3);
+    i1.setInteractionFunction("n", 1.0, S);
+}
+
+reproduction() {
+    // choose our nearest neighbor as a mate, within the max distance
+    mate = i1.nearestNeighbors(individual, 1);
+    if (mate.size()) {
+        for (i in seqLen(rpois(1, 1/L))) {
+            offspring = subpop.addCrossed(individual, mate);
+            pos = individual.spatialPosition + rnorm(2, 0, S);
+            offspring.setSpatialPosition(p1.pointReflected(pos));
+        }
+    }
+    return NULL;
+}
+
+1 early() {
+    sim.addSubpop("p1", 100);
+    p1.setSpatialBounds(c(0, 0, W, W));
+    // random initial positions
+    for (ind in p1.individuals)
+        ind.setSpatialPosition(p1.pointUniform());
+    i1.evaluate();
+}
+
+early() {
+    i1.evaluate(p1);
+    inds = p1.individuals;
+    competition = i1.totalOfNeighborStrengths(inds);
+    inds.fitnessScaling = 2 / (1 + (L + 1) / (L - 1) * (competition / (K * 2 * PI * S^2)));
+}
+
+1: late() {
+    i1.evaluate(p1);
+
+    if ((sim.generation % 20) == 0) {
+        cat(sim.generation + " " + p1.individualCount + " " + size(sim.mutations));
+        catn(" " + clock());
+    }
+}
+
+2000 late() {
+    sim.outputFixedMutations();
+}

@@ -1000,12 +1000,12 @@ lostruct () {
     for VCF in $OUTDIR/*.vcf
     do
         [ -f $VCF ] || continue
-        bcftools convert -O b -o ${VCF%vcf}bcf $VCF
-        bcftools index ${VCF%vcf}bcf
+        BCF=${VCF%vcf}bcf
+        [ -f $BCF ] || (bcftools convert -O b -o $BCF $VCF; bcftools index $BCF)
     done
     for WINLENBP in $WINLENBPS
     do
-        for NPC in 2 3; do
+        for NPC in 2 3 4 5; do
             (LODIR=${OUTDIR}/bp_${WINLENBP}_npc_${NPC};
             ./run_lostruct.R -i ${OUTDIR} -k $NPC -t bp -s $WINLENBP -o $LODIR -I ${OUTDIR}/samples.tsv;
             Rscript -e "templater::render_template('summarize_run.Rmd',output='${LODIR}/run-summary.html',change.rootdir=TRUE)")&
