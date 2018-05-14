@@ -115,7 +115,7 @@ chrom.plot <- function (y,ylab='',main='',chrom.labels=TRUE,...) {
              border=NA, col=adjustcolor("grey",0.25) )
     }
     abline( v=chrom.dividers/1e6, lty=3, col=adjustcolor("grey",0.5), lwd=2 )
-    if (chrom.labels) axis( 1, at=chrom.mids/1e6, labels=chroms, las=0, tick=FALSE )
+    if (chrom.labels) axis( 1, at=chrom.mids/1e6, labels=paste("chromosome", chroms), las=0, tick=FALSE )
     points( regions$pos/1e6, y, ...)
 }
 ```
@@ -162,6 +162,7 @@ layout(matrix(c(rep(1,length(mds.cols)),1+seq_along(mds.cols)),ncol=2),
         widths=c(1,2), heights=layout_heights(length(mds.cols),dl=spacing,ncol=2))
 plot( mds.coords[,mds.cols[1:2]], pch=cpch, 
      col=adjustcolor(ccols,0.75),  asp=1,
+     xaxt='n', yaxt='n',
      xlab="MDS coordinate 1", ylab="MDS coordinate 2" )
 points( corner.mds, pch=20, cex=5,
         col=adjustcolor(corner.cols,0.25))
@@ -200,7 +201,7 @@ for (k in seq_along(corner.covmats)) {
 }
 corner.pca <- vector(mode='list', length=ncol(mds.corners))
 for (k in seq_along(corner.pca)) {
-    corner.pca[[k]] <- cov_pca(covmat=covmat, k=corner.npc, w=opt$weights)
+    corner.pca[[k]] <- cov_pca(covmat=corner.covmats[[k]], k=corner.npc, w=opt$weights)
 }
 ```
 
@@ -224,10 +225,12 @@ for (i in 1:(corner.npc-1)) {
         for (k in 1:ncol(mds.corners)) {
             vectors <- matrix( corner.pca[[k]][-(1:(1+corner.npc))], ncol=corner.npc )[,c(i,j)]
             colnames(vectors) <- paste("PC", c(i,j))
+            par(mgp=c(0.7,0.7,0), mar=c(2,2,2,0)+.1)
             plot(vectors, pch=pop.pch[samps$population], 
-                    col=pop.cols[samps$population] )
+                    col=pop.cols[samps$population],
+                    xaxt='n', yaxt='n' )
             if (i==1 && j==2) {
-                mtext(paste("corner",k),side=3,cex=2)
+                mtext(paste("corner",k),side=3)
             }
         }
         if (do.pdfs) { pdf_copy(plot.id=paste(i,j,sep="_")) }
