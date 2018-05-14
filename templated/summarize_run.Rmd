@@ -48,6 +48,9 @@ templater::render_template("summarize_run.Rmd",output="lostruct_results/type_snp
 ```
 
 ```{r data_setup, include=FALSE}
+if (!file.exists("config.json")) {
+    stop(paste("File", file.path(getwd(), "config.json"), "does not exist. Cannot continue."))
+}
 opt <- fromJSON("config.json")
 if (is.null(opt$weights)) { opt$weights <- 1 }
 
