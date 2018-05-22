@@ -17,17 +17,18 @@ then
     exit 1
 fi
 
-SEED=$(printf "%06d" $RANDOM); 
+: ${OUTDIR?Must define OUTDIR}
+if [ -z "$OUTDIR" ]
+then
+    echo "Must define OUTDIR (is empty)."
+    exit 1
+fi
 
-OUTDIR="run_$SEED"
-mkdir -p $OUTDIR
-
-ALL_PARAMS="$PARAMS -s $SEED -d \"OUTDIR='$OUTDIR'\""
 echo "Running:"
-echo "   slim $ALL_PARAMS sims.slim"
+echo "   slim $PARAMS sims.slim"
 
 /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
-    slim "$ALL_PARAMS" sims.slim &> $OUTDIR/run.log
+    slim "$PARAMS" sims.slim &> $OUTDIR/run.log
 
 
 echo "Done!"
