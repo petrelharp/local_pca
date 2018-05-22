@@ -20,7 +20,9 @@ OUTDIR="${NAME}_${TAG}"
 mkdir -p $OUTDIR
 echo "Directory: $OUTDIR"
 
-export PARAMS="-d RECOMBTYPE='$RECOMBTYPE' -d SELTYPE='$SELTYPE' -d OUTDIR='$OUTDIR' -s $TAG"
-export OUTDIR="$OUTDIR"
-sbatch -o $OUTDIR/run_${TAG}.out -e $OUTDIR/run_${TAG}.out ./run-sim.sbatch 
+echo "defineConstant(\"RECOMBTYPE\", \"${RECOMBTYPE}\");" >> $OUTDIR/parameters.slim
+echo "defineConstant(\"SELTYPE\", \"${SELTYPE}\");" >> $OUTDIR/parameters.slim
+
+export OUTDIR
+sbatch -o $OUTDIR/slurm_${TAG}.out -e $OUTDIR/slurm_${TAG}.out ./run_sim.sbatch 
 

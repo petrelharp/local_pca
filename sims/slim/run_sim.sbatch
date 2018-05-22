@@ -10,13 +10,6 @@ module load python3 tskit SLiM
 
 cd $SLURM_SUBMIT_DIR
 
-: ${PARAMS?Must define PARAMS}
-if [ -z "$PARAMS" ]
-then
-    echo "Must define PARAMS (is empty)."
-    exit 1
-fi
-
 : ${OUTDIR?Must define OUTDIR}
 if [ -z "$OUTDIR" ]
 then
@@ -25,10 +18,10 @@ then
 fi
 
 echo "Running:"
-echo "   slim $PARAMS sims.slim"
+echo "   slim sims.slim"
 
 /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
-    slim "$PARAMS" sims.slim &> $OUTDIR/run.log
+    slim -d "OUTDIR='$OUTDIR'" sims.slim &> $OUTDIR/slim_run.log
 
 
 echo "Done!"

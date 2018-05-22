@@ -1,10 +1,12 @@
 initialize() {
 
+    // this should define RECOMBTYPE, and SELTYPE
+    source(paste(c(OUTDIR, "parameters.slim"), sep="/"));
+
     initializeSLiMModelType("nonWF");
     initializeSLiMOptions(dimensionality="xy");
     initializeTreeSeq();
 
-    createDirectory(OUTDIR);
     defineConstant("OUTFILE", paste(c(OUTDIR, "results.trees"), sep="/"));
 
     defineConstant("K", 100);  // carrying-capacity per unit square
