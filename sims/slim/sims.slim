@@ -1,19 +1,29 @@
-// set up a simple neutral simulation
 initialize() {
+
     initializeSLiMModelType("nonWF");
     initializeSLiMOptions(dimensionality="xy");
     initializeTreeSeq();
-    
+
+    createDirectory(OUTDIR);
+    defineConstant("OUTFILE", paste(c(OUTDIR, "results.trees"), sep="/"));
+
     defineConstant("K", 100);  // carrying-capacity per unit square
     defineConstant("S", 0.1);  // sigma_S, the spatial interaction and dispersal distance
     defineConstant("L", 4);    // mean lifetime at stationarity
     defineConstant("W", 8.0);  // width and height of the simulated area
 
     // read chromosome map (just so we know how long to make it)
-    lines = readFile("step_recomb.endpoints.txt");
+    if (RECOMBTYPE == "hotspot") {
+        endpoint_file = "decode_female_chr7.endpoints.txt";
+        rates_file = "decode_female_chr7.rates.txt";
+    } else {
+        endpoint_file = "step_recomb.endpoints.txt";
+        rates_file = "step_recomb.rates.txt";
+    }
+    lines = readFile(endpoint_file);
     values = asInteger(lines);
     defineConstant("X", values);
-    lines = readFile("step_recomb.rates.txt");
+    lines = readFile(rates_file);
     values = asFloat(lines);
     defineConstant("R", values);
     
@@ -23,12 +33,26 @@ initialize() {
     
     initializeGenomicElementType("g1", c(m1, m2), c(10.0, 1.0));
     initializeGenomicElement(g1, 0, max(X));
-    initializeMutationRate(1e-9);
-    initializeRecombinationRate(mean(R));
+    if (SELTYPE == "neutral") {
+        initializeMutationRate(0.0);
+    } else if (SELTYPE == "selected") {
+        initializeMutationRate(1e-9);
+    } else {
+        stop(paste(c("unknown SELTYPE", SELTYPE)));
+    }
+
+    if (RECOMBTYPE == "base") {
+        initializeRecombinationRate(mean(R));
+    } else if (RECOMBTYPE == "step" | SIMTYPE == "hotspot") {
+        initializeRecombinationRate(R, X);
+    } else {
+        stop(paste(c("unknown RECOMBTYPE", RECOMBTYPE)));
+    }
     
     // spatial competition and mate choice
     initializeInteractionType(1, "xy", reciprocal=T, maxDistance=S * 3);
     i1.setInteractionFunction("n", 1.0, S);
+
 }
 
 reproduction() {
@@ -45,12 +69,18 @@ reproduction() {
 }
 
 1 early() {
-    sim.addSubpop("p1", 100);
+    sim.addSubpop("p1", 5000);
     p1.setSpatialBounds(c(0, 0, W, W));
     // random initial positions
     for (ind in p1.individuals)
         ind.setSpatialPosition(p1.pointUniform());
     i1.evaluate();
+
+    // header info
+    catn("Overall mutation rate: " + sim.chromosome.overallMutationRate);
+    catn("Overall recombination rate: " + sim.chromosome.overallRecombinationRate);
+    catn();
+    catn("generation" + " " + "individualCount" + " " + "num_mutations" + " " + "time");
 }
 
 early() {
@@ -63,12 +93,12 @@ early() {
 1: late() {
     i1.evaluate(p1);
 
-    if ((sim.generation % 20) == 0) {
+    if ((sim.generation % 200) == 0) {
         cat(sim.generation + " " + p1.individualCount + " " + size(sim.mutations));
         catn(" " + clock());
     }
 }
 
-2000 late() {
-    sim.outputFixedMutations();
+50000 late() {
+    sim.treeSeqOutput(OUTFILE, simplify=T);
 }
