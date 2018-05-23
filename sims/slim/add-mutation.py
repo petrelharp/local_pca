@@ -73,8 +73,8 @@ def write_vcf(chrom):
     seed = seeds[chrom]
     logfile.write("Simulating mutations on" + treefile + "\n")
     ts = msprime.load(treefile)
-    rng = msprime.RandomGenerator(seed)
     tables = ts.dump_tables()
+    rng = msprime.RandomGenerator(seed)
     mutgen = msprime.MutationGenerator(rng, mut_rate)
     mutgen.generate(tables.nodes, tables.edges, tables.sites, tables.mutations)
     logfile.write("Saving to" + args.vcffile[chrom] + "\n")
