@@ -9,6 +9,7 @@ import glob
 import re
 import argparse
 import struct
+import numpy as np
 
 import msprime
 
@@ -17,7 +18,7 @@ parser.add_argument("--tree_file", "-t", type=str, nargs="*", dest="tree_file",
                     help="name of file to load tree sequences from [default: .trees files in basedir.")
 parser.add_argument("--basedir", "-o", type=str, dest="basedir", 
                     help="name of directory to save output files to.")
-parser.add_argument("--indivfile", "-i", type=str, nargs="*", dest="indiv", 
+parser.add_argument("--indivfile", "-i", type=str, nargs="*", dest="indivfile", 
                     help="name of output files [default: as trees but with .indiv.tsv]")
 parser.add_argument("--logfile", "-g", type=str, dest="logfile", 
                     help="name of log file")
@@ -28,6 +29,9 @@ argdict = vars(args)
 if args.basedir is None and args.indivfile is None:
     print(description)
     raise ValueError("Must specify at least basedir and indivfile (run with -h for help).")
+
+if args.tree_file is None or len(args.tree_file) == 0:
+    args.tree_file = glob.glob(os.path.join(args.basedir, "*.trees"))
 
 if args.indivfile is None or len(args.indivfile) == 0:
     args.indivfile = [os.path.join(args.basedir, re.sub("[.]trees$", "", os.path.basename(x))) 
@@ -56,9 +60,6 @@ class slimIndividual(object):
         self.location = location
 
 
-node_inds = [np.where(ts.tables.nodes.individual == u)[0] 
-             for u in range(ts.tables.individuals.num_rows)]
-
 header = ["id", "age", "subpop", "location_x", "location_y", "location_z", "node_ma", "node_pa"]
 
 def write_indivs(chrom):
@@ -66,7 +67,8 @@ def write_indivs(chrom):
     out = open(args.indivfile[chrom], "w")
     logfile.write("Reading trees from " + treefile + "\n")
     ts = msprime.load(treefile)
-    tables = ts.dump_tables()
+    node_inds = [np.where(ts.tables.nodes.individual == u)[0] 
+                 for u in range(ts.tables.individuals.num_rows)]
     individuals = [slimIndividual(ts.tables.individuals[k]) 
                    for k in range(ts.tables.individuals.num_rows)]
     logfile.write("Saving to" + args.indivfile[chrom] + "\n")
