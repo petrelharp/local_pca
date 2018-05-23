@@ -45,7 +45,7 @@ initialize() {
 
     if (RECOMBTYPE == "base") {
         initializeRecombinationRate(mean(R));
-    } else if (RECOMBTYPE == "step" | SIMTYPE == "hotspot") {
+    } else if (RECOMBTYPE == "step" | RECOMBTYPE == "hotspot") {
         initializeRecombinationRate(R, X);
     } else {
         stop(paste(c("unknown RECOMBTYPE", RECOMBTYPE)));
