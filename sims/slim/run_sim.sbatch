@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH -p long
 #SBATCH -n 1
-#SBATCH -t 36:00:00
-#SBATCH --mem-per-cpu=8G
+#SBATCH -t 48:00:00
+#SBATCH --mem-per-cpu=48G
 #SBATCH --ntasks-per-core=1
 
 module use /projects/apps/shared/modulefiles
@@ -20,9 +20,10 @@ fi
 echo "Running:"
 echo "   slim sims.slim"
 
+cp sims.slim $OUTDIR
+
 /usr/bin/time --format='elapsed: %E / kernel: %S / user: %U / mem: %M' \
     slim -d "OUTDIR='$OUTDIR'" sims.slim &> $OUTDIR/slim_run.log
-
 
 echo "Done!"
 

@@ -34,7 +34,7 @@ initialize() {
     m1.convertToSubstitution = T;
     
     initializeGenomicElementType("g1", c(m1, m2), c(10.0, 1.0));
-    initializeGenomicElement(g1, 0, max(X));
+    initializeGenomicElement(g1, asInteger(max(X)*2/3), max(X));
     if (SELTYPE == "neutral") {
         initializeMutationRate(0.0);
     } else if (SELTYPE == "selected") {
@@ -67,7 +67,6 @@ reproduction() {
             offspring.setSpatialPosition(p1.pointReflected(pos));
         }
     }
-    return NULL;
 }
 
 1 early() {
