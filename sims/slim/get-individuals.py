@@ -38,21 +38,15 @@ if args.indivfile is None or len(args.indivfile) == 0:
                         + ".indiv.tsv" for x in args.tree_file]
 
 if args.logfile is None:
-    args.logfile = os.path.join(args.basedir, "add_muts.log")
+    args.logfile = os.path.join(args.basedir, "get_individuals.log")
 
 assert len(args.indivfile) == len(args.tree_file)
 
 logfile = open(args.logfile, "w")
 
-# typedef struct __attribute__((__packed__)) {
-# 	slim_pedigreeid_t pedigree_id_;	// 8 bytes (int64_t): the SLiM pedigree ID for this individual, assigned by pedigree rec
-# 	slim_age_t age_; // 4 bytes (int32_t)
-# 	slim_objectid_t subpopulation_id_; // 4 bytes (int32_t)
-# } IndividualMetadataRec;
-
 class slimIndividual(object):
     def __init__(self, table_row):
-        ped_id, age, subpop = struct.unpack("qii", table_row.metadata)
+        ped_id, age, subpop, sex, flags = struct.unpack("<qiiiI", table_row.metadata)
         location = table_row.location[:3]
         self.ped_id = ped_id
         self.age = age
