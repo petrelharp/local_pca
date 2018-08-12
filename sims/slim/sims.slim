@@ -46,7 +46,7 @@ initialize() {
     }
 
     if (RECOMBTYPE == "base") {
-        initializeRecombinationRate(mean(R));
+        initializeRecombinationRate(1e-9);
     } else if (RECOMBTYPE == "step" | RECOMBTYPE == "hotspot") {
         initializeRecombinationRate(R, X);
     } else {
