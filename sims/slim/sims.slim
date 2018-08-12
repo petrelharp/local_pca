@@ -1,6 +1,8 @@
 initialize() {
 
     // this should define RECOMBTYPE, and SELTYPE
+    // RECOMBTYPE can be 'base', 'step', or 'hotspot'
+    // SELTYPE can be 'neutral', 'selected', or 'balancing'
     source(paste(c(OUTDIR, "parameters.slim"), sep="/"));
 
     initializeSLiMModelType("nonWF");
@@ -39,7 +41,7 @@ initialize() {
     initializeGenomicElement(g1, asInteger(max(X)*5/6), max(X));
     if (SELTYPE == "neutral") {
         initializeMutationRate(0.0);
-    } else if (SELTYPE == "selected") {
+    } else if ((SELTYPE == "selected") | (SELTYPE == "balancing")) {
         initializeMutationRate(1e-10);
     } else {
         stop(paste(c("unknown SELTYPE", SELTYPE)));
@@ -78,6 +80,12 @@ reproduction() {
     for (ind in p1.individuals)
         ind.setSpatialPosition(p1.pointUniform());
     i1.evaluate();
+
+    if (SELTYPE == "balancing") {
+        sim.registerFitnessCallback(NULL, 
+            "1.0 + (relFitness - 1) * 2 * (individual.x - 0.5);",
+            NULL);
+    }
 
     // header info
     catn("Overall mutation rate: " + sim.chromosome.overallMutationRate);
