@@ -83,7 +83,7 @@ reproduction() {
 
     if (SELTYPE == "balancing") {
         sim.registerFitnessCallback(NULL, 
-            "1.0 + (relFitness - 1) * 2 * (individual.x - 0.5);",
+            "{ return mut.selectionCoeff * (1 + asFloat(homozygous)) * (individual.x - 0.5); }",
             NULL);
     }
 
