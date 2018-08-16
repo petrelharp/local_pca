@@ -495,6 +495,10 @@ $D_{ij}$ can be computed efficiently as
 %     \end{split}
 % \end{align}
 
+\paragraph{Testing}
+Figure \ref{fig:test_missing} shows tests with lots of missing data.
+Also the covariance matrix was chosen to have the top two eigenvalues equal,
+so that eigenvector switching is expected.
 
 \subsection{Visualization of results}
 
@@ -1298,6 +1302,10 @@ but has the interpretation
 In our R implementation we use the Spectra library \citep{qiu2016rspectra}
 to find only the top $k$ eigenvectors.
 
+\paragraph{Testing}
+To demonstrate the utilitiy of this method XXX
+see Figure \ref{fig:test_weighted_pca}.
+
 % put in list of figures here 
 \ifsubmission
     \listoffigures
@@ -1644,6 +1652,26 @@ to find only the top $k$ eigenvectors.
 \end{figure}
 
 
+
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=0.82\textwidth]{simple_example_base_case}
+        \includegraphics[width=0.82\textwidth]{simple_example_missing_data}
+    \end{center}
+    \caption{
+        From simple example -- base case; and with 50\% missing data.
+    } \label{fig:test_missing}.
+\end{figure}
+
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=0.82\textwidth]{simple_example_sample_diffs}
+        \includegraphics[width=0.82\textwidth]{simple_example_reweighted}
+    \end{center}
+    \caption{
+        From simple example -- different sample sizes; unweighted (top); weighted by $1/\sqrt{n_i}$ (bottom).
+    } \label{fig:test_weighted_pca}.
+\end{figure}
 
 
 

@@ -42,6 +42,11 @@ pdf_copy <- function (
 }
 ```
 
+**Note:** to copy the resulting figures to the `writeup/` directory:
+```
+for x in figure/simple_example/*pdf; do mv $x "../../writeup/simple_example_$(basename ${x%-1.pdf}.pdf)"; done
+```
+
 
 Let's suppose there are three populations,
 and on the first quarter of the chromosome,
@@ -50,8 +55,8 @@ on the middle hald, the last two are close,
 and on the last quarter the first and the last are.
 
 ```{r simple_data, cache=TRUE}
-base_covmat <- matrix(c(1.0, 0.7, 0.0,
-                        0.7, 1.0, 0.0,
+base_covmat <- matrix(c(0.75, 0.25, 0.0,
+                        0.25, 0.75, 0.0,
                         0.0, 0.0, 1.0), nrow=3)
 pop_covmats <- list(base_covmat, 
                     base_covmat[3:1, 3:1], 
@@ -59,19 +64,20 @@ pop_covmats <- list(base_covmat,
 struct_breakpoints <- c(0.0, 0.25, 0.5, 0.75, 1.0)
 struct_indices <- c(1,2,2,3)
 nsamples <- c(50, 50, 50)
-ind_covmat <- diag(sum(nsamples))
-for (k in seq_along(nsamples)) {
-    ii <- sum(nsamples[seq_len(k-1)]) + 1:nsamples[k] 
-    ind_covmat[ii, ii] <- rexp(nsamples[k]^2, 100)
-    ind_covmat[ii, ii] <- ind_covmat[ii, ii] + t(ind_covmat[ii, ii])
-}
+# ind_covmat <- diag(sum(nsamples))
+# for (k in seq_along(nsamples)) {
+#     ii <- sum(nsamples[seq_len(k-1)]) + 1:nsamples[k] 
+#     ind_covmat[ii, ii] <- rexp(nsamples[k]^2, 100)
+#     ind_covmat[ii, ii] <- ind_covmat[ii, ii] + t(ind_covmat[ii, ii])
+# }
+ind_covmat <- 0
 pop_chols <- lapply(lapply(pop_covmats, chol),
                     function (x) { 
                         (x[rep(1:3, nsamples), rep(1:3, nsamples)] / sqrt(rep(nsamples, nsamples))
                          + ind_covmat)
                     })
 nwindows <- 99
-nloci <- 100
+nloci <- 400
 win.fn <- function (n, ...) {
     geno <- matrix(rnorm(sum(nsamples) * nloci), nrow=nloci)
     cholmat <- pop_chols[[struct_indices[findInterval(n/nwindows, struct_breakpoints, rightmost.closed=TRUE)]]]
@@ -202,7 +208,6 @@ mds.coords <- cbind( data.frame(
                         window=unlist(lapply(all.lengths,seq_len)) ),
                         cmdscale( pc.distmat[!na.inds,!na.inds], k=2 )[ ifelse( na.inds, NA, cumsum(!na.inds) ), ] )
 mds.cols <- (1:ncol(mds.coords))[-(1:2)]
-
 plot_everything()
 ```
 
@@ -223,7 +228,7 @@ pop_chols <- lapply(lapply(pop_covmats, chol),
                          + ind_covmat)
                     })
 nwindows <- 99
-nloci <- 50
+nloci <- 400
 win.fn <- function (n, ...) {
     geno <- matrix(rnorm(sum(nsamples) * nloci), nrow=nloci)
     cholmat <- pop_chols[[struct_indices[findInterval(n/nwindows, struct_breakpoints, rightmost.closed=TRUE)]]]
