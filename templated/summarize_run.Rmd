@@ -75,7 +75,7 @@ if (!is.null(opt$sample_info)) {
     samps <- droplevels( samps[match(sample.ids,samps$id),] )
     samps$population <- factor(samps$population)
 } else {
-    warning("No populatio information in the sample file, %s.", samp.file)
+    warning("No population information in the sample file, %s.", samp.file)
     samps <- data.frame( 
             ID=sample.ids,
             population=factor(rep("pop",length(sample.ids))) )
@@ -155,7 +155,6 @@ corner.mds <- do.call(rbind, lapply(1:ncol(mds.corners),
                 function (ii){
                     colMeans(mds.coords[mds.corners[,ii],-(1:2)])
                 } ) )
-if (do.pdfs) { pdf_copy() }
 ```
 ```{r plot_corners, fig.width=3*fig.dim, fig.height=fig.dim*ceiling(length(mds.cols)/2)}
 # plot corners and MDS along the chromosome

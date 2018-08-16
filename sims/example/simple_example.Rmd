@@ -1,0 +1,265 @@
+---
+title: "Simple simulation"
+date: "`r date()`"
+---
+
+```{r setup, include=FALSE}
+library(lostruct)
+library(colorspace)
+library(jsonlite)
+library(RColorBrewer)
+fig.dim <- 4
+knitr::opts_chunk$set(fig.width=2*fig.dim,fig.height=fig.dim,fig.align='center')
+# set do.pdfs to TRUE to output PDFs of figures as well
+if (!exists("do.pdfs")) { do.pdfs <- FALSE }
+```
+```{r plot_setup, include=FALSE}
+layout_heights <- function (k,dl=0,ncol=1) {
+    # to set up layout without 'dl' lines between plots
+    # use like layout(1:5,heights=layout_heights(5))
+    if (k==1) return(1)
+    layout(matrix(seq_len(k*ncol),ncol=ncol))  # this changes par("csi")
+    ds <- dl*par("lheight")*par("csi")
+    eps=par("mai")[c(1,3)]
+    dh=(par("din")[2]-sum(eps)-(k-1)*ds)/k
+    return(c(eps[2]+dh+ds/2,rep(dh+ds,k-2),eps[1]+dh+ds/2)/par("din")[2])
+}
+pdf_copy <- function (
+                width=6,
+                height=width*knitr::opts_current$get("fig.height")/knitr::opts_current$get("fig.width"),
+                plot.id=NULL,
+                filename
+                ) {
+    if (missing(filename)) {
+        file.id <- if (is.null(plot.id)) { "" } else { paste0("_",plot.id) }
+        filename <- knitr::fig_path(paste(file.id,".pdf",sep=""))
+    }
+    cat("pdf version at:",filename)
+    dev.print( file=filename, device=pdf, 
+            width=width, height=height,
+            pointsize=10,
+            family="sans")
+}
+```
+
+
+Let's suppose there are three populations,
+and on the first quarter of the chromosome,
+the first two are close to each other;
+on the middle hald, the last two are close,
+and on the last quarter the first and the last are.
+
+```{r simple_data, cache=TRUE}
+base_covmat <- matrix(c(1.0, 0.7, 0.0,
+                        0.7, 1.0, 0.0,
+                        0.0, 0.0, 1.0), nrow=3)
+pop_covmats <- list(base_covmat, 
+                    base_covmat[3:1, 3:1], 
+                    base_covmat[c(1,3,2), c(1,3,2)])
+struct_breakpoints <- c(0.0, 0.25, 0.5, 0.75, 1.0)
+struct_indices <- c(1,2,2,3)
+nsamples <- c(50, 50, 50)
+ind_covmat <- diag(sum(nsamples))
+for (k in seq_along(nsamples)) {
+    ii <- sum(nsamples[seq_len(k-1)]) + 1:nsamples[k] 
+    ind_covmat[ii, ii] <- rexp(nsamples[k]^2, 100)
+    ind_covmat[ii, ii] <- ind_covmat[ii, ii] + t(ind_covmat[ii, ii])
+}
+pop_chols <- lapply(lapply(pop_covmats, chol),
+                    function (x) { 
+                        (x[rep(1:3, nsamples), rep(1:3, nsamples)] / sqrt(rep(nsamples, nsamples))
+                         + ind_covmat)
+                    })
+nwindows <- 99
+nloci <- 100
+win.fn <- function (n, ...) {
+    geno <- matrix(rnorm(sum(nsamples) * nloci), nrow=nloci)
+    cholmat <- pop_chols[[struct_indices[findInterval(n/nwindows, struct_breakpoints, rightmost.closed=TRUE)]]]
+    return( geno %*% cholmat )
+}
+attr(win.fn, "max.n") <- nwindows
+attr(win.fn,"samples") <- paste0(rep(letters[seq_along(nsamples)], nsamples),
+                                 unlist(lapply(nsamples, seq_len)))
+attr(win.fn,"region") <- function (n) { 
+    data.frame( chrom="matrix", start=((n-1)*nloci+1), end=n*nloci ) }
+all.pcas <- eigen_windows(win.fn, k=2, do.windows=1:nwindows)
+regions <- region(win.fn)()
+all.lengths <- c("chrom1"=nwindows)
+pc.distmat <- pc_dist( all.pcas, npc=2 )
+na.inds <- is.na( all.pcas[,1] ) # there may be windows with missing data
+mds.coords <- cbind( data.frame( 
+                        chrom=rep(names(all.lengths),all.lengths),
+                        window=unlist(lapply(all.lengths,seq_len)) ),
+                        cmdscale( pc.distmat[!na.inds,!na.inds], k=2 )[ ifelse( na.inds, NA, cumsum(!na.inds) ), ] )
+mds.cols <- (1:ncol(mds.coords))[-(1:2)]
+```
+
+OK, now we plot them:
+```{r plotting_setup, echo=FALSE}
+chroms <- unique(regions$chrom)
+chrom.starts <- tapply( regions$start, regions$chrom, min, na.rm=TRUE )
+chrom.ends <- tapply( regions$end, regions$chrom, max, na.rm=TRUE )
+chrom.spacing <- floor(.05*mean(chrom.ends))
+chrom.offsets <- c(0,cumsum(chrom.spacing+chrom.ends))
+names(chrom.offsets) <- c(chroms,"end")
+chrom.dividers <- c(0,chrom.offsets[-1])-chrom.spacing/2
+chrom.mids <- chrom.dividers[-1] - diff(chrom.dividers)/2
+
+# this is where to plot windows at when plotting with all chromosomes
+regions$pos <- chrom.offsets[match(regions$chrom,chroms)]+(regions$start+regions$end)/2
+
+chrom.cols <- rainbow_hcl(length(chroms), c=90, end=.9*360)[as.numeric(regions$chrom)]
+
+#' Set up to plot all chromosomes together
+#' will plot the vector of values 'y' along all the chromosomes.
+chrom.plot <- function (y,ylab='',main='',chrom.labels=TRUE,...) {
+    plot(0, type='n', xlim=range(chrom.offsets/1e6), ylim=range(y,finite=TRUE), 
+         xlab='', xaxt='n', yaxt='n', ylab=ylab, main=main)
+    if (length(chroms)>1) for (k in 1:floor(length(chroms)/2)) {
+        rect( xleft=chrom.dividers[2*k-1]/1e6, xright=chrom.dividers[2*k]/1e6, 
+             ybottom=par("usr")[3], ytop=par("usr")[4], 
+             border=NA, col=adjustcolor("grey",0.25) )
+    }
+    abline( v=chrom.dividers/1e6, lty=3, col=adjustcolor("grey",0.5), lwd=2 )
+    if (chrom.labels) axis( 1, at=chrom.mids/1e6, labels=paste("chromosome", chroms), las=0, tick=FALSE )
+    points( regions$pos/1e6, y, ...)
+}
+
+pairs( mds.coords[,mds.cols], pch=20, col=adjustcolor(chrom.cols,0.75) )
+
+plot_everything <- function () {
+    mds.corners <- corners( mds.coords[,mds.cols[1:2]], prop=.05 )
+    corner.cols <- brewer.pal(3,"Dark2")
+    corner.pch <- c(15,17,19)
+    ccols <- rep("black",nrow(mds.coords))
+    cpch <- rep(20,nrow(mds.coords))
+    for (k in 1:ncol(mds.corners)) {
+        ccols[ mds.corners[,k] ] <- corner.cols[k]
+        cpch[ mds.corners[,k] ] <- corner.pch[k]
+    }
+    # centroids of the corners in MDS space
+    corner.mds <- do.call(rbind, lapply(1:ncol(mds.corners), 
+                    function (ii){
+                        colMeans(mds.coords[mds.corners[,ii],-(1:2)])
+                    } ) )
+
+    spacing <- 1
+    opar <- par(mar=c(4,4,2,1)+.1,mgp=c(2.5,0.8,0))
+    layout(matrix(c(rep(1,length(mds.cols)),1+seq_along(mds.cols)),ncol=2),
+            widths=c(1,2), heights=layout_heights(length(mds.cols),dl=spacing,ncol=2))
+    plot( mds.coords[,mds.cols[1:2]], pch=cpch, 
+         col=adjustcolor(ccols,0.75),  asp=1,
+         xaxt='n', yaxt='n',
+         xlab="MDS coordinate 1", ylab="MDS coordinate 2" )
+    points( corner.mds, pch=20, cex=5,
+            col=adjustcolor(corner.cols,0.25))
+    text( corner.mds, labels=seq_len(nrow(corner.mds)), 
+            col=corner.cols, cex=2, lwd=2 )
+    opar2 <- par(mar=c(par("mar"),spacing/2)[c(5,2,3,4)])
+    for (k in mds.cols) {
+        lastone <- (k==mds.cols[length(mds.cols)])
+        if (lastone) { par(mar=c(par("mar"),opar2$mar[1])[c(5,2,3,4)]) }
+        chrom.plot( mds.coords[,k], pch=20, 
+                xlab=if (lastone) { "Position (Mb)"} else { "" }, # main=paste("MDS coordinate",match(k,mds.cols)),
+                chrom.labels=lastone,
+                ylab=colnames(mds.coords)[k],
+                col=adjustcolor(ccols,0.75) )
+        # do this for all but first
+        par(mar=c(par("mar"),spacing/2)[c(1,2,5,4)])
+    }
+    par(opar)
+    pdf_copy()
+}
+```
+```{r base_case}
+plot_everything()
+```
+
+## With missing data
+
+Now we'll do the same thing, but with 50% missing data
+on the first half of the chromosome.
+```{r missing_data, cache=TRUE, depends="simple_data"}
+win.fn <- function (n, ...) {
+    geno <- matrix(rnorm(sum(nsamples) * nloci), nrow=nloci)
+    cholmat <- pop_chols[[struct_indices[findInterval(n/nwindows, struct_breakpoints, rightmost.closed=TRUE)]]]
+    out <- geno %*% cholmat
+    if (n < nwindows/2) {
+        out[rbinom(length(out), 1, 0.5)==1] <- NA
+    }
+    return(out)
+}
+attr(win.fn, "max.n") <- nwindows
+attr(win.fn,"samples") <- paste0(rep(letters[seq_along(nsamples)], nsamples),
+                                 unlist(lapply(nsamples, seq_len)))
+attr(win.fn,"region") <- function (n) { 
+    data.frame( chrom="matrix", start=((n-1)*nloci+1), end=n*nloci ) }
+all.pcas <- eigen_windows(win.fn, k=2, do.windows=1:nwindows)
+pc.distmat <- pc_dist( all.pcas, npc=2 )
+na.inds <- is.na( all.pcas[,1] ) # there may be windows with missing data
+mds.coords <- cbind( data.frame( 
+                        chrom=rep(names(all.lengths),all.lengths),
+                        window=unlist(lapply(all.lengths,seq_len)) ),
+                        cmdscale( pc.distmat[!na.inds,!na.inds], k=2 )[ ifelse( na.inds, NA, cumsum(!na.inds) ), ] )
+mds.cols <- (1:ncol(mds.coords))[-(1:2)]
+
+plot_everything()
+```
+
+## With very different sample sizes
+
+Now we'll do the same thing, but with very different sample sizes.
+```{r sample_diffs, cache=TRUE, depends="simple_data"}
+nsamples <- c(900, 10, 10)
+ind_covmat <- diag(sum(nsamples))
+for (k in seq_along(nsamples)) {
+    ii <- sum(nsamples[seq_len(k-1)]) + 1:nsamples[k] 
+    ind_covmat[ii, ii] <- rexp(nsamples[k]^2, 15)
+    ind_covmat[ii, ii] <- ind_covmat[ii, ii] + t(ind_covmat[ii, ii])
+}
+pop_chols <- lapply(lapply(pop_covmats, chol),
+                    function (x) { 
+                        (x[rep(1:3, nsamples), rep(1:3, nsamples)] / sqrt(rep(nsamples, nsamples))
+                         + ind_covmat)
+                    })
+nwindows <- 99
+nloci <- 50
+win.fn <- function (n, ...) {
+    geno <- matrix(rnorm(sum(nsamples) * nloci), nrow=nloci)
+    cholmat <- pop_chols[[struct_indices[findInterval(n/nwindows, struct_breakpoints, rightmost.closed=TRUE)]]]
+    return( geno %*% cholmat )
+}
+attr(win.fn, "max.n") <- nwindows
+attr(win.fn,"samples") <- paste0(rep(letters[seq_along(nsamples)], nsamples),
+                                 unlist(lapply(nsamples, seq_len)))
+attr(win.fn,"region") <- function (n) { 
+    data.frame( chrom="matrix", start=((n-1)*nloci+1), end=n*nloci ) }
+all.pcas <- eigen_windows(win.fn, k=2, do.windows=1:nwindows)
+all.lengths <- c("chrom1"=nwindows)
+pc.distmat <- pc_dist( all.pcas, npc=2 )
+na.inds <- is.na( all.pcas[,1] ) # there may be windows with missing data
+mds.coords <- cbind( data.frame( 
+                        chrom=rep(names(all.lengths),all.lengths),
+                        window=unlist(lapply(all.lengths,seq_len)) ),
+                        cmdscale( pc.distmat[!na.inds,!na.inds], k=2 )[ ifelse( na.inds, NA, cumsum(!na.inds) ), ] )
+mds.cols <- (1:ncol(mds.coords))[-(1:2)]
+
+plot_everything()
+```
+
+And, *reweighted*:
+```{r reweighted, cache=TRUE, depends="sample_diffs"}
+all.pcas <- eigen_windows(win.fn, k=2, do.windows=1:nwindows, w=1/rep(sqrt(nsamples),nsamples))
+all.lengths <- c("chrom1"=nwindows)
+pc.distmat <- pc_dist( all.pcas, npc=2, w=1/rep(sqrt(nsamples),nsamples))
+na.inds <- is.na( all.pcas[,1] ) # there may be windows with missing data
+mds.coords <- cbind( data.frame( 
+                        chrom=rep(names(all.lengths),all.lengths),
+                        window=unlist(lapply(all.lengths,seq_len)) ),
+                        cmdscale( pc.distmat[!na.inds,!na.inds], k=2 )[ ifelse( na.inds, NA, cumsum(!na.inds) ), ] )
+mds.cols <- (1:ncol(mds.coords))[-(1:2)]
+
+plot_everything()
+```
+
+
