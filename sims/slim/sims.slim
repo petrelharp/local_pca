@@ -12,9 +12,10 @@ initialize() {
     defineConstant("OUTFILE", paste(c(OUTDIR, "results.trees"), sep="/"));
 
     defineConstant("K", 100);  // carrying-capacity per unit square
-    defineConstant("S", 0.1);  // sigma_S, the spatial interaction and dispersal distance
-    defineConstant("L", 4);    // mean lifetime at stationarity
+    defineConstant("S", 0.2	);  // sigma_S, the spatial interaction and dispersal distance
+    defineConstant("L", 3);    // mean lifetime at stationarity
     defineConstant("W", 8.0);  // width and height of the simulated area
+    defineConstant("RHO", (K * 2 * PI * S^2)); // carrying capacity per S-circle
 
     // read chromosome map (just so we know how long to make it)
     if (RECOMBTYPE == "hotspot") {
@@ -33,19 +34,27 @@ initialize() {
     
     initializeMutationType("m1", 0.5, "g", -0.005, 2);
     initializeMutationType("m2", 0.5, "g", 0.005, 2);
+    initializeMutationType("m3", 0.5, "n", 0.0, 0.1	);
+
     m1.convertToSubstitution = T;
     m2.convertToSubstitution = T;
+    m3.convertToSubstitution = T;
+
     
-    initializeGenomicElementType("g1", c(m1, m2), c(29.0, 1.0));
-    initializeGenomicElement(g1, asInteger(max(X)*1/3), asInteger(max(X)*1/2));
-    initializeGenomicElement(g1, asInteger(max(X)*5/6), max(X));
     if (SELTYPE == "neutral") {
+        initializeGenomicElementType("g1", c(m1, m2), c(29.0, 1.0));
         initializeMutationRate(0.0);
-    } else if ((SELTYPE == "selected") | (SELTYPE == "balancing")) {
+    } else if (SELTYPE == "selected") {
+        initializeGenomicElementType("g1", c(m1, m2), c(29.0, 1.0));
+        initializeMutationRate(1e-10);
+    } else if (SELTYPE == "balancing") {
+        initializeGenomicElementType("g1", c(m3), c(1.0));
         initializeMutationRate(1e-10);
     } else {
         stop(paste(c("unknown SELTYPE", SELTYPE)));
     }
+    initializeGenomicElement(g1, asInteger(max(X)*1/3), asInteger(max(X)*1/2));
+    initializeGenomicElement(g1, asInteger(max(X)*5/6), max(X));
 
     if (RECOMBTYPE == "base") {
         initializeRecombinationRate(1e-9);
@@ -65,10 +74,14 @@ reproduction() {
     // choose our nearest neighbor as a mate, within the max distance
     mate = i1.nearestNeighbors(individual, 1);
     if (mate.size()) {
-        for (i in seqLen(rpois(1, 1/L))) {
-            offspring = subpop.addCrossed(individual, mate);
-            pos = individual.spatialPosition + rnorm(2, 0, S);
-            offspring.setSpatialPosition(p1.pointReflected(pos));
+        fecundity = individual.tagF;        
+        if (fecundity > 0) {
+           for (i in seqLen(rpois(1, fecundity))) {
+               offspring = subpop.addCrossed(individual, mate);
+               pos = individual.spatialPosition + rnorm(2, 0, S);
+               offspring.setSpatialPosition(p1.pointReflected(pos));
+               offspring.color = rgb2color(c(0.5+10*individual.sumOfMutationsOfType(m3),0.5-10*individual.sumOfMutationsOfType(m3),1));
+           }
         }
     }
 }
@@ -83,8 +96,8 @@ reproduction() {
 
     if (SELTYPE == "balancing") {
         sim.registerFitnessCallback(NULL, 
-            "{ return mut.selectionCoeff * (1 + asFloat(homozygous)) * (individual.x - 0.5); }",
-            NULL);
+            "{ return 1.0; }",
+            m3);
     }
 
     // header info
@@ -98,18 +111,24 @@ early() {
     i1.evaluate(p1);
     inds = p1.individuals;
     competition = i1.totalOfNeighborStrengths(inds);
-    inds.fitnessScaling = 2 / (1 + (L + 1) / (L - 1) * (competition / (K * 2 * PI * S^2)));
+    inds.fitnessScaling = RHO / (1 + competition);
+    // avoid edge effects
+    inds.fitnessScaling = inds.fitnessScaling * pmin(inds.x, 1.0) * pmin(inds.y, 1.0) * pmin(W - inds.x, 1.0) * pmin(W - inds.y, 1.0);
 }
 
 1: late() {
     i1.evaluate(p1);
-
+    inds = p1.individuals;
+    fecundities = (1 + (2 * inds.x/W - 1.0) * inds.sumOfMutationsOfType(m3));
+    fecundities = fecundities / mean(fecundities) / L;
+    inds.tagF = fecundities;
+    
     if ((sim.generation % 200) == 0) {
         cat(sim.generation + " " + p1.individualCount + " " + size(sim.mutations));
         catn(" " + clock());
     }
 }
 
-50000 late() {
+500000 late() {
     sim.treeSeqOutput(OUTFILE, simplify=T);
 }
