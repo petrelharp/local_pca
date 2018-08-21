@@ -495,11 +495,7 @@ $D_{ij}$ can be computed efficiently as
 %     \end{split}
 % \end{align}
 
-\paragraph{Testing}
-Figure \ref{fig:test_missing} shows tests with lots of missing data.
-Also the covariance matrix was chosen to have the top two eigenvalues equal,
-so that eigenvector switching is expected.
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Visualization of results}
 
 We use multidimensional scaling (MDS) to visualize relationships between windows
@@ -514,6 +510,45 @@ and map their positions along the genome.
 A visualization of the effects of population structure across the entire collection is formed by extracting the corresponding genomic regions
 and performing PCA on all, aggregated, regions.
 
+%%%%%%%%%%%%%%%%%%%
+\subsection{Testing}
+
+We tested the method using two types of simulation.
+First, to verify expected behavior, we simulated ``genomes'' as an independent sequence
+of correlated Gaussian ``genotypes'', using a different covariance matrix
+in the first quarter, middle half, and last quarter of the chromosome.
+To verify robustness to missing data,
+we ran the method after randomly dropping 50\% of the genotypes in the first half of the genome;
+if the method is misled by missing data, then it will distinguish the two halves of the chromosome
+rather than the segments having different covariance matrices.
+Details are given in Appendix \ref{apx:gaussian_sims}.
+
+To provide a realistic test,
+we next used forwards-time, individual-based simulations, implemented using SLiM v3 \citep{slim_v3},
+which are described in detail in Appendix \ref{apx:slim_sims}.
+To provide realistic population structure for PCA to identify,
+each simulation ahd at least 5,000 diploid individuals,
+living across a continuous square range,
+with Gaussian dispersal and local density-dependent competition.
+Each genome was modeled on human chromosome 7, which is $1.54 \times 10^8$bp long,
+with an overall recombination rate of 1.6785 crossovers per chromosome per generation.
+To improve speed, we used tskit \citep{tskit_paper} to record tree sequences
+and add neutral mutations afterwards, at a rate of $10^{-9}$ per bp per generation.
+Most simulations were neutral, but we also included linked selection, of two types.
+First, % run_031486
+we introduced selected mutations into two regions, 
+which extended from 1/3 to 1/2 and from 5/6 to the end of the genome respectively.
+These had selection coefficients from a Gamma distribution with shape 2 and mean 0.005
+at a rate of $10^{-10}$ per bp, that were either beneficial (with probability $1/30$)
+or deleterious (otherwise).
+Second, % run_016913
+to roughly model a recent expansion followed by local adaptation,
+we introduced mutations in the same manner as above,
+except that mutations were no longer unconditionally deleterious or beneficial:
+each selection coefficient was multiplied by a factor depending on the spatial location
+of the individual being evaluated, varying linearly from -1 at the left side of the range
+to +1 at the right edge.
+In all simulations, genome-wide PCA displayed a map of the population range, as expected.
 
 
 \subsection{Datasets}
@@ -624,13 +659,50 @@ Below, we discuss the results and likely underlying causes.
 %%%%%%%%%%%
 \subsection{Validation}
 
-Address
-mutation rate variation;
-recombination rate variation;
-choice of number of PCs;
-choice of window size;
-variation in missingness;
-maybe differing sample sizes and reweighting.
+\plr{Address:
+    mutation rate variation;
+    recombination rate variation;
+    choice of number of PCs;
+    choice of window size;
+    variation in missingness;
+    maybe differing sample sizes and reweighting.  }
+
+Simple non-population-based simulations with Gaussian ``genotypes''
+showed that the method performs as expected, clearly separating regions of the genome
+with different underlying covariance matrices
+without being affected by extreme differences in amount of missing data
+(Supplemental Figure \ref{fig:test_missing}).
+This simulation also verifies insensitivity to ordering of top PCs,
+since it was performed using a covariance matrix with the top two eigenvalues equal,
+so that the order of empirical eigenvectors (PCs) switches randomly.
+The same type of simulations with dramatically different sample sizes
+showed that using weighted PCA substantially improved identification of different genomic regions
+(Supplemental Figure \ref{fig:test_weighted_pca}).
+
+Individual-based simulations using SLiM \citep{slim_v3} allowed us to test the effects
+of recombination and mutation rate variation, as well as linked selection.
+Results are shown in Supplemental Figures \ref{sfig:slim_sims1} and \ref{sfig:slim_sims2}.
+As expected, varying recombination rate stepwise by a factor of 64
+did not induce patterns in the MDS visualizations correlated with recombination rate.
+Since varying mutation rate with a fixed recombination map
+is equivalent to varying the recombination map and remapping windows,
+we used the same simulations to show that variation in mutation rate similarly has no effect.
+On the other hand,
+a recombination map with hotspots
+(the HapMap human female map for chromosome 7 \citep{hapmap})
+induced outliers at long regions of low recombination rate
+(also as expected).
+
+Simulations with linked selection produced mixed results
+(Figure \ref{sfig:linked_selection}).
+The method strongly identified the regions under spatially varying linked selection.
+It also identified the regions (although less unambiguously)
+with constant selection and stepwise varying recombination rate,
+but did not clearly identify them with constant recombination rate.
+This difference is likely because recombination rates are overall lower in the first case,
+leading to a stronger effect of linked seleciton.
+These tests are not meant to be comprehensive survey of linked selection,
+but only to demonstrate that linked selection can produce signals simlar to what we see in real data.
 
 
 %%%%%%%%%%%
@@ -1562,38 +1634,31 @@ see Figure \ref{fig:test_weighted_pca}.
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=0.82\textwidth]{FigS_plot_corners-1_run_012720}
-    \end{center}
-    \caption{
-        MDS visualizations of simulation run 012720 (RECOMBTYPE, ``step"; SELTYPE, ``neutral")
-        \label{sfig:mds_run_012720}
-    }
-\end{figure}
-
-\begin{figure}
-    \begin{center}
        \includegraphics[width=0.82\textwidth]{FigS_plot_corners-1_run_027034}
-    \end{center}
-    \caption{
-        MDS visualizations of simulation run 027034 (RECOMBTYPE, ``base"; SELTYPE, ``neutral")
-        \label{sfig:mds_run_027034}
-    }
-\end{figure}
-
-\begin{figure}
-    \begin{center}
+       \includegraphics[width=0.82\textwidth]{FigS_plot_corners-1_run_012720}
        \includegraphics[width=0.82\textwidth]{FigS_plot_corners-1_run_015598}
+       \includegraphics[width=0.82\textwidth]{FigS_plot_corner_pca-1_run_015598}
     \end{center}
     \caption{
-        MDS visualizations of simulation run 015598 (RECOMBTYPE, ``hotspot"; SELTYPE, ``neutral")
-        \label{sfig:mds_run_015598}
-    }
+        MDS visualizations of the results of individual-based simulations using SLiM
+        (see Appendix \ref{apx:slim_sims} for details).
+        All simulations are neutral, and recombination is:
+        \textbf{(top)} constant;
+        \textbf{(top middle)} varies stepwise by factors of two in seven equal-length segments,
+        with highest rates on the ends, so the middle segment has a recombination rate 64 times lower
+        than the ends;
+        \textbf{(bottom middle)} according to the HapMap human female chromosome 7 map.
+        The \textbf{bottom} figure shows PCA maps corresponding to the three colored windows
+        of the last (HapMap) situation;
+        the outlying regions are long regions of low recombination rate,
+        so that region can be dominated by a few correlated trees,
+        similar to an inversion.
+    } \label{sfig:slim_sims1}
 \end{figure}
 
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=0.82\textwidth]{FigS_plot_corner_pca-1_run_015598}
     \end{center}
     \caption{
         PCA plots for regions colored in \Figure \ref{sfig:mds_run_015598}
@@ -1616,6 +1681,7 @@ see Figure \ref{fig:test_weighted_pca}.
        \includegraphics[width=0.82\textwidth]{FigS_plot_corners-1_run_031486}
     \end{center}
     \caption{
+        \plr{KEEP}
         MDS visualizations of simulation run 031486 (RECOMBTYPE, ``base"; SELTYPE, ``selected")
         \label{sfig:mds_run_031486}
     }
@@ -1626,6 +1692,7 @@ see Figure \ref{fig:test_weighted_pca}.
        \includegraphics[width=0.82\textwidth]{FigS_plot_corners-1_run_009673}
     \end{center}
     \caption{
+        \plr{KEEP}
         MDS visualizations of simulation run 009673 (RECOMBTYPE, ``step"; SELTYPE, ``selected")
         \label{sfig:mds_run_009673}
     }
