@@ -934,9 +934,12 @@ In particular, fine-scale recombination rate estimates are not available in a fo
 to Mt4.0 coordinates (although those in \citet{paape2012finescale} appear visually similar).
 \revpoint{2}{8}
 
-We also found nearly identical results when choosing shorter windows of 1,000 SNPs
-(Supplemental Figure \ref{sfig:mds_medicago_allchr_1e3}; \revpoint{1}{4}
-or choosing windows of equal length in base pairs rather than SNPs. \revpoint{1}{5}
+The results were highly consistent across window sizes, window types (SNPs or bp),
+and number of PCs (Table \ref{tab:param_cors}).
+\revpoint{1}{4} \revpoint{1}{5} \revpoint{1}{6}
+% We also found nearly identical results when choosing shorter windows of 1,000 SNPs
+% (Supplemental Figure \ref{sfig:mds_medicago_allchr_1e3}; \revpoint{1}{4}
+% or choosing windows of equal length in base pairs rather than SNPs. \revpoint{1}{5}
 % Similarly, the results were not substantially changed
 % when using weighted PCA to downweight the large group of Tunisian samples.
 
@@ -1451,24 +1454,21 @@ and leads to a moderate number of balanced polymorphisms.
       10000bp, 2 PCs & 0.83 & 0.92 & 0.77 & 0.84 & 1.00 \\ 
        \hline
     \end{tabular}
-    \begin{caption}
+    \caption{
         Correlations between MDS coordinates of genomic regions
         between runs with different parameter values.
         To produce these, 
         we first ran the algorithm with the specified window size and number of PCs 
-        ($k$ in equation \plr{XXX})
+        ($k$ in equation \eqref{eqn:est_cov})
         on the full \textit{Medicago truncatula} dataset.
         Then to obtain the correlation between results obtained from parameters A in the row of the matrix above
         and parameters B in the column of the matrix above,
         we mapped the windows of B to those of A by averaging MDS coordinates of any windows of B whose midpoints lay in the corresponding window of A;
         we then computed the correlation between the MDS coordinates of A and the averaged MDS coordinates of B.
         This is not a symmetric operation, so these matrices are not symmetric.
-        As expected, parameter values with smaller windows produce noisier estimates.
-        Plots of MDS values along the genome are visually nearly identical
-        for parameter sets having similar window sizes --
-        full reports are available as supplementary material on Data Dryad \plr{XXX}.
-        \label{tab:param_cors}
-    \end{caption}
+        As expected, parameter values with smaller windows produce noisier estimates,
+        but plots of MDS values along the genome are visually very similar.
+    } \label{tab:param_cors}
 \end{table}
 
 \section{Supplementary Figures}
@@ -1495,7 +1495,7 @@ and leads to a moderate number of balanced polymorphisms.
         \includegraphics[width=1\textwidth]{Fig1_allchr_Together_MDS_plot_PCAk5_win103}
     \end{center}
     \caption{      
-        MSD visualizations for each chromosome arm of \textit{Drosophila melanogaster},
+        MDS visualizations for each chromosome arm of \textit{Drosophila melanogaster},
         as in \Figure \ref{fig:mds_allchr},
         except that the method was run using five PCs ($k=5$) instead of two.
          \label{fig:dmel_k5}
@@ -1670,21 +1670,21 @@ and leads to a moderate number of balanced polymorphisms.
     }
 \end{figure}
 
-\begin{figure}
-    \begin{center}
-        \ifusepngs
-           \includegraphics[width=0.85\textwidth]{Medicago_MDS_plot_allchr_win103_PCAk2.png}
-       \else
-           \includegraphics[width=0.85\textwidth]{Medicago_MDS_plot_allchr_win103_PCAk2}
-       \fi
-    \end{center}
-    \caption{
-        MDS visualizations of the effects of population structure for all 8 chromosomes 
-        of the \textit{Medicago truncatula} data as in \Figure \ref{sfig:mds_medicago_allchr},
-        but using windows of $10^3$ SNPs.
-        \label{sfig:mds_medicago_allchr_1e3}
-    }
-\end{figure}
+% \begin{figure}
+%     \begin{center}
+%         \ifusepngs
+%            \includegraphics[width=0.85\textwidth]{Medicago_MDS_plot_allchr_win103_PCAk2.png}
+%        \else
+%            \includegraphics[width=0.85\textwidth]{Medicago_MDS_plot_allchr_win103_PCAk2}
+%        \fi
+%     \end{center}
+%     \caption{
+%         MDS visualizations of the effects of population structure for all 8 chromosomes 
+%         of the \textit{Medicago truncatula} data as in \Figure \ref{sfig:mds_medicago_allchr},
+%         but using windows of $10^3$ SNPs.
+%         \label{sfig:mds_medicago_allchr_1e3}
+%     }
+% \end{figure}
 
 
 
