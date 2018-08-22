@@ -98,6 +98,8 @@ reproduction() {
         sim.registerFitnessCallback(NULL, 
             "{ return 1.0; }",
             m3);
+        sim.registerLateEvent(NULL
+            "inds = p1.individuals; fecundities = (1 + (2 * inds.x/W - 1.0) * inds.sumOfMutationsOfType(m3)); fecundities = fecundities / mean(fecundities) / L; inds.tagF = fecundities;");
     }
 
     // header info
@@ -118,10 +120,6 @@ early() {
 
 1: late() {
     i1.evaluate(p1);
-    inds = p1.individuals;
-    fecundities = (1 + (2 * inds.x/W - 1.0) * inds.sumOfMutationsOfType(m3));
-    fecundities = fecundities / mean(fecundities) / L;
-    inds.tagF = fecundities;
     
     if ((sim.generation % 200) == 0) {
         cat(sim.generation + " " + p1.individualCount + " " + size(sim.mutations));

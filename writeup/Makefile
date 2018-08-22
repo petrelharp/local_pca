@@ -38,7 +38,7 @@ figs :
 	bibtex $*.aux
 
 # these make the pdf render too slow
-local_pca_paper.pdf : review-responses.tex FigS_Together_MDS_plot_allchr.png FigS_pca_plot_allchr_human.png Fig1_allchr_Together_MDS_plot_compact_with_ChrX_inv.png MDS_allchr_Together_plot_samples_noinv.png
+local_pca_paper.pdf : review-responses.tex FigS_Together_MDS_plot_allchr.png FigS_pca_plot_allchr_human.png Fig1_allchr_Together_MDS_plot_compact_with_ChrX_inv.png MDS_allchr_Together_plot_samples_noinv.png Medicago_MDS_plot_allchr_win103_PCAk2.png
 
 clean :
 	-rm *.aux *.bbl *.blg *.fff *.lof *.log *.out
