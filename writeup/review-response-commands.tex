@@ -1,6 +1,6 @@
 \usepackage{lineno}
-% \usepackage[hypertexnames=false]{hyperref}   % not working correctly
-% \usepackage{latexml}
+\usepackage{blindtext}
+\usepackage{hyperref}
 
 \linenumbers
 
@@ -12,12 +12,9 @@
 % \newif\ifreviewresponses
 % \reviewresponsestrue  % include them
 % % \reviewresponsesfalse  % don't include them
-% \newcommand{\responsefile}{pbio-reviews-19sept12-responses.tex}  % name of the review reponses file
+% \newcommand{\responsefile}{the-review-responses.tex}  % name of the review reponses file
 
 % counters for reviewer points
-%% instead do reviewer labels
-% \newcounter{reviewer}
-% \setcounter{reviewer}{0}
 \newcommand{\thereviewer}{}
 \newcounter{point}
 \setcounter{point}{0}
@@ -34,19 +31,21 @@
         { }
 \newcommand{\reply}{\normalfont \medskip \noindent \textbf{Reply}:\ }   
 
-% use this command in the text where a change addressing a reviewer point has occurred
+% Use this command in the text where a change addressing a reviewer point has occurred
 % e.g. \revpoint{1}{3} for reviewer 1, point 3
-\newcommand{\revpoint}[2]{\linelabel{rr:rev#1:#2}}
+\newcommand{\revpoint}[2]{\hypertarget{llineno:rr:rev#1:#2}{\linelabel{rr:rev#1:#2}}}
 % and this one to refer to such a location, e.g. \revreffull{1}{3}
-\newcommand{\revreffull}[2]{{(p.\ \pageref{rr:rev#1:#2}, l.\ \lineref{rr:rev#1:#2})}}
+\newcommand{\revreffull}[2]{\hyperlink{llineno:rr:rev#1:#2}{(p.\ \pageref{rr:rev#1:#2}, l.\ \lineref{rr:rev#1:#2})}}
 % but this version fills in reviewer and point automatically if called in the appropriate part of the reviews
 \newcommand{\revref}{\revreffull{\thereviewer}{\thepoint}}
 % NOTE: should call \revref{} with empty brackets after to get a space afterwards if desired: http://tex.stackexchange.com/questions/31091/space-after-latex-commands
+% hyperlinks drawing from https://tex.stackexchange.com/questions/117883/hyperlinks-and-line-numbering
 
-% or, this one to refer to a named linelabel
-% e.g. if in the text there is a \linelabel{approx_eqn_point}
+% Use this one to refer to a named linelabel
+% e.g. if in the text there is a \llabel{approx_eqn_point}
 % refer to it with \llname{approx_eqn_point}
-\newcommand{\llname}[1]{{(p.\ \pageref{#1}, l.\ \lineref{#1})}}
+\newcommand{\llabel}[1]{\hypertarget{llineno:#1}{\linelabel{#1}}}
+\newcommand{\llname}[1]{\hyperlink{llineno:#1}{(p.\ \pageref{#1}, l.\ \lineref{#1})}}
 
 % put \includereviews() where the reviews are to appear (at the end?)
 \newcommand{\includereviews}{

@@ -34,7 +34,7 @@
     \bibliographystyle{plainnat}
     \newcommand{\Figure}{{Figure }}
     \newcommand{\Figures}{{Figures }}
-    % \renewcommand{\linelabel}[1]{}
+    % \renewcommand{\llabel}[1]{}
 \fi
 % grrr
 \newcommand{\citetx}[2][]{\ifsubmission#1 \cite{#2}\else\citet{#2}\fi}
@@ -388,7 +388,7 @@ The above procedure can be performed on any subset of the data;
 for future reference, denote by $\pcone_j$ and $\pctwo_j$
 the result after applying to all SNPs in the $j^\text{th}$ window.
 (Note, however, that our measure of dissimilarity between windows
-does not depend on PC ordering.) \linelabel{ll:another_pc_point}
+does not depend on PC ordering.) \llabel{ll:another_pc_point}
 
 % Several of the datasets we use have unbalanced representations of diverged populations,
 % which can have a strong impact on the results of PCA.
@@ -674,15 +674,15 @@ of recombination and mutation rate variation, as well as linked selection.
 Results are shown in Supplemental Figures \ref{sfig:slim_sims1} and \ref{sfig:slim_sims2}.
 As expected, varying recombination rate stepwise by a factor of 64
 did not induce patterns in the MDS visualizations correlated with recombination rate.
-\linelabel{ll:test_recomb_rate}
+\llabel{ll:test_recomb_rate}
 Since varying mutation rate with a fixed recombination map
 is equivalent to varying the recombination map and remapping windows,
-we used the same simulations to show that variation in mutation rate similarly has no effect.
+this also indicates that the method is not misled by variation in mutation rate.
 On the other hand,
 a recombination map with hotspots
 (the HapMap human female map for chromosome 7 \citep{hapmap2007second})
 induced outliers at long regions of low recombination rate
-(also as expected). \linelabel{ll:hotspot_recomb}
+(also as expected). \llabel{ll:hotspot_recomb}
 
 Simulations with linked selection produced mixed results
 (Figure \ref{sfig:slim_sims2}).
@@ -714,7 +714,8 @@ plotted against the window's position along the genome,
 to show how the plot of the first column is laid out along the genome.
 The patterns did not depend on the number of PCs used
 (see \Figure \ref{fig:dmel_k5} for the same plot with $k=5$ PCs), \revpoint{1}{3}
-and are not driven by variation in missingness (see \Figure \ref{sfig:dpgp_missingness}). \revpoint{2}{4}
+and are only weakly correlated with variation in missingness 
+(see \Figure \ref{sfig:dpgp_missingness}). \revpoint{2}{4}
 
 
 \begin{figure}
@@ -935,8 +936,8 @@ to Mt4.0 coordinates (although those in \citet{paape2012finescale} appear visual
 \revpoint{2}{8}
 
 The results were highly consistent across window sizes, window types (SNPs or bp),
-and number of PCs (Table \ref{tab:param_cors}).
-\revpoint{1}{4} \revpoint{1}{5} \revpoint{1}{6}
+and number of PCs, as shown in Table \ref{tab:param_cors}.
+\revpoint{1}{3} \revpoint{1}{4} \revpoint{1}{5}
 % We also found nearly identical results when choosing shorter windows of 1,000 SNPs
 % (Supplemental Figure \ref{sfig:mds_medicago_allchr_1e3}; \revpoint{1}{4}
 % or choosing windows of equal length in base pairs rather than SNPs. \revpoint{1}{5}
@@ -1023,22 +1024,33 @@ may outlast the inversions themselves.
 
 
 \paragraph{The effect of selection}
-It seems that
-the variation in patterns of relatedness we see in the \textit{Medicago truncatula} and \textit{Drosophila melanogaster} datasets
-must be explained somehow by linked selection --
-the effects of neutral processes are not expected to show such large, chromosome-scale correlations.  \linelabel{ll:not_neutral}
-Furthermore, 
-the selection must be affecting many targets across the genome,
-since we see similar effects across long distances (even distinct chromosomes).
-For this reason, the most likely candidate may be selection against linked deleterious mutations, known as ``background selection'' \citep{charlesworth1993effect,charlesworth2013background}.
-Informally, background selection reduces the number of potential contributors to the gene pool 
-in regions of the genome with many possible deleterious mutations \citep{hudson1995deleterious};
-for this reason, if it acts in a spatial context, it is expected to induce samples from nearby locations to cluster together more frequently,
+Neutral processes are not expected to produce the chromosome-scale correlations we see in
+patterns of relatedness 
+in the \textit{Medicago truncatula} and \textit{Drosophila melanogaster} datasets, \llabel{ll:not_neutral}
+because correlations induced by neutral processes 
+should extend no further than does linkage disequilibrium
+(i.e., much less than a chromosome's length).
+This suggests that they are produced by linked selection,
+a hypothesis backed up by correlations with gene density and recombination rate.
+We have also shown with simulations that linked selection can, in at least some circumstances,
+produce the sorts of patterns we observe.
+How might selection cause variation in patterns of relatedness?
+For instance, background selection
+(the effect on linked sites of selection against deleterious mutations
+\citet{charlesworth1993effect,charlesworth2013background}),
+can informally be thought of as reducing the number of potential contributors to the gene pool 
+in regions of the genome with many possible deleterious mutations \citep{hudson1995deleterious}.
+For this reason, if it acts in a spatial context, it is expected to induce samples from nearby locations to cluster together more frequently.
 Therefore, regions of the genome harboring many targets of local adaptation may show similar patterns,
 since migrant alleles in these regions will be selected against,
 and so locally gene trees will more closely reflect spatial proximity.
+Other forms of selection, such as hard sweeps on new mutations,
+repeated selection on standing variation, local adaptation,
+or temporally fluctuating selection,
+could clearly lead to variation 
+in geographic patterns of relatedness in a similar way.
 
-A related possibility is that variation in patterns of relatedness is due to recent admixture between previously separated populations,
+Another possible contributor is recent admixture between previously separated populations,
 the effects of which were not uniform across the genome due to selection. \revpoint{2}{6}
 For instance, it has been hypothesized that large-scale variation in amount of introgressed Neanderthal DNA along the genome
 is due to selection against Neanderthal genes, leading to greater introgression in regions of lower gene density
@@ -1048,7 +1060,7 @@ if selection regularly favors genes from one origin,
 this could lead to substantial variation in patterns of relatedness correlated with local gene density.
 
 There has been substantial debate over the relative impacts of different forms of selection
-\citep{charlesworth1997effects,charlesworth2012effects,pease2013accurate,hedrick2013adaptive,burri2015linked,corbettdetig2015natural,harris2016genetic,martin2016natural,phung2016determining}. \revpoint{2}{16}
+(e.g., \citet{charlesworth1997effects,charlesworth2012effects,pease2013accurate,hedrick2013adaptive,burri2015linked,corbettdetig2015natural,harris2016genetic,martin2016natural,phung2016determining}). \revpoint{2}{16}
 These have been difficult to disentangle in part because for the most part
 theory makes predictions which are only strictly valid in randomly mating (i.e., unstructured) populations,
 and it is unclear to what extent the spatial structure observed in most real populations will affect these predictions.
@@ -1230,7 +1242,7 @@ where the sign is chosen according to which of
 $\| \pcone_{1} - u \|$ or
 $\| \pcone_{1} + u \|$ 
 is smaller.
-\linelabel{ll:moved_pc_note}
+\llabel{ll:moved_pc_note}
 
 After doing this, the mean variance across windows is
 \begin{align*}
@@ -1365,11 +1377,11 @@ These matrices are chosen so that the top two eigenvalues $\Sigma$ are the same 
 and so the ordering of the top two PCs is arbitrary.
 If our method was sensitive to PC ordering,
 then half the windows in each region that have one ordering would cluster with each other,
-separate from the other half. \linelabel{ll:pc_switching_test}
+separate from the other half. \llabel{ll:pc_switching_test}
 
 We then marked each genotype in the first half of the chromosome
 as missing, independently, with probability $1/2$ and ran our method again,
-producing the second plot of Figure \ref{fig:test_missing}. \linelabel{ll:test_missing}
+producing the second plot of Figure \ref{fig:test_missing}. \llabel{ll:test_missing}
 If our method was influenced by missing data,
 we would expect the first half of the chromosome to separate from the second
 in the MDS plot.

@@ -22,7 +22,35 @@
  
 \vskip 1em
 
-We are pleased to submit a revision of our manuscript, 
+We are pleased to finally submit a revised version of our manuscript, 
+``Local PCA shows how the effect of population structure differs along the genome''.
+As you will see, at the reviewers' requests 
+we have put substantial effort into additional validation of the method,
+including simple simulations to back up some of our mathematical claims about the method
+(e.g., about PC switching),
+and large individual-based simulations with large numbers of loci under weak selection
+on realistically-sized chromosomes.
+The latter simulations, 
+which verify that our method can detect the action of linked selection,
+were made possible with tools only developed (some by us) over the last year.
+
+In adding simulation results and the additional verifications requested by the reviewers,
+we have endeavored not to expand the manuscript (or the supplementary figures) too much.
+
+In addition to the addition of many more tests,
+we have also tried to shift the focus away from background selection specifically
+to more general linked selection.
+We think it likely that background selection is a contributing factor,
+but that the relative contributions of different sorts of selection
+on genomic landscapes of diversity, divergence, and relatedness
+are almost completely unknown, and constitute a major open question in the field.
+We hope this addresses Reviewer 1's skepticism regarding background selection.
+
+In addition to the main document, with line numbers and hyperlinked references
+from the responses to reviews,
+we have also uploaded a version highlighting the changes between this version
+and the submitted one.
+We hope you find the revised manuscript an improvement as well.
 
 \noindent \hspace{4em}
 \begin{minipage}{3in}
@@ -45,21 +73,18 @@ Peter Ralph
 \reviewersection{AE}
 
 \begin{quote}
-    Please understand that incremental changes will not be sufficient.  Adding
-    simulations to strengthen key claims will be necessary, particularly addressing
-    the impacts of mutation rate and recombination rate variation with more depth,
-    the concern regarding PC switching (Reviewer 1), and the concern regarding the
-    impacts of variation in missingness by sub-population (Reviewer 2).
+    Adding simulations to strengthen key claims will be necessary, particularly
+    addressing the impacts of mutation rate and recombination rate variation
+    with more depth, the concern regarding PC switching (Reviewer 1), and the
+    concern regarding the impacts of variation in missingness by sub-population
+    (Reviewer 2).
 \end{quote}
 
 Thanks for the positive feedback and the useful suggestions.
 We agree that more extensive exploration 
 using simulations would help bolster understanding of the method,
 and have now done so.
-This took a substantial amount of work, because genome-scale forwards-time simulations
-with a large number of loci under selection
-is at or beyond the current limits of computation,
-depending on the number of individuals simulated.
+See below for more detailed responses.
 
 
 %%%%%%%%%%%%%%
@@ -73,13 +98,18 @@ depending on the number of individuals simulated.
     compelling, though not watertight, and I am not yet convinced that it is finding
     ubiquitous background selection.  To make this claim, significant extra work is
     required.
-\end{quote}
 
-\begin{quote}
     In short, the approach is interesting but not sufficiently explored to produce
     compelling evidence for the implications that are claimed.  Putting a large
     amount of effort into simulations may alleviate these concerns somewhat.
+\end{quote}
 
+We have backed off somewhat on our previous speculation that the observed patterns
+are due to background selection,
+and have also put a large amount of effort into simulations (discussed below).
+We hope these alleviate your concerns.
+
+\begin{quote}
     Specific points: What does this method find? I'm concerned about:
     (a) variation in the recombination rate
     and (b) variation in the mutation rate, creating spurious structure.
@@ -104,6 +134,18 @@ depending on the number of individuals simulated.
     something that separates these effects from selection.
 \end{quote}
 
+Specific points are addressed below.
+Briefly, switching of PC 1 and 2 cannot mislead the method
+because we measure distances in a way that does not depend on PC ordering.
+It is possible that switching of PC 2 and 3 could mislead if we are using only $k=2$ of the PCs;
+however, we see the same patterns when using more PCs, so we know this is not happening.
+
+Nearly all of the inversion-like signals we find are well-characterized in the literature.
+The evidence for remaining inversion is \emph{not} watertight,
+because (as we point out), we cannot distinguish them from long regions of low recombination.
+The fact that nearly all of the strong, localized signals coincide with known polymorphic inversions
+induces us to emphasize inversions.
+
 
 \begin{point}{}
     \ldots (a) variation in the recombination rate and 
@@ -111,22 +153,22 @@ depending on the number of individuals simulated.
 \end{point}
 
 \reply{
-    Since we only look at SNPs,
-    a 1Kb window with mutation rate $\mu$ and recombination rate $\rho$
-    is equivalent to a 10Kb window with mutation rate $\mu/10$ and recombination rate $\rho/10$,
-    and the ratio $\mu/\rho$ determines the ``signal-to-noise'' ratio.
-    For this reason, varying recombination rate in simulations,
-    and varying window size and type in analysis
-    suffices to check for the effects of both recombination and mutation rate.
     We have now added simulation tests showing that large-scale variation in recombination rate
     does not create spurious structure \llname{ll:test_recomb_rate};
     except in the presence of long regions of low recombination,
-    as expected \llname{ll:hotspot_recomb}
-    The point is addressed by comparing results with windows of different types --
-    windows of equal length in bp (or in SNPs) have different lengths in cM;
-    since these different choices show nearly identical patterns in all cases we have examined,
-    recombination rate variation cannot be driving the results
-    (e.g., compare Figures \ref{fig:mds_allchr} and Supplemental Figure \plr{XXX}).
+    as expected \llname{ll:hotspot_recomb}.
+    We also check for the effect of this in the real data:
+    since we only look at SNPs,
+    a 1Kb window with mutation rate $\mu$ and recombination rate $\rho$
+    is equivalent to a 10Kb window with mutation rate $\mu/10$ and recombination rate $\rho/10$,
+    and the ratio $\mu/\rho$ determines the ``signal-to-noise'' ratio.
+    Therefore, we can check for effects due to recombination
+    and mutation rate variation 
+    by comparing results with windows of different types --
+    windows of equal length in bp, or in SNPs, have different lengths in cM.
+    These different choices show nearly identical patterns in all cases we have examined,
+    as is summarized in Table \ref{tab:window_sizes},
+    making it unlikely that recombination or mutation rate variation could be driving the results.
 }
 
 \begin{point}{PC switching}
@@ -138,8 +180,8 @@ could switch).
 \reply{
     This is a natural concern.
     However, the only point at which we compare PCs in a way that could be sensitive to ordering
-    is in determining the window size -- in computing the distance between windows
-    we use a measure which is invariant under ordering.
+    is in determining the window size -- we compute the distance between windows
+    in a way that is invariant under ordering.
     We have made this more clear by moving the note about flipping signs of PCs
     to the appendix on window choice \llname{ll:moved_pc_note}
     and added more explicit notes about this to \llname{ll:another_pc_point} and \revref.
@@ -226,11 +268,11 @@ comment), and compare to previous efforts in similar domains.
     although it was not that well-defined in the paper;
     we have hopefully improved on this in the Introduction \revref.
     Expanding a bit more:
-    We strongly agree that methods that seek to test well-defined hypotheses
+    We agree that methods that seek to test well-defined hypotheses
     are extremely useful and powerful.
-    We also feel that methods for visualization and exploration are also useful --
-    a primary example here being PCA.
-    If PCA is useful -- and we think that it is --
+    We feel that methods for visualization and exploration are also useful --
+    a primary example here being PCA (as used for visualization).
+    If PCA is useful -- or more generally, dimension reduction --
     then it should be important to also know how much the thing that PCA is summarizing
     varies along the genome,
     in the same way that knowing the mean of some quantity in a population 
@@ -275,7 +317,7 @@ variation in missingness. Would be good to discuss this potential issue and prov
 
 \reply{
     We have tested the method against a large quantity of missing data
-    whereby the amount of missingness does not vary by population \llname{ll:test_missing}.
+    in which the amount of missingness does not vary by population \llname{ll:test_missing}.
     However, missingness that is structured by population could absolutely cause variation in PCs.
     This could happen, for instance, with RAD data wherein allelic dropout is driven by
     population-specific polymorphism in the restriction site.
@@ -283,11 +325,12 @@ variation in missingness. Would be good to discuss this potential issue and prov
     and in fact we see windows around the breakpoints of the polymorphic inversions
     of the DPGP data having higher rates of missingness.
     We definately would like our method to be insensitive to missing data,
-    but if missingness is in fact correlated with changes in patterns of relatedness (as in these cases),
+    but if missingness is in fact correlated with the signal we are looking for 
+    (changes in patterns of relatedness, as it is in these cases),
     correlation of MDS scores with amount of missingness is not in fact a problem.
     As we don't think this point is particularly helpful to the reader, 
     we have provided a plot of missingness against MDS score (Figure \ref{sfig:dpgp_missingness})
-    and mentioned in the text \revref,
+    and mentioned it in the text \revref,
     but have not added a lengthy discussion.
 }
 
@@ -302,7 +345,7 @@ the correlation with recombination rate may be partially explained by this.
 \reply{
     That's true, but we are unaware of a better option,
     and since the jackknife is only used to pick an appropriate window size,
-    it does not seem crucial.  \revref
+    it does not seem crucial.  {\revref}
     Since results are the same across different window sizes,
     we don't think this can explain a correlation wtih recombination rate.
 }
@@ -338,10 +381,9 @@ normalization addresses it.
 
 \reply{
     We agree that demonstrating this issue would be nice in principle,
-    but for this audience would be getting too far down in the weeds,
-    and including the requested simulations would inflate an already lengthy paper.
-    Additionally, we aim to provide a good method, not to prove that the method
-    is better than all other possible methods.
+    but think that for this audience would be getting too far down in the weeds.
+    (Besides, we aim to provide a good method, not to prove that the method
+    is better than all other possible methods.)
     For the reviewer's sake, here is some more about our rationale.
     Suppose that the covariance matrix is the same along the whole genome,
     except that it is multiplied by an overall constant that varies.
@@ -418,7 +460,7 @@ is clear which PC the text refers to.
 \begin{point}{}
 Would the authors be able to provide a sense for the directionality of effects in Figure 4? It
 would be interesting if the authors tried to further characterize regions that are similar due to
-higher recombination rates. E.g. is there more/less density of polymorphisms in these regions?
+higher recombination rates. E.g.\ is there more/less density of polymorphisms in these regions?
 \end{point}
 
 \reply{
@@ -485,5 +527,5 @@ It would help to have numbered lines and references.
 \end{point}
 
 \reply{
-    We've made these changes.
+    Now provided.
 }
