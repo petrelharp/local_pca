@@ -279,7 +279,7 @@ Others have applied PCA to windows of the genome:
 \citet{ma2012investigation} used local PCA much as we do 
 to identify putative chromosomal inversions.
 \citet{bryc2010genomewide} and \citet{brisbin2012pcadmix}
-use PCA to infer tracts of local ancestry in recently admixed populations,
+used PCA to infer tracts of local ancestry in recently admixed populations,
 but by projecting each genomic window onto the axes of a single, globally-defined PCA
 rather than doing PCA separately on each window.  \revpoint{1}{7}
 
@@ -304,7 +304,7 @@ and to interpret the results in terms of the action of selection
 (e.g., \citet{turner2005genomic,ellegren2012genomic}).
 However, a given pattern (e.g., valleys of $F_{ST}$)
 can be caused by more than one biological process \citep{cruickshank2014reanalysis,burri2015linked},
-which in retrospect is unsuprising given that we are using a single statistic
+which in retrospect is unsurprising given that we are using a single statistic
 to describe a complex process.
 It is also common to use methods such as PCA to visualize large-scale patterns in 
 mean genome-wide relatedness.
@@ -419,7 +419,7 @@ we also rescale each approximate covariance matrix to be of similar size
 
 To do this, define the $N \times k$ matrix $V(i)$ so that $V(i)_{\cdot \ell}$, 
 the $\ell^\text{th}$ column of $V(i)$,
-is equal to the $\ell^\text{th}$ princpal component of the $i^\text{th}$ window,
+is equal to the $\ell^\text{th}$ principal component of the $i^\text{th}$ window,
 multiplied by $( \lambda_{\ell i} / \sum_{m=1}^k \lambda_{m i} )^{1/2}$,
 where $\lambda_{\ell i}$ is the $\ell^\text{th}$ eigenvalue of the genetic covariance matrix.
 % \begin{equation}
@@ -527,13 +527,13 @@ To provide a realistic test,
 we next used forwards-time, individual-based simulations, implemented using SLiM v3 \citep{haller2017flexible},
 which are described in detail in Appendix \ref{apx:slim_sims}.
 To provide realistic population structure for PCA to identify,
-each simulation ahd at least 5,000 diploid individuals,
+each simulation had at least 5,000 diploid individuals,   
 living across a continuous square range,
 with Gaussian dispersal and local density-dependent competition.
 Each genome was modeled on human chromosome 7, which is $1.54 \times 10^8$bp long,
 with an overall recombination rate of 1.6785 crossovers per chromosome per generation.
 To improve speed, we used tskit \citep{kelleher2018efficient} to record tree sequences
-and add neutral mutations afterwards, at a rate of $10^{-9}$ per bp per generation.
+and added neutral mutations afterwards, at a rate of $10^{-9}$ per bp per generation.
 Most simulations were neutral, but we also included linked selection, of two types.
 First, % run_031486
 we introduced selected mutations into two regions, 
@@ -666,7 +666,7 @@ with different underlying covariance matrices
 without being affected by extreme differences in amount of missing data
 (Supplemental Figure \ref{fig:test_missing}).
 This simulation also verifies insensitivity to ordering of top PCs,
-since it was performed using a covariance matrix with the top two eigenvalues equal,
+since it was performed using a covariance matrix with the top two eigenvalues equal,  
 so that the order of empirical eigenvectors (PCs) switches randomly.
 
 Individual-based simulations using SLiM \citep{haller2017flexible} allowed us to test the effects
@@ -691,9 +691,9 @@ It also identified the regions (although less unambiguously)
 with constant selection and stepwise varying recombination rate,
 but did not clearly identify them with constant recombination rate.
 This difference is likely because recombination rates are overall lower in the first case,
-leading to a stronger effect of linked seleciton.
+leading to a stronger effect of linked selection.
 These tests are not meant to be comprehensive survey of linked selection,
-but only to demonstrate that linked selection can produce signals simlar to what we see in real data.
+but only to demonstrate that linked selection can produce signals similar to what we see in real data.
 
 
 %%%%%%%%%%%
@@ -975,7 +975,7 @@ and number of PCs (Table \ref{tab:param_cors}).
          MDS coordinate and gene density for each window in the \textit{Medicago} genome,
          for chromosomes 1--8 (numbered above each pair of figures).
          For each chromosome, the red plot above is first coordinate of MDS against the middle position of each window along each chromosome. 
-         The black plot below is gene count for each window against the position of each window.
+         The black plot below is gene count for each window against the middle position of each window.
          \label{fig:mds_medicago}
     }
 \end{figure}
@@ -1109,12 +1109,12 @@ Finally, which collections of genomic regions are compared to each other (steps 
 along with the method used to discover common structure,
 will affect results.
 We used MDS, applied to either each chromosome separately or to the entire genome;
-for instance, human inversions are clearly visible as outliers when compared to the rest of their chromosome,
+for instance, human inversions are clearly visible as outliers when compared to the rest of their chromosomes,
 but genome-wide, their signal is obscured by the numerous other signals of comparable strength.
 
 Besides window length, there is also the question of how to choose windows.
 In these applications we have used nonoverlapping windows with equal numbers of polymorphic sites.
-Alternatively, windows could be chosen to have equal length in genetic distance,
+Alternatively, windows could be chosen to have equal length in genetic distance, % or have equal length in physical distance
 so that each would have roughly the same number of independent trees.
 However, we found little change in results when using different window sizes
 or when measuring windows in physical distance (in bp).
@@ -1144,7 +1144,7 @@ has been one of the major sources of confounding in genome-wide association stud
 and so methods must account for it by modeling population structure or kinship \citep{astle2009population,yang2014advantages}.
 Modern ``mixed model'' methods \citep[e.g.][]{loh2015efficient} 
 account for this with either a single, genome-wide kinship matrix
-or one constructed using only sites unliked to the focal SNP. \revpoint{2}{9}
+or one constructed using only sites unliked to the focal SNP. \revpoint{2}{9}   %unlike ---> unlink?
 Since the effects of population structure is not constant along the genome,
 this could in principle lead to an inflation of false positives in parts of the genome
 with stronger population structure than the genome-wide average.
@@ -1304,7 +1304,7 @@ and choosing windows to be of the same physical length (in bp) rather than in nu
     computed separately for each chromosome arm in the \textit{Drosophila} dataset,
     at different window sizes.
     All values are multiplied by $1,000$
-    (so typical variation is of order of 50\% of the actual values).
+    (so typical variation is of order of 50\% of the actual values).  %A little confused about this line. What does this 50% mean?
     Starting at windows of 1,000 SNPs, the signal (variation of PC1 between windows)
     starts to be substantially larger than the noise (standard error of PC1 for each window).
 } \label{tab:window_sizes}
@@ -1393,7 +1393,7 @@ each coefficient are either positive or negative with probabilities $1/30$ and $
 Each simulation was run for 50,000 generations.
 
 Each individual has a spatial position in the two-dimensional square of width $W=8$.
-Each time step, each individual chooses the nearest other to mate with,
+Each time step, each individual chooses the nearest other to mate with,             
 producing a random, Poisson distributed number of offspring with mean $1/3$.
 Offspring are assigned random spatial locations displaced from their parent's
 by a bivariate Gaussian with mean zero and standard deviation $\sigma = 0.2$,
@@ -1485,7 +1485,7 @@ and leads to a moderate number of balanced polymorphisms.
         The first column shows the combined PCA plot for windows 
         whose points are colored green in \Figure \ref{fig:mds_allchr}; 
         the second is for orange windows; 
-        and third is for purple windows.
+        and the third is for purple windows.
          \label{fig:pca_by_pop}
     }
 \end{figure}
@@ -1557,7 +1557,7 @@ and leads to a moderate number of balanced polymorphisms.
          The first column shows the MDS visualization of relationships between windows, 
          and the second and third columns show the midpoint of each window against the two MDS coordinates; 
          rows correspond to chromosome arms.
-         Colors are consistent for plots in each row. 
+%         Colors are consistent for plots in each row.   %this plot is all black points. 
          Vertical lines show the breakpoints of known polymorphic inversions.   
          \label{sfig:mds_allchr_noinversions}
     }
