@@ -533,7 +533,7 @@ with Gaussian dispersal and local density-dependent competition.
 Each genome was modeled on human chromosome 7, which is $1.54 \times 10^8$bp long,
 with an overall recombination rate of 1.6785 crossovers per chromosome per generation.
 To improve speed, we used tskit \citep{kelleher2018efficient} to record tree sequences
-and added neutral mutations afterwards, at a rate of $10^{-9}$ per bp per generation.
+and to add neutral mutations afterwards, at a rate of $10^{-9}$ per bp per generation.
 Most simulations were neutral, but we also included linked selection, of two types.
 First, % run_031486
 we introduced selected mutations into two regions, 
@@ -1126,8 +1126,6 @@ but genome-wide, their signal is obscured by the numerous other signals of compa
 
 Besides window length, there is also the question of how to choose windows.
 In these applications we have used nonoverlapping windows with equal numbers of polymorphic sites.
-Alternatively, windows could be chosen to have equal length in genetic distance, % or have equal length in physical distance
-so that each would have roughly the same number of independent trees.
 However, we found little change in results when using different window sizes
 or when measuring windows in physical distance (in bp).
 
@@ -1156,7 +1154,7 @@ has been one of the major sources of confounding in genome-wide association stud
 and so methods must account for it by modeling population structure or kinship \citep{astle2009population,yang2014advantages}.
 Modern ``mixed model'' methods \citep[e.g.][]{loh2015efficient} 
 account for this with either a single, genome-wide kinship matrix
-or one constructed using only sites unliked to the focal SNP. \revpoint{2}{9}   %unlike ---> unlink?
+or one constructed using only sites unlinked to the focal SNP. \revpoint{2}{9}   %unlike ---> unlink?
 Since the effects of population structure is not constant along the genome,
 this could in principle lead to an inflation of false positives in parts of the genome
 with stronger population structure than the genome-wide average.
@@ -1315,8 +1313,7 @@ and choosing windows to be of the same physical length (in bp) rather than in nu
     Measures of signal and noise,
     computed separately for each chromosome arm in the \textit{Drosophila} dataset,
     at different window sizes.
-    All values are multiplied by $1,000$
-    (so typical variation is of order of 50\% of the actual values).  %A little confused about this line. What does this 50% mean?
+    All values are multiplied by $1,000$.
     Starting at windows of 1,000 SNPs, the signal (variation of PC1 between windows)
     starts to be substantially larger than the noise (standard error of PC1 for each window).
 } \label{tab:window_sizes}
@@ -1569,7 +1566,6 @@ and leads to a moderate number of balanced polymorphisms.
          The first column shows the MDS visualization of relationships between windows, 
          and the second and third columns show the midpoint of each window against the two MDS coordinates; 
          rows correspond to chromosome arms.
-%         Colors are consistent for plots in each row.   %this plot is all black points. 
          Vertical lines show the breakpoints of known polymorphic inversions.   
          \label{sfig:mds_allchr_noinversions}
     }
