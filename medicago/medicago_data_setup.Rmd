@@ -180,7 +180,7 @@ This is just with ten samples, so we don't expect a real result, but let's check
 ```{r mds_chr1_snp, cache=TRUE, depends="lpca_chr1_snp"}
 system.time( chr1.pcdist <- pc_dist( snp.pca ) )
 # there may be windows with missing data
-na.inds <- is.na( snp.pca[1,] )
+na.inds <- is.na( snp.pca[,1] )
 chr1.mds <- cmdscale( chr1.pcdist[!na.inds,!na.inds], eig=TRUE, k=4 )
 mds.coords <- chr1.mds$points[ ifelse( na.inds, NA, cumsum(!na.inds) ), ]
 colnames(mds.coords) <- paste("MDS coordinate", 1:ncol(mds.coords))
