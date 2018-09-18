@@ -1,4 +1,4 @@
-.PHONY : figs
+.PHONY : figs all
 
 SHELL := /bin/bash
 
@@ -22,6 +22,20 @@ $(DISPLAYDIR)/%.png : %.pdf
 $(DISPLAYDIR)/%.eps : %.pdf
 	inkscape $< --export-eps=$@
 
+all : with-line-numbers.pdf cover-letter.pdf review-responses.pdf
+
+with-line-numbers.pdf : local_pca_paper.pdf
+	pdfjam --outfile $@ $< 1-53
+
+cover-letter.pdf : local_pca_paper.pdf
+	pdfjam --outfile $@ $< 54
+
+review-responses.pdf : local_pca_paper.pdf
+	pdfjam --outfile $@ $< 55-
+
+# these make the pdf render too slow
+local_pca_paper.pdf : review-responses.tex FigS_Together_MDS_plot_allchr.png FigS_pca_plot_allchr_human.png Fig1_allchr_Together_MDS_plot_compact_with_ChrX_inv.png MDS_allchr_Together_plot_samples_noinv.png Medicago_MDS_plot_allchr_win103_PCAk2.png
+
 figs :
 	echo "This doesn't make Figure 6 correctly yet (FIXME)."
 	for x in $$(cat local_pca_paper.tex | grep includegr | tr '{}' ',,' | cut -f 2 -d ','); do make $$x.eps; done
@@ -36,9 +50,6 @@ figs :
 %.bbl : %.tex
 	-$(PDFLATEX) $<
 	bibtex $*.aux
-
-# these make the pdf render too slow
-local_pca_paper.pdf : review-responses.tex FigS_Together_MDS_plot_allchr.png FigS_pca_plot_allchr_human.png Fig1_allchr_Together_MDS_plot_compact_with_ChrX_inv.png MDS_allchr_Together_plot_samples_noinv.png Medicago_MDS_plot_allchr_win103_PCAk2.png
 
 clean :
 	-rm *.aux *.bbl *.blg *.fff *.lof *.log *.out

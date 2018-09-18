@@ -23,22 +23,24 @@
 \vskip 1em
 
 We are pleased to finally submit a revised version of our manuscript, 
-``Local PCA shows how the effect of population structure differs along the genome''.
+``Local PCA shows how the effect of population structure differs along the genome'',
+previously submitted with ID GENETICS/2016/197517.
 As you will see, at the reviewers' requests 
 we have put substantial effort into additional validation of the method,
 including simple simulations to back up some of our mathematical claims about the method
 (e.g., about PC switching),
-and large individual-based simulations with large numbers of loci under weak selection
+and individual-based simulations with large numbers of loci under weak selection
 on realistically-sized chromosomes.
 The latter simulations, 
 which verify that our method can detect the action of linked selection,
-were made possible with tools only developed (some by us) over the last year.
+were made possible with tools only recently developed (in part by us).
+Our additional tests are described in Section \ref{ss:testing_methods}.
 
 In adding simulation results and the additional verifications requested by the reviewers,
 we have endeavored not to expand the manuscript (or the supplementary figures) too much.
 
-In addition to the addition of many more tests,
-we have also tried to shift the focus away from background selection specifically
+Besides theese additional verifications,
+we have tried to shift the focus away from background selection specifically
 to more general linked selection.
 We think it likely that background selection is a contributing factor,
 but that the relative contributions of different sorts of selection
@@ -49,8 +51,10 @@ We hope this addresses Reviewer 1's skepticism regarding background selection.
 In addition to the main document, with line numbers and hyperlinked references
 from the responses to reviews,
 we have also uploaded a version highlighting the changes between this version
-and the submitted one.
-We hope you find the revised manuscript an improvement as well.
+and the submitted one (note that the submission system doesn't provide an appropriate category
+for this file upload, so it is also marked ``Response to Reviewers'').
+
+We hope you find the manuscript to be improved as much as we do.
 
 \noindent \hspace{4em}
 \begin{minipage}{3in}
@@ -68,6 +72,7 @@ Peter Ralph
 \vskip 4em
 
 \pagebreak
+\setcounter{page}{1}
 
 %%%%%%%%%%%%%%
 \reviewersection{AE}
@@ -140,12 +145,20 @@ because we measure distances in a way that does not depend on PC ordering.
 It is possible that switching of PC 2 and 3 could mislead if we are using only $k=2$ of the PCs;
 however, we see the same patterns when using more PCs, so we know this is not happening.
 
-Nearly all of the inversion-like signals we find are well-characterized in the literature.
-The evidence for remaining inversion is \emph{not} watertight,
-because (as we point out), we cannot distinguish them from long regions of low recombination.
+As for inversions: we aren't claiming that every strong localized signal discovered by this method
+is an inversion (and we've tried to make sure the paper doesn't imply that!),
+but think we have good evidence for the taxa we study.
+We hope the reviewer agrees that we find the large inversions of \emph{Drosophila},
+where (a) PCA structure coincides with known inversion breakpoints, 
+and (b) the local PCA plots separate samples carrying the two inversion orientations.
+Nearly all of the inversion-like signals we find in human are likewise located at the positions 
+of known polymorphic inversions; 
+however, we agree that the evidence for remaining inversion is \emph{not} watertight,
+because, as the reviwer points out (and we do as well),
+we cannot distinguish them from long regions of low recombination.
 The fact that nearly all of the strong, localized signals coincide with known polymorphic inversions
 induces us to emphasize inversions.
-
+We now more clearly emphasize this caveat in the Discussion \llname{ll:inversion_caveat}.
 
 \begin{point}{}
     \ldots (a) variation in the recombination rate and 
@@ -156,7 +169,7 @@ induces us to emphasize inversions.
     We have now added simulation tests showing that large-scale variation in recombination rate
     does not create spurious structure \llname{ll:test_recomb_rate};
     except in the presence of long regions of low recombination,
-    as expected \llname{ll:hotspot_recomb}.
+    which we point is is as expected \llname{ll:hotspot_recomb}.
     We also check for the effect of this in the real data:
     since we only look at SNPs,
     a 1Kb window with mutation rate $\mu$ and recombination rate $\rho$
@@ -197,7 +210,7 @@ could switch).
     We have added a table including correlations between MDS values between $k=2$ and $k=5$
     for the Medicago data (Table \ref{tab:param_cors}),
     and a representative figure (for the Drosophila data, $k=5$),
-    see Figure \ref{fig:dmel_k5}. \revref
+    see Figure \ref{sfig:dmel_k5}, \revref and \llname{rr:rev1:4}.
 }
 
 \begin{point}{p15}
@@ -259,7 +272,7 @@ intuition of what the method is doing and how, but I found comparison to previou
 to be somewhat missing. To some extent, this is due to the fact that the main goal of their
 analysis is somewhat vaguely ``finding heterogeneity'', which leads to the applications of
 detecting chromosomal inversions and evidence for background selection. It would help to
-have a well defined set of hypotheses, test the method'€™s accuracy  using simulation (see next
+have a well defined set of hypotheses, test the method's accuracy using simulation (see next
 comment), and compare to previous efforts in similar domains.
 \end{point}
 
@@ -392,8 +405,8 @@ normalization addresses it.
     to the covariance matrix, and the scaling we propose would remove the effect
     of this overall constant.
     It is not clear that variation in mutation rate would act like an overall multiple
-    of the covariance matrix.
-    Since we're interested in patterns rather than magnitudes of relatedness,
+    of the covariance matrix, but
+    since we're interested in patterns rather than magnitudes of relatedness,
     it seems a wise thing to remove.
 }
 
@@ -417,7 +430,7 @@ normalization addresses it.
     \includegraphics{../medicago/recomb_rates/recomb_and_mds} \\
     However, given uncertainties in this mapping, the relatively poor match of window sizes,
     the large number of unmappable windows, and the nature of the recombination data
-    (produced with LDhat, not with actual observations of recombiations),
+    (produced with LDhat, not with actual observations of recombinations),
     we decided not to include this (but have provided a note, \revref).
 }
 
@@ -510,7 +523,7 @@ supplementary table.
 \reply{
     We have included a table of correlations (Table \ref{tab:param_cors}),
     as well as the plots for Drosophila data using $k=5$
-    (Figure \ref{fig:dmel_k5}),
+    (Figure \ref{sfig:dmel_k5}),
     and hope that readers will take our word on this point more generally.
 }
 

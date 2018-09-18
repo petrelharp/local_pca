@@ -120,7 +120,6 @@ Peter Ralph\textsuperscript{1,2,3,*}
 \ifsubmission\linenumbers\fi
 
 
-
 \section*{Abstract}
 
 Population structure leads to systematic patterns in measures of mean relatedness
@@ -138,7 +137,7 @@ In a global human dataset, localized heterogeneity is likely explained by polymo
 In a range-wide dataset of \textit{Medicago truncatula},
 factors that produce heterogeneity are shared between chromosomes,
 correlate with local gene density,
-and may be caused by background selection or local adaptation.
+and may be caused by linked selection, such as background selection or local adaptation.
 In a dataset of primarily African \textit{Drosophila melanogaster}, large-scale heterogeneity across each chromosome arm
 is explained by known chromosomal inversions thought to be under recent selection,
 and after removing samples carrying inversions, remaining heterogeneity is correlated with recombination rate and gene density,
@@ -148,6 +147,8 @@ The visualization method provides a flexible new way to discover biological driv
 and its application to data highlights the strong effects that linked selection and chromosomal inversions
 can have on observed patterns of genetic variation.
 
+% Article summary
+% Principal component analysis is often used to describe overall "population structure", or patterns of relatedness arising from past demographic history, among a set of genomes.  In this paper, we describe how the patterns uncovered by PCA differ at a local scale along the genome.  We find that these patterns can be driven strongly by chromosomal inversions (and perhaps also regions of low recombination), and suggest that the strong remaining heterogeneity may be caused by the past action of linked selection.
 
 
 \section{Introduction}
@@ -409,10 +410,9 @@ we do not compare patterns of relatedness of different genomic regions by direct
 since rotations or reflections of these imply identical patterns of relatedness.
 Instead, we compare the low-dimensional approximations of the local covariance matrices
 obtained using the top $k$ PCs,
-which is invariant under ordering of the PCs \revpoint{1}{2},
+which is invariant under reordering of the PCs, \revpoint{1}{2}
 reflections, and rotations and yet contains all other information about the PCs.
-(For results shown here, we use $k=2$;
-results using larger numbers of PCs were nearly identical.)
+(For results shown here, we use $k=2$.)
 Furthermore, to remove the effect of artifacts such as mutation rate variation,
 we also rescale each approximate covariance matrix to be of similar size
 (precisely, so that the underlying data matrix has trace norm equal to one).
@@ -438,7 +438,8 @@ Then, the rescaled, rank $k$ approximate covariance matrix for the $i^\text{th}$
 % \end{align}
 To measure the similarity of patterns of relatedness for the $i^\text{th}$ window and $j^\text{th}$ window,
 we then use
-Euclidean distance $D_{ij}$ between the matrices $M(i)$ and $M(j)$:
+Euclidean distance $D_{ij}$ between the matrices $M(i)$ and $M(j)$,
+defined by
 $D_{ij}^2 = \sum_{k\ell} ( M(i)_{k,\ell} - M(j)_{k,\ell} )^2$.
 
 
@@ -517,11 +518,13 @@ We tested the method using two types of simulation.
 First, to verify expected behavior, we simulated ``genomes'' as an independent sequence
 of correlated Gaussian ``genotypes'', using a different covariance matrix
 in the first quarter, middle half, and last quarter of the chromosome.
+The details of the simulation,
+also designed to detect sensitivity to PC switching,
+are given in Appendix \ref{apx:gaussian_sims}.
 To verify robustness to missing data,
 we ran the method after randomly dropping 50\% of the genotypes in the first half of the genome;
 if the method is misled by missing data, then it will distinguish the two halves of the chromosome
 rather than the segments having different covariance matrices.
-Details are given in Appendix \ref{apx:gaussian_sims}.
 
 To provide a realistic test,
 we next used forwards-time, individual-based simulations, implemented using SLiM v3 \citep{haller2017flexible},
@@ -532,7 +535,8 @@ living across a continuous square range,
 with Gaussian dispersal and local density-dependent competition.
 Each genome was modeled on human chromosome 7, which is $1.54 \times 10^8$bp long,
 with an overall recombination rate of 1.6785 crossovers per chromosome per generation.
-To improve speed, we used tskit \citep{kelleher2018efficient} to record tree sequences
+To improve speed, we used tskit \citep{kelleher2018efficient} to record tree sequences 
+in SLiM \citep{haller2018treesequence}
 and to add neutral mutations afterwards, at a rate of $10^{-9}$ per bp per generation.
 Most simulations were neutral, but we also included linked selection, of two types.
 First, % run_031486
@@ -664,16 +668,16 @@ Simple non-population-based simulations with Gaussian ``genotypes''
 showed that the method performs as expected, clearly separating regions of the genome
 with different underlying covariance matrices
 without being affected by extreme differences in amount of missing data
-(Supplemental Figure \ref{fig:test_missing}).
+(Supplemental Figure \ref{sfig:test_missing}).
 This simulation also verifies insensitivity to ordering of top PCs,
 since it was performed using a covariance matrix with the top two eigenvalues equal,  
 so that the order of empirical eigenvectors (PCs) switches randomly.
 
 Individual-based simulations using SLiM \citep{haller2017flexible} allowed us to test the effects
 of recombination and mutation rate variation, as well as linked selection.
-Results are shown in Supplemental Figures \ref{sfig:slim_sims1} and \ref{sfig:slim_sims2}.
 As expected, varying recombination rate stepwise by a factor of 64
-did not induce patterns in the MDS visualizations correlated with recombination rate.
+did not induce patterns in the MDS visualizations correlated with recombination rate
+(Supplemental Figure \ref{sfig:slim_sims1}).
 \llabel{ll:test_recomb_rate}
 Since varying mutation rate with a fixed recombination map
 is equivalent to varying the recombination map and remapping windows,
@@ -713,7 +717,7 @@ The next two columns of \Figure \ref{fig:mds_allchr} respectively depict the two
 plotted against the window's position along the genome,
 to show how the plot of the first column is laid out along the genome.
 The patterns did not depend on the number of PCs used
-(see \Figure \ref{fig:dmel_k5} for the same plot with $k=5$ PCs), \revpoint{1}{3}
+(see \Figure \ref{sfig:dmel_k5} for the same plot with $k=5$ PCs), \revpoint{1}{3}
 and are only weakly correlated with variation in missingness 
 (see \Figure \ref{sfig:dpgp_missingness}). \revpoint{2}{4}
 
@@ -751,7 +755,7 @@ then highlighted these windows' positions along the genome,
 and created PCA plots for the windows, combined.
 Representative plots are shown for three groups of windows on each chromosome arm
 in \Figure \ref{fig:mds_allchr} (groups are shown in color),
-and in Supplemental \Figure \ref{fig:pca_by_pop} (PCA plots).
+and in Supplemental \Figure \ref{sfig:pca_by_pop} (PCA plots).
 The latter plots are quite different,
 showing that genomic windows in different regions of the MDS plot 
 indeed show quite different patterns of relatedness.
@@ -762,7 +766,7 @@ several large inversions that are polymorphic in these samples,
 discussed in \citet{corbett2012population} and \citet{langley2012genomic}.
 % Frequencies of each inversion in the sample are given in Table \ref{tab:inversion_freqs}.
 To depict this, \Figure \ref{fig:pca_by_inversion} shows
-the PCA plots in \Figure \ref{fig:pca_by_pop} recolored by the orientation of the inversion for each sample.
+the PCA plots in Supplemental \Figure \ref{sfig:pca_by_pop} recolored by the orientation of the inversion for each sample.
 Taking chromosome arm 2L as an example,
 the two regions of similar, extreme patterns of relatedness
 shown in green in the first row of \Figure \ref{fig:mds_allchr}
@@ -771,7 +775,7 @@ and the PCA plots in the first rows of \Figure \ref{fig:pca_by_inversion}
 shows that patterns of relatedness here are mostly determined by inversion orientation.
 The regions shown in purple on chromosome 2L lie near the centromere,
 and have patterns of relatedness reflective of two axes of variation,
-seen in \Figures \ref{fig:pca_by_pop} and \ref{fig:pca_by_inversion},
+seen in \Figure \ref{fig:pca_by_inversion} and Supplemental \Figure \ref{sfig:pca_by_pop},
 which correspond roughly to latitude within Africa and to degree of cosmopolitan admixture respectively
 (see \citet{lack2015drosophila} for more about admixture in this sample).
 The regions shown in orange on chromosome 2L mostly lie inside the inversion,
@@ -818,7 +822,8 @@ however, each breakpoint visibly affects patterns in the MDS coordinates
 To see how patterns of relatedness vary in the absence of polymorphic inversions,
 we performed the same analyses after removing, for each chromosome arm,
 any samples carrying inversions on that arm.
-In the result, shown in Supplemental \Figure \ref{sfig:mds_allchr_noinversions},
+In the result, shown in \Figure \ref{fig:drosophila_recomb_rate} and
+Supplemental \Figure \ref{sfig:mds_allchr_noinversions},
 the striking peaks associated with inversion breakpoints are gone,
 and previously smaller-scale variation now dominates the MDS visualization.
 For instance, the majority of the variation along 3L in \Figure \ref{fig:mds_allchr}
@@ -937,7 +942,7 @@ to Mt4.0 coordinates (although those in \citet{paape2012finescale} appear visual
 
 The results were highly consistent across window sizes, window types (SNPs or bp),
 and number of PCs, as shown in Table \ref{tab:param_cors}.
-\revpoint{1}{3} \revpoint{1}{4} \revpoint{1}{5}
+\revpoint{1}{4} \revpoint{1}{5}
 % We also found nearly identical results when choosing shorter windows of 1,000 SNPs
 % (Supplemental Figure \ref{sfig:mds_medicago_allchr_1e3}; \revpoint{1}{4}
 % or choosing windows of equal length in base pairs rather than SNPs. \revpoint{1}{5}
@@ -964,7 +969,6 @@ and number of PCs, as shown in Table \ref{tab:param_cors}.
         Each point corresponds to a sample, colored by country of origin.
         Plots for remaining chromosomes are shown in Supplemental \Figure \ref{sfig:pca_peaks_medicago_allchr}.
        \label{fig:mds12_medicago}
-       \label{fig:pca_medicago}
     }
 \end{figure}
 
@@ -1004,13 +1008,13 @@ and possible additional applications.
 
 
 \paragraph{Chromosomal inversions}
-A major driver of variation in patterns of relatedness in two datasets we examined are inversions.
+A major driver of variation in patterns of relatedness in two datasets we examined seems to be inversions.
 This may be common,
 but the example of \textit{Medicago truncatula} shows that polymorphic inversions are not ubiquitous.
 PCA has been proposed as a method for discovering inversions \citep{ma2012investigation};
 however, the signal left by inversions likely cannot be distinguished from long haplotypes under balancing selection 
 or simply regions of reduced recombination
-without additional lines of evidence.
+without additional lines of evidence.  \llabel{ll:inversion_caveat}
 Inversions show up in our method because across the inverted region,
 most gene trees share a common split that dates back to the origin of the inversion.
 However, in many applications, inversions are a nuisance.
@@ -1055,12 +1059,12 @@ the effects of which were not uniform across the genome due to selection. \revpo
 For instance, it has been hypothesized that large-scale variation in amount of introgressed Neanderthal DNA along the genome
 is due to selection against Neanderthal genes, leading to greater introgression in regions of lower gene density
 \citep{harris2016genetic,juric2016strength}.
-African \textit{Drosophila melanogaster} are known to have a substantial amount of recently introgressed genome from ``cosmopolitan'' sources;
+African \textit{Drosophila melanogaster} are thought to have a substantial amount of recently introgressed genome from ``cosmopolitan'' sources;
 if selection regularly favors genes from one origin,
 this could lead to substantial variation in patterns of relatedness correlated with local gene density.
 
 There has been substantial debate over the relative impacts of different forms of selection
-(e.g., \citet{charlesworth1997effects,charlesworth2012effects,pease2013accurate,hedrick2013adaptive,burri2015linked,corbettdetig2015natural,harris2016genetic,martin2016natural,phung2016determining}). \revpoint{2}{16}
+(e.g., \citet{charlesworth1997effects,charlesworth2012effects,pease2013accurate,hedrick2013adaptive,burri2015linked,corbettdetig2015natural,harris2016genetic,martin2016natural,phung2016determining,stankowski2018tempo}). \revpoint{2}{16}
 These have been difficult to disentangle in part because for the most part
 theory makes predictions which are only strictly valid in randomly mating (i.e., unstructured) populations,
 and it is unclear to what extent the spatial structure observed in most real populations will affect these predictions.
@@ -1112,11 +1116,9 @@ As with whole-genome PCA,
 the choice of samples is important,
 as variation not strongly represented in the sample will not be discovered.
 The effects of strongly imbalanced sampling schemes are often corrected by dropping samples in overrepresented groups;
-but downweighting may be a better option that does not discard data
-(and here we present a method to do this).
+but downweighting may be a better option that does not discard data.
 Next, the choice of window size may be important,
-although in our applications results were not sensitive to this,
-indicating that we can see variation on a sufficiently fine scale.
+although in our applications results were not sensitive to this.
 Finally, which collections of genomic regions are compared to each other (steps 3 and 4 in \Figure \ref{fig:diagram}),
 along with the method used to discover common structure,
 will affect results.
@@ -1369,7 +1371,7 @@ The variance of individual $i$'s genotype is $\Sigma_{ii} = S_{p(i),p(i)} + 0.1$
 
 We first created ``genotypes'' in this way with fifty individuals from each of the three populations;
 running our method on a genome with 99 windows of 400 loci each
-produced the first plot in Figure \ref{fig:test_missing}.
+produced the first plot in Figure \ref{sfig:test_missing}.
 These matrices are chosen so that the top two eigenvalues $\Sigma$ are the same (both 50.1),
 and so the ordering of the top two PCs is arbitrary.
 If our method was sensitive to PC ordering,
@@ -1378,7 +1380,7 @@ separate from the other half. \llabel{ll:pc_switching_test}
 
 We then marked each genotype in the first half of the chromosome
 as missing, independently, with probability $1/2$ and ran our method again,
-producing the second plot of Figure \ref{fig:test_missing}. \llabel{ll:test_missing}
+producing the second plot of Figure \ref{sfig:test_missing}. \llabel{ll:test_missing}
 If our method was influenced by missing data,
 we would expect the first half of the chromosome to separate from the second
 in the MDS plot.
@@ -1395,7 +1397,7 @@ Recombination was either
 or (c) constant in each of seven equal-sized regions, beginning at $2.04\times 10^{-8}$,
 descending by a factor of four for three steps, and then ascending by a factor of four for three steps,
 so that the middle seventh has the lowest recombination rate,
-and the outer two sevenths has a rage 64 times higher.
+and the outer two sevenths has a rate 64 times higher.
 Selected mutations are introduced at a rate of $10^{-10}$ per bp per individual per generation,
 and have selection coefficients drawn from a Gamma distribution with mean 0.005 and shape 2;
 each coefficient are either positive or negative with probabilities $1/30$ and $29/30$ respectively.
@@ -1485,34 +1487,6 @@ and leads to a moderate number of balanced polymorphisms.
 
 \begin{figure}
     \begin{center}
-       \includegraphics[width=1\textwidth]{Fig2_pca_plots_allchr_3peaks_label_update}
-    \end{center}
-    \caption{      
-        PCA plots for the three sets of genomic windows colored in \Figure \ref{fig:mds_allchr},
-        on each chromosome arm of \textit{Drosophila melanogaster}.
-        In all plots, each point represents a sample. 
-        The first column shows the combined PCA plot for windows 
-        whose points are colored green in \Figure \ref{fig:mds_allchr}; 
-        the second is for orange windows; 
-        and the third is for purple windows.
-         \label{fig:pca_by_pop}
-    }
-\end{figure}
-
-\begin{figure}
-    \begin{center}
-        \includegraphics[width=1\textwidth]{Fig1_allchr_Together_MDS_plot_PCAk5_win103}
-    \end{center}
-    \caption{      
-        MDS visualizations for each chromosome arm of \textit{Drosophila melanogaster},
-        as in \Figure \ref{fig:mds_allchr},
-        except that the method was run using five PCs ($k=5$) instead of two.
-         \label{fig:dmel_k5}
-    }
-\end{figure}
-
-\begin{figure}
-    \begin{center}
        \includegraphics[width=1\textwidth]{FigS_pca_plots_allchr_drosophila}
     \end{center}
     \caption{
@@ -1542,6 +1516,124 @@ and leads to a moderate number of balanced polymorphisms.
     \caption{
         PCA plots for all 8 chromosomes in the \textit{Medicago truncatula} dataset.
         \label{sfig:pca_medicago_allchr}
+    }
+\end{figure}
+
+%%%%%%%%%%simulations
+
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=0.82\textwidth]{simple_example_base_case}
+        \includegraphics[width=0.82\textwidth]{simple_example_missing_data}
+    \end{center}
+    \caption{
+        MDS visualizations of the Gaussian genotypes described in Appendix \ref{apx:gaussian_sims},
+        for 50 individuals from each of three populations.
+        \textbf{(top)} The first quarter, middle half, and final quarter of the chromosome
+        each have different population structure, as expected,
+        despite the possibility for PC switching within each.
+        \textbf{(bottom)} The same picture results even after marking a random 50\% of the genotypes
+        in the first half of the chromosome as missing.
+    } \label{sfig:test_missing}.
+\end{figure}
+
+\begin{figure}
+    \begin{center}
+       \includegraphics[width=0.82\textwidth]{FigS_plot_corners-1_run_027034}
+       \includegraphics[width=0.82\textwidth]{FigS_plot_corners-1_run_012720}
+       \includegraphics[width=0.82\textwidth]{FigS_plot_corners-1_run_015598}
+       \includegraphics[width=0.82\textwidth]{FigS_plot_corner_pca-1_run_015598}
+    \end{center}
+    \caption{
+        MDS visualizations of the results of individual-based simulations using SLiM
+        (see Appendix \ref{apx:slim_sims} for details).
+        All simulations are neutral, and recombination is:
+        \textbf{(top)} constant;
+        \textbf{(top middle)} varies stepwise by factors of two in seven equal-length segments,
+        with highest rates on the ends, so the middle segment has a recombination rate 64 times lower
+        than the ends;
+        \textbf{(bottom middle)} according to the HapMap human female chromosome 7 map.
+        The \textbf{bottom} figure shows PCA maps corresponding to the three colored windows
+        of the last (HapMap) situation;
+        the outlying regions are long regions of low recombination rate,
+        so that region can be dominated by a few correlated trees,
+        similar to an inversion.
+    } \label{sfig:slim_sims1}
+\end{figure}
+
+
+\begin{figure}
+    \begin{center}
+       \includegraphics[width=0.82\textwidth]{FigS_plot_corners-1_run_031486} % base, selected
+       \includegraphics[width=0.82\textwidth]{FigS_plot_corners-1_run_009673} % step, selected
+       \includegraphics[width=0.82\textwidth]{FigS_plot_corners-1_run_016913} % base, balancing
+       \includegraphics[width=0.82\textwidth]{FigS_plot_corner_pca-1_run_016913}
+    \end{center}
+    \caption{
+        MDS visualizations of the results of individual-based simulations using SLiM
+        (see Appendix \ref{apx:slim_sims} for details).
+        All simulations incorporate linked selection by allowing selected mutations
+        to appear in the same two regions of the genome: 
+        the one-sixth of the genome immediately before the halfway point,
+        and the last one-sixth of the genome.
+        \textbf{(top)} Constant recombination rate.
+        \textbf{(top middle)} Stepwise varying recombination rate 
+        (as described in \Figure \ref{sfig:slim_sims1}).
+        \textbf{(bottom middle)} Constant recombination rate
+        with spatially varying effects of selection.
+        \textbf{(bottom)} PCA plots corresponding to the highlighted corners 
+        of the last MDS visualization, showing how spatially varying linked selection 
+        has affected patterns of relatedness.
+    } \label{sfig:slim_sims2}
+\end{figure}
+
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=1\textwidth]{Fig1_allchr_Together_MDS_plot_PCAk5_win103}
+    \end{center}
+    \caption{      
+        MDS visualizations for each chromosome arm of \textit{Drosophila melanogaster},
+        as in \Figure \ref{fig:mds_allchr},
+        except that the method was run using five PCs ($k=5$) instead of two.
+         \label{sfig:dmel_k5}
+    }
+\end{figure}
+
+\begin{figure}
+    \begin{center}
+       \includegraphics[width=0.82\textwidth]{FigS_Drosophila_missings_against_MDS1_win103}
+    \end{center}
+    \caption{
+        The proportion of data in each window that are missing,
+        compared to the value of the first MDS coordinate
+        for the \textit{Drosophila melanogaster} data from \Figure \ref{fig:mds_allchr}.
+        \label{sfig:dpgp_missingness}
+    }
+\end{figure}
+ 
+% \begin{figure}
+%     \begin{center}
+%        \includegraphics[width=0.82\textwidth]{FigS_Medicago_missing_against_MDS1_win104}
+%     \end{center}
+%     \caption{
+%         The missingness ratio along genome and the correlation of MDS against missingness in Medicago.
+%         \label{sfig:medicago_missingness}
+%     }
+% \end{figure}
+
+\begin{figure}
+    \begin{center}
+       \includegraphics[width=1\textwidth]{Fig2_pca_plots_allchr_3peaks_label_update}
+    \end{center}
+    \caption{      
+        PCA plots for the three sets of genomic windows colored in \Figure \ref{fig:mds_allchr},
+        on each chromosome arm of \textit{Drosophila melanogaster}.
+        In all plots, each point represents a sample. 
+        The first column shows the combined PCA plot for windows 
+        whose points are colored green in \Figure \ref{fig:mds_allchr}; 
+        the second is for orange windows; 
+        and the third is for purple windows.
+         \label{sfig:pca_by_pop}
     }
 \end{figure}
 
@@ -1663,21 +1755,6 @@ and leads to a moderate number of balanced polymorphisms.
     }
 \end{figure}
 
-\begin{figure}
-    \begin{center}
-        \ifusepngs
-           \includegraphics[width=0.85\textwidth]{FigS_Together_MDS_plot_allchr.png}
-       \else
-           \includegraphics[width=0.85\textwidth]{FigS_Together_MDS_plot_allchr}
-       \fi
-    \end{center}
-    \caption{
-        MDS visualizations of the effects of population structure for all 8 chromosomes 
-        of the \textit{Medicago truncatula} data, using windows of $10^4$ SNPs.
-        \label{sfig:mds_medicago_allchr}
-    }
-\end{figure}
-
 % \begin{figure}
 %     \begin{center}
 %         \ifusepngs
@@ -1694,6 +1771,21 @@ and leads to a moderate number of balanced polymorphisms.
 %     }
 % \end{figure}
 
+\begin{figure}
+    \begin{center}
+        \ifusepngs
+           \includegraphics[width=0.85\textwidth]{FigS_Together_MDS_plot_allchr.png}
+       \else
+           \includegraphics[width=0.85\textwidth]{FigS_Together_MDS_plot_allchr}
+       \fi
+    \end{center}
+    \caption{
+        MDS visualizations of the effects of population structure for all 8 chromosomes 
+        of the \textit{Medicago truncatula} data, using windows of $10^4$ SNPs.
+        \label{sfig:mds_medicago_allchr}
+    }
+\end{figure}
+
 
 
 \begin{figure}
@@ -1708,99 +1800,9 @@ and leads to a moderate number of balanced polymorphisms.
     }
 \end{figure}
 
-%%%%%%%%%%simulations
-
-\begin{figure}
-    \begin{center}
-       \includegraphics[width=0.82\textwidth]{FigS_plot_corners-1_run_027034}
-       \includegraphics[width=0.82\textwidth]{FigS_plot_corners-1_run_012720}
-       \includegraphics[width=0.82\textwidth]{FigS_plot_corners-1_run_015598}
-       \includegraphics[width=0.82\textwidth]{FigS_plot_corner_pca-1_run_015598}
-    \end{center}
-    \caption{
-        MDS visualizations of the results of individual-based simulations using SLiM
-        (see Appendix \ref{apx:slim_sims} for details).
-        All simulations are neutral, and recombination is:
-        \textbf{(top)} constant;
-        \textbf{(top middle)} varies stepwise by factors of two in seven equal-length segments,
-        with highest rates on the ends, so the middle segment has a recombination rate 64 times lower
-        than the ends;
-        \textbf{(bottom middle)} according to the HapMap human female chromosome 7 map.
-        The \textbf{bottom} figure shows PCA maps corresponding to the three colored windows
-        of the last (HapMap) situation;
-        the outlying regions are long regions of low recombination rate,
-        so that region can be dominated by a few correlated trees,
-        similar to an inversion.
-    } \label{sfig:slim_sims1}
-\end{figure}
-
-
-\begin{figure}
-    \begin{center}
-       \includegraphics[width=0.82\textwidth]{FigS_plot_corners-1_run_031486} % base, selected
-       \includegraphics[width=0.82\textwidth]{FigS_plot_corners-1_run_009673} % step, selected
-       \includegraphics[width=0.82\textwidth]{FigS_plot_corners-1_run_016913} % base, balancing
-       \includegraphics[width=0.82\textwidth]{FigS_plot_corner_pca-1_run_016913}
-    \end{center}
-    \caption{
-        MDS visualizations of the results of individual-based simulations using SLiM
-        (see Appendix \ref{apx:slim_sims} for details).
-        All simulations incorporate linked selection by allowing selected mutations
-        to appear in the same two regions of the genome: 
-        the one-sixth of the genome immediately before the halfway point,
-        and the last one-sixth of the genome.
-        \textbf{(top)} Constant recombination rate.
-        \textbf{(top middle)} Stepwise varying recombination rate 
-        (as described in \Figure \ref{sfig:slim_sims1}).
-        \textbf{(bottom middle)} Constant recombination rate
-        with spatially varying effects of selection.
-        \textbf{(bottom)} PCA plots corresponding to the highlighted corners 
-        of the last MDS visualization, showing how spatially varying linked selection 
-        has affected patterns of relatedness.
-    } \label{sfig:slim_sims2}
-\end{figure}
 
 
 
-\begin{figure}
-    \begin{center}
-       \includegraphics[width=0.82\textwidth]{FigS_Drosophila_missings_against_MDS1_win103}
-    \end{center}
-    \caption{
-        The proportion of data in each window that are missing,
-        compared to the value of the first MDS coordinate
-        for the \textit{Drosophila melanogaster} data from \Figure \ref{fig:mds_allchr}.
-        \label{sfig:dpgp_missingness}
-    }
-\end{figure}
- 
-% \begin{figure}
-%     \begin{center}
-%        \includegraphics[width=0.82\textwidth]{FigS_Medicago_missing_against_MDS1_win104}
-%     \end{center}
-%     \caption{
-%         The missingness ratio along genome and the correlation of MDS against missingness in Medicago.
-%         \label{sfig:medicago_missingness}
-%     }
-% \end{figure}
-
-
-
-\begin{figure}
-    \begin{center}
-        \includegraphics[width=0.82\textwidth]{simple_example_base_case}
-        \includegraphics[width=0.82\textwidth]{simple_example_missing_data}
-    \end{center}
-    \caption{
-        MDS visualizations of the Gaussian genotypes described in Appendix \ref{apx:gaussian_sims},
-        for 50 individuals from each of three populations.
-        \textbf{(top)} The first quarter, middle half, and final quarter of the chromosome
-        each have different population structure, as expected,
-        despite the possibility for PC switching within each.
-        \textbf{(bottom)} The same picture results even after marking a random 50\% of the genotypes
-        in the first half of the chromosome as missing.
-    } \label{fig:test_missing}.
-\end{figure}
 
 
 
