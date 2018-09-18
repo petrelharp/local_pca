@@ -80,15 +80,26 @@
 
 % Responses to reviews
 \input{review-response-commands}
+\newif\ifbiorxiv
+\biorxivfalse
+% \biorxivtrue
+\ifbiorxiv
+    \renewcommand{\revpoint}[2]{\relax}
+    \renewcommand{\llabel}[1]{\relax}
+\fi
 % set this to show line numbers and include responses to reviews or not
 \newif\ifreviewresponses
 \reviewresponsestrue  % include them
 % \reviewresponsesfalse  % don't include them
+\ifbiorxiv\reviewresponsesfalse\fi
 \newcommand{\responsefile}{review-responses.tex}  % name of the review reponses file
+
 
 
 \begin{document}
 \vspace*{0.35in}
+
+\ifbiorxiv\nolinenumbers\fi
 
 % Title must be 250 characters or less.
 % Please capitalize all terms in the title except conjunctions, prepositions, and articles.
@@ -117,7 +128,6 @@ Peter Ralph\textsuperscript{1,2,3,*}
 \end{flushleft}
 
 
-\ifsubmission\linenumbers\fi
 
 
 \section*{Abstract}
