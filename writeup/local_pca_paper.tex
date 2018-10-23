@@ -139,7 +139,7 @@ Mean relatedness
 is an average of the relationships across locus-specific genealogical trees,
 which can be strongly affected on intermediate genomic scales by linked selection and other factors.
 We show how to use local principal components analysis to describe this 
-meso-scale heterogeneity in patterns of relatedness,
+intermediate-scale heterogeneity in patterns of relatedness, \revpoint{AE}{1}
 and apply the method to genomic data from three species,
 finding in each that the effect of population structure 
 can vary substantially across only a few megabases.
@@ -173,13 +173,14 @@ can have on observed patterns of genetic variation.
 where ``subdivision'' refers to restricted migration between subpopulations.
 The phrase is also commonly used to refer to the genetic patterns that result from this process,
 as for instance reduced mean relatedness between individuals from distinct populations.
-However, it is not necessarily clear what aspects of demography should be included in the concept. \revpoint{2}{10}
+However, it is not necessarily clear what aspects of demography should be included in the concept. % \revpoint{2}{10}
 For instance, 
 \citetx[Blair]{blair1943population} defines \emph{population structure} to be the sum total of
 ``such factors as size of breeding populations, periodic fluctuation of population size, sex ratio, activity range and \emph{differential survival of progeny}'' (emphasis added).
 The definition is similar to Wright's, but differs in including the effects of natural selection.
 On closer examination, incorporating differential survival or fecundity makes the concept less clear:
-should a randomly mating population consisting of two types that are partially reproductively isolated from each other
+should a randomly mating population consisting of two types 
+that exhibit partial post-zygotic reproductive isolation from each other \revpoint{AE}{2}
 be said to show population structure or not?
 Whatever the definition,
 it is clear that due to natural selection, the effects of population structure --
@@ -246,8 +247,8 @@ and theoretical expectations predict that geographic patterns of relatedness sho
 
 Patterns in genome-wide relatedness are often summarized
 by applying principal components analysis (PCA, \citet{patterson2006population}) 
-to the genetic covariance matrix,
-as pioneered by \citet{menozzi1978synthetic}.
+to the genetic data matrix,
+as inspired by the pioneering work of \citet{menozzi1978synthetic}. \revpoint{AE}{3}
 % About 37 years ago, \citet{menozzi1978synthetic} first applied principal component analysis (PCA) in population genetics to construct maps summarizing genetic variation \citep{menozzi1978synthetic}. 
 % Nowadays, PCA is a widely used powerful non-parametric method to extract information from genetic data.
 The results of PCA can be related to the genealogical history of the samples, 
@@ -292,7 +293,7 @@ to identify putative chromosomal inversions.
 \citet{bryc2010genomewide} and \citet{brisbin2012pcadmix}
 used PCA to infer tracts of local ancestry in recently admixed populations,
 but by projecting each genomic window onto the axes of a single, globally-defined PCA
-rather than doing PCA separately on each window.  \revpoint{1}{7}
+rather than doing PCA separately on each window.  % \revpoint{1}{7}
 
 A note on nomenclature: In this work we describe variation in patterns of relatedness using local PCA,
 where ``local'' refers to proximity along the genome.
@@ -326,7 +327,7 @@ our method then describes how this structure is affected by selection and other 
 Our aim is not to identify outlier loci,
 but rather to describe larger-scale variation shared by many parts of the genome;
 correlation of this variation with known genomic features
-can then be used to uncover its source. \revpoint{2}{1}
+can then be used to uncover its source. % \revpoint{2}{1}
 
 
 
@@ -394,7 +395,7 @@ and ordered by magnitude of the eigenvalues.
 
 The top 2--5 principal components are generally good summaries of population structure; 
 for ease of visualization we usually only use the first two (referred to as $\pcone$ and $\pctwo$),
-and check that results hold using more. \revpoint{1}{6}
+and check that results hold using more. % \revpoint{1}{6}
 The above procedure can be performed on any subset of the data;
 for future reference, denote by $\pcone_j$ and $\pctwo_j$
 the result after applying to all SNPs in the $j^\text{th}$ window.
@@ -420,7 +421,7 @@ we do not compare patterns of relatedness of different genomic regions by direct
 since rotations or reflections of these imply identical patterns of relatedness.
 Instead, we compare the low-dimensional approximations of the local covariance matrices
 obtained using the top $k$ PCs,
-which is invariant under reordering of the PCs, \revpoint{1}{2}
+which is invariant under reordering of the PCs, % \revpoint{1}{2}
 reflections, and rotations and yet contains all other information about the PCs.
 (For results shown here, we use $k=2$.)
 Furthermore, to remove the effect of artifacts such as mutation rate variation,
@@ -727,9 +728,9 @@ The next two columns of \Figure \ref{fig:mds_allchr} respectively depict the two
 plotted against the window's position along the genome,
 to show how the plot of the first column is laid out along the genome.
 The patterns did not depend on the number of PCs used
-(see \Figure \ref{sfig:dmel_k5} for the same plot with $k=5$ PCs), \revpoint{1}{3}
+(see \Figure \ref{sfig:dmel_k5} for the same plot with $k=5$ PCs), % \revpoint{1}{3}
 and are only weakly correlated with variation in missingness 
-(see \Figure \ref{sfig:dpgp_missingness}). \revpoint{2}{4}
+(see \Figure \ref{sfig:dpgp_missingness}). % \revpoint{2}{4}
 
 
 \begin{figure}
@@ -931,7 +932,7 @@ This consistency suggests that the factor affecting the population structure for
 as might be caused by varying strengths of linked selection.
 To verify that variation in the effects of population structure is shared across chromosomes,
 we applied the method to all chromosomes together.
-Results for chromosome 3 are shown in \Figure \ref{fig:mds12_medicago}, \revpoint{2}{13}
+Results for chromosome 3 are shown in \Figure \ref{fig:mds12_medicago}, % \revpoint{2}{13}
 and other chromosomes are similar:
 across chromosomes, the high values of the first MDS coordinate coincide with the position of the heterochromatic regions surrounding the centromere,
 which often have lower gene density and may therefore be less subject to linked selection.
@@ -948,11 +949,11 @@ However, other genomic features, such as distance to centromere show roughly the
 so we cannot rule out alternative hypotheses.
 In particular, fine-scale recombination rate estimates are not available in a form mappable
 to Mt4.0 coordinates (although those in \citet{paape2012finescale} appear visually similar).
-\revpoint{2}{8}
+% \revpoint{2}{8}
 
 The results were highly consistent across window sizes, window types (SNPs or bp),
 and number of PCs, as shown in Table \ref{tab:param_cors}.
-\revpoint{1}{4} \revpoint{1}{5}
+% \revpoint{1}{4} \revpoint{1}{5}
 % We also found nearly identical results when choosing shorter windows of 1,000 SNPs
 % (Supplemental Figure \ref{sfig:mds_medicago_allchr_1e3}; \revpoint{1}{4}
 % or choosing windows of equal length in base pairs rather than SNPs. \revpoint{1}{5}
@@ -1041,7 +1042,7 @@ may outlast the inversions themselves.
 Neutral processes are not expected to produce the chromosome-scale correlations we see in
 patterns of relatedness 
 in the \textit{Medicago truncatula} and \textit{Drosophila melanogaster} datasets, \llabel{ll:not_neutral}
-because correlations induced by neutral processes 
+because correlations in patterns of relatedness induced by neutral processes \revpoint{AE}{4}
 should extend no further than does linkage disequilibrium
 (i.e., much less than a chromosome's length).
 This suggests that they are produced by linked selection,
@@ -1074,7 +1075,7 @@ if selection regularly favors genes from one origin,
 this could lead to substantial variation in patterns of relatedness correlated with local gene density.
 
 There has been substantial debate over the relative impacts of different forms of selection
-(e.g., \citet{charlesworth1997effects,charlesworth2012effects,pease2013accurate,hedrick2013adaptive,burri2015linked,corbettdetig2015natural,harris2016genetic,martin2016natural,phung2016determining,stankowski2018tempo}). \revpoint{2}{16}
+(e.g., \citet{charlesworth1997effects,charlesworth2012effects,pease2013accurate,hedrick2013adaptive,burri2015linked,corbettdetig2015natural,harris2016genetic,martin2016natural,phung2016determining,stankowski2018tempo}). % \revpoint{2}{16}
 These have been difficult to disentangle in part because for the most part
 theory makes predictions which are only strictly valid in randomly mating (i.e., unstructured) populations,
 and it is unclear to what extent the spatial structure observed in most real populations will affect these predictions.
@@ -1166,7 +1167,7 @@ has been one of the major sources of confounding in genome-wide association stud
 and so methods must account for it by modeling population structure or kinship \citep{astle2009population,yang2014advantages}.
 Modern ``mixed model'' methods \citep[e.g.][]{loh2015efficient} 
 account for this with either a single, genome-wide kinship matrix
-or one constructed using only sites unlinked to the focal SNP. \revpoint{2}{9}   %unlike ---> unlink?
+or one constructed using only sites unlinked to the focal SNP. % \revpoint{2}{9}   %unlike ---> unlink?
 Since the effects of population structure is not constant along the genome,
 this could in principle lead to an inflation of false positives in parts of the genome
 with stronger population structure than the genome-wide average.
@@ -1241,7 +1242,7 @@ Since we summarize patterns of relatedness using relative positions in the princ
 we quantify ``noise'' as the standard error of a sample's position on PC1 in a particular window,
 averaged across windows and samples,
 and ``signal'' as the standard deviation of the sample's position on PC1 over all windows,
-averaged over samples. \revpoint{2}{11}
+averaged over samples. % \revpoint{2}{11}
 The definition of eigenvectors does not specify their sign,
 and so when comparing between windows we choose signs to best match each other:
 after choosing $\pcone_1$, for instance, 
@@ -1263,7 +1264,7 @@ After doing this, the mean variance across windows is
 \end{align*}
 where $\pcone_{ij}$ is the position of the $i^\text{th}$ individual on $\pcone$ in window $j$,
 and $\overline\pcone_j = (1/N) \sum_{j=1}^N \pcone_{ij}$.
-We estimate the standard error for each $\pcone_{ij}$ using the block jackknife \citep{efron1982jackknife,busing1999deletem}: \revpoint{2}{5}
+We estimate the standard error for each $\pcone_{ij}$ using the block jackknife \citep{efron1982jackknife,busing1999deletem}: % \revpoint{2}{5}
 we divide the $j^\text{th}$ window into 10 equal-sized pieces,
 and let $\pcone_{ij,k}$ denote the first principal component of this region found after removing the $k^\text{th}$ piece;
 then the estimate of the squared standard error is
@@ -1568,6 +1569,8 @@ and leads to a moderate number of balanced polymorphisms.
         the outlying regions are long regions of low recombination rate,
         so that region can be dominated by a few correlated trees,
         similar to an inversion.
+        The \textbf{(inset)} provides a key to the locations of the individuals
+        on the spatial lanscape.
     } \label{sfig:slim_sims1}
 \end{figure}
 
@@ -1594,6 +1597,8 @@ and leads to a moderate number of balanced polymorphisms.
         \textbf{(bottom)} PCA plots corresponding to the highlighted corners 
         of the last MDS visualization, showing how spatially varying linked selection 
         has affected patterns of relatedness.
+        The \textbf{(inset)} provides a key to the locations of the individuals
+        on the spatial lanscape.
     } \label{sfig:slim_sims2}
 \end{figure}
 
