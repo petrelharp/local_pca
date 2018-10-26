@@ -27,6 +27,7 @@
     \newcommand\citep{\cite}
     \newcommand{\Figure}{Fig }
     \newcommand{\Figures}{Fig }
+    \newcommand{\SFigure}{Sup Fig }
 \else
     % for the nice version
     \usepackage[square,sort,comma,numbers]{natbib} 
@@ -34,6 +35,7 @@
     \bibliographystyle{plainnat}
     \newcommand{\Figure}{{Figure }}
     \newcommand{\Figures}{{Figures }}
+    \newcommand{\SFigure}{{Supplementary Figure }}
     % \renewcommand{\llabel}[1]{}
 \fi
 % grrr
@@ -324,10 +326,12 @@ In this paper we show if and how patterns of mean relatedness vary systematicall
 in a way particularly suited to large samples from geographically distributed populations.
 Geographic population structure sets the stage by establishing ``background'' patterns of relatedness;
 our method then describes how this structure is affected by selection and other factors.
-Our aim is not to identify outlier loci,
-but rather to describe larger-scale variation shared by many parts of the genome;
-correlation of this variation with known genomic features
-can then be used to uncover its source. % \revpoint{2}{1}
+The method is descriptive:
+it does not aim to identify outlier loci,
+but rather to describe larger-scale variation shared by many parts of the genome,
+and give clues about its source. \llabel{ll:descriptive}
+% If such variation is found, correlation of this variation with known genomic features
+% can then be used to uncover its source. % \revpoint{2}{1}
 
 
 
@@ -600,7 +604,7 @@ of 3,965 samples in total: 346 African-Americans, 73 Asians, 3,187 Europeans and
 Since these data derive from genotyping arrays, the SNP density is much lower than the other datasets,
 which are each derived from whole genome sequencing.
 We excluded the sex chromosomes and the mitochondria.
-PCA plots for each chromosome, separately, are shown in \Figure \ref{sfig:pca_human_allchr}.
+PCA plots for each chromosome, separately, are shown in \SFigure \ref{sfig:pca_human_allchr}.
 % We use the allele that has highest frequency in the samples as the reference allele for each position. 
 
 % lack2015drosophila: describes the DGN, including the AGES samples.  reports diversity and mentions inversions but mostly a 'data' paper
@@ -611,7 +615,7 @@ Finally, we used whole-genome sequencing data from the \textit{Medicago truncatu
 which has 263 samples from 24 countries,
 primarily distributed around the Mediterranean basin.
 Each of the 8 chromosomes has 3--5 million SNPs;
-PCA plots for these are shown in \Figure \ref{sfig:pca_medicago_allchr}.
+PCA plots for these are shown in \SFigure \ref{sfig:pca_medicago_allchr}.
 We did not use the mitochondria or chloroplasts.
 
 \begin{table}[ht]
@@ -700,8 +704,9 @@ induced outliers at long regions of low recombination rate
 (also as expected). \llabel{ll:hotspot_recomb}
 
 Simulations with linked selection produced mixed results
-(Figure \ref{sfig:slim_sims2}).
-The method strongly identified the regions under spatially varying linked selection.
+(\SFigure \ref{sfig:slim_sims2}).
+The method strongly identified the regions under spatially varying linked selection
+(also our simulation with strongest positive selection). \revpoint{2}{2}
 It also identified the regions (although less unambiguously)
 with constant selection and stepwise varying recombination rate,
 but did not clearly identify them with constant recombination rate.
@@ -728,9 +733,9 @@ The next two columns of \Figure \ref{fig:mds_allchr} respectively depict the two
 plotted against the window's position along the genome,
 to show how the plot of the first column is laid out along the genome.
 The patterns did not depend on the number of PCs used
-(see \Figure \ref{sfig:dmel_k5} for the same plot with $k=5$ PCs), % \revpoint{1}{3}
+(see \SFigure \ref{sfig:dmel_k5} for the same plot with $k=5$ PCs), % \revpoint{1}{3}
 and are only weakly correlated with variation in missingness 
-(see \Figure \ref{sfig:dpgp_missingness}). % \revpoint{2}{4}
+(see \SFigure \ref{sfig:dpgp_missingness}). % \revpoint{2}{4}
 
 
 \begin{figure}
@@ -899,7 +904,7 @@ would require additional data.
 
 We also applied the method on all 22 autosomes together, 
 and found that, remarkably, 
-the inversion on chromosome 8 is still the most striking outlying signal (\Figure \ref{sfig:mds1_along_allchr_human}). 
+the inversion on chromosome 8 is still the most striking outlying signal (\SFigure \ref{sfig:mds1_along_allchr_human}). 
 Further investigation with a denser set of SNPs,
 allowing a finer genomic resolution,
 may yield other patterns.
@@ -1037,6 +1042,25 @@ seen in the \textit{Drosophila melanogaster} dataset,
 demonstrating that the genomic effects of transiently polymorphic inversions
 may outlast the inversions themselves.
 
+\paragraph{Genealogical noise?} \revpoint{AE}{6}
+The field of phylogenetics has long had to deal with the fact that 
+there can be a great number of different local phylogenies along the genome,
+even between species
+\citep{avise1983mitochondrial,pamilo1988relationships,hobolth2007genomic}.
+Loosely, we are studying the within-species patterns that might lead to such
+incomplete lineage sorting in the future.
+The neutral distribution of variation in these patterns 
+has been used to infer demographic history,
+both between species \citep{slatkin2006concordance}
+and within species \citep{beeravolu2018blockwise}.
+If these distinct phylogenies are merely a result of neutral stochasticity,
+there is not expected to be a correlation between local phylogeny
+and other genomic features.
+However, in some cases the local assortment of ancestral diversity 
+and subsequent introgression between sister taxa
+shows clear signs of selection, 
+as for instance in the wild tomato clade \citep{pease2016phylogenomics}.
+
 
 \paragraph{The effect of selection}
 Neutral processes are not expected to produce the chromosome-scale correlations we see in
@@ -1079,7 +1103,9 @@ There has been substantial debate over the relative impacts of different forms o
 These have been difficult to disentangle in part because for the most part
 theory makes predictions which are only strictly valid in randomly mating (i.e., unstructured) populations,
 and it is unclear to what extent the spatial structure observed in most real populations will affect these predictions.
-It may be possible to design more powerful statistics that make stronger use of spatial information.
+It may be possible to design more powerful statistics that make stronger use of spatial information,
+or even using the variation in relatedness that we observe here,
+similar to the method of \citet{beeravolu2018blockwise}. \revpoint{1}{2}
 
 
 % How do we expect selection to affect population structure?
@@ -1156,7 +1182,15 @@ or when measuring windows in physical distance (in bp).
 Finally, our software allows different choices for how many PCs to use in approximating structure of each window ($k$ in equation \ref{eqn:est_cov}),
 and how many MDS coordinates to use when describing the distance matrix between windows,
 but in our exploration, changing these has not produced dramatically different results.
-These are all part of more general techniques in dimension reduction and high-dimensional data visualization;
+However, this choice could easily be important:
+for instance, if the $k^\text{th}$ and $(k+1)^\text{st}$ PCs 
+are sufficiently different but have similar eigenvalues,
+then small amounts of noise could cause these to switch,
+leading to spuriously inferred differences between windows in which one or the other
+was included in the top $k$ PCs.
+This does not seem to be a problem in our applications,
+as changing the number of PCs did not affect the qualitative results. \revpoint{2}{1}
+These choices are all part of more general techniques in dimension reduction and high-dimensional data visualization;
 we encourage the user to experiment.
 
 
@@ -1382,7 +1416,7 @@ The variance of individual $i$'s genotype is $\Sigma_{ii} = S_{p(i),p(i)} + 0.1$
 
 We first created ``genotypes'' in this way with fifty individuals from each of the three populations;
 running our method on a genome with 99 windows of 400 loci each
-produced the first plot in Figure \ref{sfig:test_missing}.
+produced the first plot in \SFigure \ref{sfig:test_missing}.
 These matrices are chosen so that the top two eigenvalues $\Sigma$ are the same (both 50.1),
 and so the ordering of the top two PCs is arbitrary.
 If our method was sensitive to PC ordering,
@@ -1391,7 +1425,7 @@ separate from the other half. \llabel{ll:pc_switching_test}
 
 We then marked each genotype in the first half of the chromosome
 as missing, independently, with probability $1/2$ and ran our method again,
-producing the second plot of Figure \ref{sfig:test_missing}. \llabel{ll:test_missing}
+producing the second plot of \SFigure \ref{sfig:test_missing}. \llabel{ll:test_missing}
 If our method was influenced by missing data,
 we would expect the first half of the chromosome to separate from the second
 in the MDS plot.

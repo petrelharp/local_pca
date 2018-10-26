@@ -111,31 +111,69 @@ Peter Ralph
 \end{point}
 
 \reply{
+    Good suggestion; we've added (hopefully helpful) additional discussion.
+    \revref and \revreffull{1}{2}
 }
 
 %%%%%%%%%%%%%%
 \reviewersection{1}
 
 \begin{quote}
-    Li \& Ralph in their manuscript show how local PCA can be used to visualise genomic regions that differ from each other in the mean relatedness among samples. While a similar approach has be previously used to detect inversions in human genome (Ma & Amos 2012), they have applied their method to also other than human datasets and invoke other interpretations to the observed patterns than inversions.
+    Li \& Ralph in their manuscript show how local PCA can be used to visualise genomic regions that differ from each other in the mean relatedness among samples. While a similar approach has be previously used to detect inversions in human genome (Ma \& Amos 2012), they have applied their method to also other than human datasets and invoke other interpretations to the observed patterns than inversions.
 
     I appreciate the quality of writing (readability, clarity, organisation) and also the time spent amending the manuscript after the first review. The figures were clear and demonstrated the points they should. The method was very well explained and the code is understandable to use and easily accessible. The manuscript was fun to read.
+\end{quote}
 
+Thanks!  We put a lot of time into the work and the writing,
+and that's really nice to hear.
+
+\begin{quote}
     I have not previously reviewed the manuscript and but I think that most of the comments of previous reviewers were well reacted upon. However, the resulting manuscript is to a new reader a bit unclear in terms of the application and usability of the method and ability to distinguish between different scenarios leading to observed patterns and I think further simulations of mechanisms of interest should be performed with the aim to either demonstrate what the limitations of the method are for potential users or to further explore biological processes hinted at.
 \end{quote}
 
+A similar point was raised by another reviewer in the previous round.
+It might be reasonable, as \citet{ma2012investigation} did,
+to use these results to develop an inference method for a particular signal.
+We have rather chosen to follow the lead of genomic PCA,
+which, despite having connections to demographic quantities,
+is most widely-used as a purely descriptive tool,
+for communicating population genetics resuls.
+We've tried to make this a bit more clear in the introduction. \llname{ll:descriptive}
+
+
 \begin{point}{}
-    Is the method meant to facilitate discovery of new inversions? If so, what number of samples are necessary? Of what coverage (what level of missingness is allowed)? What size of inversions is possible to detect? What are ranges of the distance values between windows that could point to inversions (any significance test would be recommended)? How does the method compare to other methods that detect inversions (esp. Ma & Amos 2012)? If it is not meant to discover new inversions and it should only confirm known existing inversions, what is the success rate (with varying sample size, missingness)?
+    Is the method meant to facilitate discovery of new inversions? If so, what number of samples are necessary? Of what coverage (what level of missingness is allowed)? What size of inversions is possible to detect? What are ranges of the distance values between windows that could point to inversions (any significance test would be recommended)? How does the method compare to other methods that detect inversions (esp. Ma \& Amos 2012)? If it is not meant to discover new inversions and it should only confirm known existing inversions, what is the success rate (with varying sample size, missingness)?
 \end{point}
 
 \reply{
+    These are excellent questions for a method designed to detect inversions.
+    However, we do not present such a method,
+    we rather present a visualization method in which, empirically, inversions often leave a large (but not quantified) signal.
+    We are not sure if it would be productive to turn this into a quantitative method, either:
+    as we have now clarified in the paper \llname{ll:inversion_caveat},
+    distinguishing inversions from regions of low recombination
+    likely requires other sources of information.
 }
 
 \begin{point}{}
-    The authors argue that linked selection is the likely cause for the patterns they observed in Drosophila dataset since the recombination rate correlates with the position of the first MDS coordinate (from line number 321). At the same time, the authors mention that the ability to identify the windows could be influenced by recombination rate in the case of linked selection and also in the presence of recombination hotspots (section 3.1 Validation). As such, I do not agree with the authors, that it is enough to demonstrate that linked selection could cause these patterns but to use this in interpretation, they should be able to distinguish this explanation from the other possible causes in simulations first and then on real data (e.g. using recombination maps for Drosophila to simulate exactly the same regions could be of advantage).
+    The authors argue that linked selection is the likely cause for the patterns they observed in Drosophila dataset since the recombination rate correlates with the position of the first MDS coordinate (from line number 321). At the same time, the authors mention that the ability to identify the windows could be influenced by recombination rate in the case of linked selection and also in the presence of recombination hotspots (section 3.1 Validation). As such, I do not agree with the authors, that it is enough to demonstrate that linked selection could cause these patterns but to use this in interpretation, they should be able to distinguish this explanation from the other possible causes in simulations first and then on real data (e.g., using recombination maps for Drosophila to simulate exactly the same regions could be of advantage).
 \end{point}
 
 \reply{
+    We don't share the reviewer's concern about variation in recombination rate:
+    a region of low recombination could be dominated by a single tree,
+    and therefore provide a strongly divergent PCA signal,
+    there is no reason this would provide a \emph{consistent} signal
+    across a large fraction of a chromosome,
+    unless that chromosomal region had much lower recombination rate than we see here.
+    More generally, we heartily agree that we would love to have available a test
+    that could prove to what degree these (or any) varying patterns of relatedness along genomes
+    are due to linked selection, demographic noise, or some other force.
+    However, this is one of the major unsolved question in the field,
+    and is subject to substantial debate 
+    (see for instance \citet{jensen2014unfounded,harris2018unfounded}
+    and subsequent rejoinders).
+    We've added more to the discussion on this. \revref
 }
 
 \begin{point}{}
@@ -143,6 +181,7 @@ Peter Ralph
 \end{point}
 
 \reply{
+    Good point; that's fixed.
 }
 
 \begin{point}{}
@@ -150,6 +189,16 @@ Peter Ralph
 \end{point}
 
 \reply{
+    That's a good suggestion -- perhaps, to test for (or, visualize) outlierness,
+    one could plot the deviation from the MDS centroid.
+    We chose to plot each MDS coordinate separately
+    so as to better see how the structure of the MDS plot lays out along the genome.
+    For instance, in Figure \ref{fig:mds_allchr} on chromosome arm 3L,
+    it is interesting that the green arm of the MDS plot localizes to the endpoints of the inversion,
+    while the purple arm localizes to near the centromere.
+    If only a measure of outlierness were plotted,
+    it would be more difficult to discern patterns like this,
+    and therefore develop hypotheses explaining the observed patterns.
 }
 
 
@@ -163,10 +212,23 @@ Peter Ralph
 \begin{point}{}
 I only have one major comment, which is unfortunate because it could have been avoided if the simulation were implemented slightly differently. The authors didn't address the intention of my concern about the switching of PCs. To be very explicit: when you perform a PC analysis, there is some variability about the order that the "true" directions of the data comes out in terms of the magnitude of that PC (i.e. the order). This model uses K PCs for each small segment of genome, and each small segment is compared using a method called MDS. It is convincing that order doesn't affect comparisons of the segments *provided that all of the components are present*. However, if the magnitude of the noise is high, then it is quite plausible that the top K components in a segment of genome are not the top K for the whole genome. The simulation is useless for reassuring on this because it sets up a situation with 2 important PCs which are always included, and the claim that "the simulation also verifies insensitivity to ordering of top PCs" is not really true. The real data analyses are more reassuring, given the relatively similar results between K=2 and K=5, but I think the concern remains valid.
 
-I would like to see evidence that the windows that are found by this method are not associated with "which" PCs happen to be included in the top K. To do that, you could for example calculate the top M>K pcs, check the correlation with the overall PCs, and then plot "presence" of a PC (measured in correlation in the top K) against the MDS values. It would alternatively be possible to make an argument that it will always be fine if you use a large enough number of PCs, but this is argued to have severe computational problems (an argument I don't know that I buy). It would be enough to do this for retaining *one* PC in the simulation that has 2 *equally strong* PCs, but I have a suspicion that this case goes quite wrong and is anyway unrealistic. Better to keep more, e.g. 5 when there is non-trivial structure in the truth, and see that the 4th or 5th swapping with the 6th or 7th doesn't affect much. To be clear: the authors shouldn't necessarily follow this route, but they should address the underlying concern.
+I would like to see evidence that the windows that are found by this method are not associated with "which" PCs happen to be included in the top K. To do that, you could for example calculate the top $M>K$ pcs, check the correlation with the overall PCs, and then plot "presence" of a PC (measured in correlation in the top K) against the MDS values. It would alternatively be possible to make an argument that it will always be fine if you use a large enough number of PCs, but this is argued to have severe computational problems (an argument I don't know that I buy). It would be enough to do this for retaining *one* PC in the simulation that has 2 *equally strong* PCs, but I have a suspicion that this case goes quite wrong and is anyway unrealistic. Better to keep more, e.g. 5 when there is non-trivial structure in the truth, and see that the 4th or 5th swapping with the 6th or 7th doesn't affect much. To be clear: the authors shouldn't necessarily follow this route, but they should address the underlying concern.
 \end{point}
 
 \reply{
+    Apologies for not realizing the precise nature of your original concern.
+    Yes, we agree that if strongly different PCs switched order 
+    right at the boundary of which PCs were included,
+    then that could easily show up as (spurious) structure in our MDS plots.
+    We have added discussion of this point. \revref
+    However, for our empirical data we think we have strong evidence that the differences between windows 
+    are not being driven by this effect:
+    as the reviewer also mentions, the effect is expected to dissappear when using a larger number of PCs,
+    which does not happen in our applications.
+    Furthermore, and speculatively,
+    our method of choosing a window size looks for a big enough window that the PCs within a window 
+    are relatively stable,
+    and so might help avoid sensitive PC switching.
 }
 
 \begin{point}{}
@@ -174,4 +236,6 @@ The simulation with geographically linked selection is not comparable to the sim
 \end{point}
 
 \reply{
+    Good point;
+    we've added a note about this. \revref
 }
