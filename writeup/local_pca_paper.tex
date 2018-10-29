@@ -235,7 +235,7 @@ that doesn't depend much on the genetic markers chosen.
 This is not guaranteed:
 for instance,
 relatedness on sex chromosomes is expected to differ from the autosomes;
-and positive or negative selection on particular loci can dramatically disort shapes of nearby genealogies
+and positive or negative selection on particular loci can dramatically distort shapes of nearby genealogies
 \citep{kim2002hitchhiking,charlesworth1993effect,barton2000genetic}.
 Indeed,
 many species show chromosome-scale variation in diversity and divergence
@@ -683,7 +683,7 @@ Simple non-population-based simulations with Gaussian ``genotypes''
 showed that the method performs as expected, clearly separating regions of the genome
 with different underlying covariance matrices
 without being affected by extreme differences in amount of missing data
-(Supplemental Figure \ref{sfig:test_missing}).
+(Supplementary Figure \ref{sfig:test_missing}).
 This simulation also verifies insensitivity to ordering of top PCs,
 since it was performed using a covariance matrix with the top two eigenvalues equal,  
 so that the order of empirical eigenvectors (PCs) switches randomly.
@@ -692,7 +692,7 @@ Individual-based simulations using SLiM \citep{haller2017flexible} allowed us to
 of recombination and mutation rate variation, as well as linked selection.
 As expected, varying recombination rate stepwise by a factor of 64
 did not induce patterns in the MDS visualizations correlated with recombination rate
-(Supplemental Figure \ref{sfig:slim_sims1}).
+(Supplementary Figure \ref{sfig:slim_sims1}).
 \llabel{ll:test_recomb_rate}
 Since varying mutation rate with a fixed recombination map
 is equivalent to varying the recombination map and remapping windows,
@@ -771,7 +771,7 @@ then highlighted these windows' positions along the genome,
 and created PCA plots for the windows, combined.
 Representative plots are shown for three groups of windows on each chromosome arm
 in \Figure \ref{fig:mds_allchr} (groups are shown in color),
-and in Supplemental \Figure \ref{sfig:pca_by_pop} (PCA plots).
+and in Supplementary \Figure \ref{sfig:pca_by_pop} (PCA plots).
 The latter plots are quite different,
 showing that genomic windows in different regions of the MDS plot 
 indeed show quite different patterns of relatedness.
@@ -782,7 +782,7 @@ several large inversions that are polymorphic in these samples,
 discussed in \citet{corbett2012population} and \citet{langley2012genomic}.
 % Frequencies of each inversion in the sample are given in Table \ref{tab:inversion_freqs}.
 To depict this, \Figure \ref{fig:pca_by_inversion} shows
-the PCA plots in Supplemental \Figure \ref{sfig:pca_by_pop} recolored by the orientation of the inversion for each sample.
+the PCA plots in Supplementary \Figure \ref{sfig:pca_by_pop} recolored by the orientation of the inversion for each sample.
 Taking chromosome arm 2L as an example,
 the two regions of similar, extreme patterns of relatedness
 shown in green in the first row of \Figure \ref{fig:mds_allchr}
@@ -791,7 +791,7 @@ and the PCA plots in the first rows of \Figure \ref{fig:pca_by_inversion}
 shows that patterns of relatedness here are mostly determined by inversion orientation.
 The regions shown in purple on chromosome 2L lie near the centromere,
 and have patterns of relatedness reflective of two axes of variation,
-seen in \Figure \ref{fig:pca_by_inversion} and Supplemental \Figure \ref{sfig:pca_by_pop},
+seen in \Figure \ref{fig:pca_by_inversion} and Supplementary \Figure \ref{sfig:pca_by_pop},
 which correspond roughly to latitude within Africa and to degree of cosmopolitan admixture respectively
 (see \citet{lack2015drosophila} for more about admixture in this sample).
 The regions shown in orange on chromosome 2L mostly lie inside the inversion,
@@ -839,13 +839,13 @@ To see how patterns of relatedness vary in the absence of polymorphic inversions
 we performed the same analyses after removing, for each chromosome arm,
 any samples carrying inversions on that arm.
 In the result, shown in \Figure \ref{fig:drosophila_recomb_rate} and
-Supplemental \Figure \ref{sfig:mds_allchr_noinversions},
+Supplementary \Figure \ref{sfig:mds_allchr_noinversions},
 the striking peaks associated with inversion breakpoints are gone,
 and previously smaller-scale variation now dominates the MDS visualization.
 For instance, the majority of the variation along 3L in \Figure \ref{fig:mds_allchr}
 is on the left end of the arm, dominated by two large peaks around the inversion breakpoints;
 there is also a relatively small dip on the right end of the arm (near the centromere).
-In contrast, Supplemental \Figure \ref{sfig:mds_allchr_noinversions} shows that after removing polymorphic inversions,
+In contrast, Supplementary \Figure \ref{sfig:mds_allchr_noinversions} shows that after removing polymorphic inversions,
 remaining structure is dominated by the dip near the centromere.
 Without inversions, variation in patterns of relatedness shown in the MDS plots
 follows similar patterns to that previously seen in \textit{D.~melanogaster} recombination rate and diversity \citep{langley2012genomic,mackay2012drosophila}.
@@ -868,7 +868,7 @@ was not significantly correlated with MDS coordinate ($p=0.22$).
         for windows of 10,000 SNPs,
         obtained after removing samples with inversions.
         (A plot analogous to \Figure \ref{fig:mds_allchr} is shown
-        in Supplemental \Figure \ref{sfig:mds_allchr_noinversions}.)
+        in Supplementary \Figure \ref{sfig:mds_allchr_noinversions}.)
         The second plot (in blue) shows
         local average recombination rates in cM/Mbp, obtained as midpoint estimates for 100Kbp windows 
         from the Drosophila recombination rate calculator \citep{fistonlavier2010drosophila} release 5,
@@ -946,7 +946,7 @@ To verify that this is a possible explanation,
 we counted the number of genes found in each window using gene models in Mt4.0 from \url{jcvi.org} \citep{tang2014improved},
 which are shown juxtaposed with
 the first MDS coordinate of each window in \Figure \ref{fig:mds_medicago},
-and are significantly correlated, as shown in Supplemental \Figure \ref{sfig:mds_gene_count}.
+and are significantly correlated, as shown in Supplementary \Figure \ref{sfig:mds_gene_count}.
 (Values shown are the number of start and end positions of each predicted mRNA transcript,
 divided by two, assigned to the nearest window.)
 % that lie closer to SNPs  between the last SNP of each window and the first SNP in the next window.
@@ -979,11 +979,11 @@ and number of PCs, as shown in Table \ref{tab:param_cors}.
        with windows in the upper-right corner of the MDS plot (colored red) clustered around the centromere,
        windows in the upper-left corner (purple) furthest from the centromere,
        and the remaining corner (green) intermediate.
-       Plots for remaining chromosomes are shown in Supplemental \Figure \ref{sfig:mds_medicago_allchr}.
+       Plots for remaining chromosomes are shown in Supplementary \Figure \ref{sfig:mds_medicago_allchr}.
        \textbf{(bottom)}
         PCA plots for the sets of genomic windows colored (A) green, (B) orange, and (C) purple in the top figure.
         Each point corresponds to a sample, colored by country of origin.
-        Plots for remaining chromosomes are shown in Supplemental \Figure \ref{sfig:pca_peaks_medicago_allchr}.
+        Plots for remaining chromosomes are shown in Supplementary \Figure \ref{sfig:pca_peaks_medicago_allchr}.
        \label{fig:mds12_medicago}
     }
 \end{figure}
@@ -1755,7 +1755,7 @@ and leads to a moderate number of balanced polymorphisms.
        \includegraphics[width=0.9\textwidth]{FigS_human_MDS12_chr9_16_all_valid_and_pre}
     \end{center}
     \caption{
-        MDS plots for human chromosomes 9-16, as in Supplemental Figure \ref{sfig:mds12_chr1_8_human}.
+        MDS plots for human chromosomes 9-16, as in Supplementary Figure \ref{sfig:mds12_chr1_8_human}.
         \label{sfig:mds12_chr9_16_human}
     }
 \end{figure}
@@ -1765,7 +1765,7 @@ and leads to a moderate number of balanced polymorphisms.
        \includegraphics[width=0.9\textwidth]{FigS_human_MDS12_chr17_22_all_valid_and_pre}
     \end{center}
     \caption{
-        MDS plots for human chromosomes 17-22, as in Supplemental Figure \ref{sfig:mds12_chr1_8_human}.
+        MDS plots for human chromosomes 17-22, as in Supplementary Figure \ref{sfig:mds12_chr1_8_human}.
         \label{sfig:mds12_chr17_22_human}
     }
 \end{figure}
