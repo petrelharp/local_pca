@@ -329,7 +329,7 @@ our method then describes how this structure is affected by selection and other 
 The method is descriptive:
 it does not aim to identify outlier loci,
 but rather to describe larger-scale variation shared by many parts of the genome,
-and give clues about its source. \llabel{ll:descriptive}
+and give clues about the source of this variation. \llabel{ll:descriptive}
 % If such variation is found, correlation of this variation with known genomic features
 % can then be used to uncover its source. % \revpoint{2}{1}
 
@@ -845,7 +845,9 @@ and previously smaller-scale variation now dominates the MDS visualization.
 For instance, the majority of the variation along 3L in \Figure \ref{fig:mds_allchr}
 is on the left end of the arm, dominated by two large peaks around the inversion breakpoints;
 there is also a relatively small dip on the right end of the arm (near the centromere).
-In contrast, Supplementary \Figure \ref{sfig:mds_allchr_noinversions} shows that after removing polymorphic inversions,
+In contrast, Figure \ref{fig:drosophila_recomb_rate} 
+and Supplementary \Figure \ref{sfig:mds_allchr_noinversions} 
+show that after removing polymorphic inversions,
 remaining structure is dominated by the dip near the centromere.
 Without inversions, variation in patterns of relatedness shown in the MDS plots
 follows similar patterns to that previously seen in \textit{D.~melanogaster} recombination rate and diversity \citep{langley2012genomic,mackay2012drosophila}.
@@ -1047,8 +1049,8 @@ The field of phylogenetics has long had to deal with the fact that
 there can be a great number of different local phylogenies along the genome,
 even between species
 \citep{avise1983mitochondrial,pamilo1988relationships,hobolth2007genomic}.
-Loosely, we are studying the within-species patterns that might lead to such
-incomplete lineage sorting in the future.
+The within-species patterns we observe might contribute to such
+incomplete lineage sorting among future descendant species of a given population.
 The neutral distribution of variation in these patterns 
 has been used to infer demographic history,
 both between species \citep{slatkin2006concordance}
@@ -1090,7 +1092,7 @@ could clearly lead to variation
 in geographic patterns of relatedness in a similar way.
 
 Another possible contributor is recent admixture between previously separated populations,
-the effects of which were not uniform across the genome due to selection. \revpoint{2}{6}
+the effects of which were not uniform across the genome due to selection. % \revpoint{2}{6}
 For instance, it has been hypothesized that large-scale variation in amount of introgressed Neanderthal DNA along the genome
 is due to selection against Neanderthal genes, leading to greater introgression in regions of lower gene density
 \citep{harris2016genetic,juric2016strength}.
@@ -1101,10 +1103,14 @@ this could lead to substantial variation in patterns of relatedness correlated w
 There has been substantial debate over the relative impacts of different forms of selection
 (e.g., \citet{charlesworth1997effects,charlesworth2012effects,pease2013accurate,hedrick2013adaptive,burri2015linked,corbettdetig2015natural,harris2016genetic,martin2016natural,phung2016determining,stankowski2018tempo}). % \revpoint{2}{16}
 These have been difficult to disentangle in part because for the most part
-theory makes predictions which are only strictly valid in randomly mating (i.e., unstructured) populations,
-and it is unclear to what extent the spatial structure observed in most real populations will affect these predictions.
-It may be possible to design more powerful statistics that make stronger use of spatial information,
-or even using the variation in relatedness that we observe here,
+theory makes predictions which are only strictly valid 
+in randomly mating (i.e., unstructured) populations,
+and it is unclear to what extent the spatial structure observed in most real populations 
+will affect these predictions.
+Developing a method to distinguish these forms of selection from each other
+and from the effects of demography is a major challenge to the field.
+It may be possible to make progress using statistics that make stronger use of spatial information,
+such as the variation in relatedness that we observe here,
 similar to the method of \citet{beeravolu2018blockwise}. \revpoint{1}{2}
 
 
@@ -1182,7 +1188,7 @@ or when measuring windows in physical distance (in bp).
 Finally, our software allows different choices for how many PCs to use in approximating structure of each window ($k$ in equation \ref{eqn:est_cov}),
 and how many MDS coordinates to use when describing the distance matrix between windows,
 but in our exploration, changing these has not produced dramatically different results.
-However, this choice could easily be important:
+However, this choice could in some situations be important:
 for instance, if the $k^\text{th}$ and $(k+1)^\text{st}$ PCs 
 are sufficiently different but have similar eigenvalues,
 then small amounts of noise could cause these to switch,

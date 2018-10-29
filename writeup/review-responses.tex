@@ -22,8 +22,17 @@
  
 \vskip 1em
 
-We are pleased to submit a revised version of our manuscript, 
+We are writing to submit a revised version of our manuscript, 
 ``Local PCA shows how the effect of population structure differs along the genome''.
+We appreciate the thoughtful comments by the reviewers and the editors,
+and have made changes to address all of the points raised.
+The changes are mostly to what is discussed;
+we sympathize with the additional testing suggested by Reviewer 1,
+but think that it falls outside the scope of this paper,
+and would be appropriate for follow-up work that builds on our descriptive method
+to create more specific, hypothesis-driven tools.
+
+We hope you find the revised manuscript to be as improved as we do.
 
 
 \noindent \hspace{4em}
@@ -101,10 +110,10 @@ Peter Ralph
 \begin{point}{Senior editor comments:}
     It would be helpful to expand the discussion of variation in relationships
     along the genome - as written, the discussion is strongly focused on the
-    "classical" Drosophila-centred linked selection literature.  Specifically,
+    ``classical'' Drosophila-centred linked selection literature.  Specifically,
     there has been a lot of discussion in the phylogenetics world about how to
     estimate species trees from the set of locus-specific genealogies (where the
-    "consensus" tree can be quite wrong); and there are methods that use the
+    ``consensus'' tree can be quite wrong); and there are methods that use the
     distribution of genealogical relationships to estimate population structure
     (Konrad Lohse, Asger Hobolth etc).  It would be helpful to make these broader
     links.  
@@ -112,7 +121,7 @@ Peter Ralph
 
 \reply{
     Good suggestion; we've added (hopefully helpful) additional discussion.
-    \revref and \revreffull{1}{2}
+    {\revref} and \revreffull{1}{2}
 }
 
 %%%%%%%%%%%%%%
@@ -161,11 +170,12 @@ We've tried to make this a bit more clear in the introduction. \llname{ll:descri
 
 \reply{
     We don't share the reviewer's concern about variation in recombination rate:
-    a region of low recombination could be dominated by a single tree,
+    although a region of low recombination could be dominated by a single tree,
     and therefore provide a strongly divergent PCA signal,
     there is no reason this would provide a \emph{consistent} signal
     across a large fraction of a chromosome,
-    unless that chromosomal region had much lower recombination rate than we see here.
+    as we see here.
+    We've tried to make this argument more clear. {\llname{ll:not_neutral}}
     More generally, we heartily agree that we would love to have available a test
     that could prove to what degree these (or any) varying patterns of relatedness along genomes
     are due to linked selection, demographic noise, or some other force.
@@ -177,7 +187,8 @@ We've tried to make this a bit more clear in the introduction. \llname{ll:descri
 }
 
 \begin{point}{}
-    The authors refer to supplementary Figures sometimes as "Figure S6" and sometimes as "Supplementary Figure S6". In certain journals, these two could denote different figures so I would select one way only.
+    The authors refer to supplementary Figures sometimes as ``Figure S6'' and sometimes as ``Supplementary Figure S6''. 
+    In certain journals, these two could denote different figures so I would select one way only.
 \end{point}
 
 \reply{
@@ -210,21 +221,20 @@ We've tried to make this a bit more clear in the introduction. \llname{ll:descri
 \end{quote}
 
 \begin{point}{}
-I only have one major comment, which is unfortunate because it could have been avoided if the simulation were implemented slightly differently. The authors didn't address the intention of my concern about the switching of PCs. To be very explicit: when you perform a PC analysis, there is some variability about the order that the "true" directions of the data comes out in terms of the magnitude of that PC (i.e. the order). This model uses K PCs for each small segment of genome, and each small segment is compared using a method called MDS. It is convincing that order doesn't affect comparisons of the segments *provided that all of the components are present*. However, if the magnitude of the noise is high, then it is quite plausible that the top K components in a segment of genome are not the top K for the whole genome. The simulation is useless for reassuring on this because it sets up a situation with 2 important PCs which are always included, and the claim that "the simulation also verifies insensitivity to ordering of top PCs" is not really true. The real data analyses are more reassuring, given the relatively similar results between K=2 and K=5, but I think the concern remains valid.
+I only have one major comment, which is unfortunate because it could have been avoided if the simulation were implemented slightly differently. The authors didn't address the intention of my concern about the switching of PCs. To be very explicit: when you perform a PC analysis, there is some variability about the order that the ``true'' directions of the data comes out in terms of the magnitude of that PC (i.e. the order). This model uses K PCs for each small segment of genome, and each small segment is compared using a method called MDS. It is convincing that order doesn't affect comparisons of the segments *provided that all of the components are present*. However, if the magnitude of the noise is high, then it is quite plausible that the top K components in a segment of genome are not the top K for the whole genome. The simulation is useless for reassuring on this because it sets up a situation with 2 important PCs which are always included, and the claim that ``the simulation also verifies insensitivity to ordering of top PCs'' is not really true. The real data analyses are more reassuring, given the relatively similar results between K=2 and K=5, but I think the concern remains valid.
 
-I would like to see evidence that the windows that are found by this method are not associated with "which" PCs happen to be included in the top K. To do that, you could for example calculate the top $M>K$ pcs, check the correlation with the overall PCs, and then plot "presence" of a PC (measured in correlation in the top K) against the MDS values. It would alternatively be possible to make an argument that it will always be fine if you use a large enough number of PCs, but this is argued to have severe computational problems (an argument I don't know that I buy). It would be enough to do this for retaining *one* PC in the simulation that has 2 *equally strong* PCs, but I have a suspicion that this case goes quite wrong and is anyway unrealistic. Better to keep more, e.g. 5 when there is non-trivial structure in the truth, and see that the 4th or 5th swapping with the 6th or 7th doesn't affect much. To be clear: the authors shouldn't necessarily follow this route, but they should address the underlying concern.
+    I would like to see evidence that the windows that are found by this method are not associated with ``which'' PCs happen to be included in the top K. To do that, you could for example calculate the top $M>K$ pcs, check the correlation with the overall PCs, and then plot ``presence'' of a PC (measured in correlation in the top K) against the MDS values. It would alternatively be possible to make an argument that it will always be fine if you use a large enough number of PCs, but this is argued to have severe computational problems (an argument I don't know that I buy). It would be enough to do this for retaining *one* PC in the simulation that has 2 \emph{equally strong} PCs, but I have a suspicion that this case goes quite wrong and is anyway unrealistic. Better to keep more, e.g. 5 when there is non-trivial structure in the truth, and see that the 4th or 5th swapping with the 6th or 7th doesn't affect much. To be clear: the authors shouldn't necessarily follow this route, but they should address the underlying concern.
 \end{point}
 
 \reply{
-    Apologies for not realizing the precise nature of your original concern.
+    Apologies for not realizing the precise nature of the original concern.
     Yes, we agree that if strongly different PCs switched order 
     right at the boundary of which PCs were included,
     then that could easily show up as (spurious) structure in our MDS plots.
-    We have added discussion of this point. \revref
-    However, for our empirical data we think we have strong evidence that the differences between windows 
-    are not being driven by this effect:
-    as the reviewer also mentions, the effect is expected to disappear when using a larger number of PCs,
-    which does not happen in our applications.
+    However, as the reviewer says,
+    spurious structure created by this problem would dissappear when using a larger number of PCs
+    -- this does not happen with our empirical results.
+    We have added discussion of these points. {\revref}
     Furthermore, and speculatively,
     our method of choosing a window size looks for a big enough window that the PCs within a window 
     are relatively stable,
