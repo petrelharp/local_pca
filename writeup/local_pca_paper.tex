@@ -249,7 +249,7 @@ and theoretical expectations predict that geographic patterns of relatedness sho
 
 Patterns in genome-wide relatedness are often summarized
 by applying principal components analysis (PCA, \citet{patterson2006population}) 
-to the genetic data matrix,
+to the genotype matrix,
 as inspired by the pioneering work of \citet{menozzi1978synthetic}. \revpoint{AE}{3}
 % About 37 years ago, \citet{menozzi1978synthetic} first applied principal component analysis (PCA) in population genetics to construct maps summarizing genetic variation \citep{menozzi1978synthetic}. 
 % Nowadays, PCA is a widely used powerful non-parametric method to extract information from genetic data.
@@ -705,13 +705,16 @@ induced outliers at long regions of low recombination rate
 
 Simulations with linked selection produced mixed results
 (\SFigure \ref{sfig:slim_sims2}).
-The method strongly identified the regions under spatially varying linked selection
-(also our simulation with strongest positive selection). \revpoint{2}{2}
+The method strongly identified the distinct regions 
+in the simulation with spatially varying linked selection.
 It also identified the regions (although less unambiguously)
 with constant selection and stepwise varying recombination rate,
 but did not clearly identify them with constant recombination rate.
-This difference is likely because recombination rates are overall lower in the first case,
-leading to a stronger effect of linked selection.
+The differences in power between these three scenarios are likely
+explained by varying strength of linked selection -- 
+the simulation with spatially varying selection was also the case with strongest positive selection,
+and recombination rates were overall lower in the simulation with stepwise varying recombination rate
+than in the simulation with constant rate. \revpoint{2}{2}
 These tests are not meant to be comprehensive survey of linked selection,
 but only to demonstrate that linked selection can produce signals similar to what we see in real data.
 
