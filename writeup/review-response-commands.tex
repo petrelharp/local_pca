@@ -2,8 +2,6 @@
 \usepackage{blindtext}
 \usepackage{hyperref}
 
-\linenumbers
-
 
 %%%%%  PUT THIS IN HEADER OF FILE
 % % Responses to reviews:
@@ -13,6 +11,12 @@
 % \reviewresponsestrue  % include them
 % % \reviewresponsesfalse  % don't include them
 % \newcommand{\responsefile}{the-review-responses.tex}  % name of the review reponses file
+
+\ifreviewresponses
+\linenumbers
+\else
+\renewcommand{\linelabel}[1]{\relax}
+\fi
 
 % counters for reviewer points
 \newcommand{\thereviewer}{}

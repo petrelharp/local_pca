@@ -26,14 +26,15 @@ pc_dist <- function( x, npc=attr(x,"npc"), w=1, normalize="L1", mc.cores=1 ) {
     n <- nrow(values)
     # could speed this up by a factor of two taking advantage of symmetry
     emat <- function (u) { matrix(u,ncol=npc) }
-    out <- do.call( rbind, this.lapply( 1:n, function (i) {
+    out <- do.call( cbind, this.lapply( 1:n, function (i) {
                 sapply( 1:n, function (j) {
                     dist_sq_from_pcs( values[i,], emat(vectors[i,]), values[j,], emat(vectors[j,]) )
                 } )
             } ) )
     # symmetrize and truncate negative numbers (which are machine error)
-    out <- sqrt(pmax(0,(out+t(out))/2))
-    dim(out) <- c(n,n)
+    out <- (out + t(out))/2
+    out[out < 0] <- 0
+    out <- sqrt(out)
     return(out)
 }
 

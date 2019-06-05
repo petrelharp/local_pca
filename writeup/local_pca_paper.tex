@@ -12,7 +12,7 @@
 \usepackage[utf8]{inputenc}
 
 %% for submitting with responses to reviews
-\usepackage{lineno}
+% \usepackage{lineno}
 
 \newif\ifsubmission
 % \submissiontrue
@@ -81,6 +81,9 @@
 }
 
 % Responses to reviews
+\newif\ifreviewresponses
+% \reviewresponsestrue  % include them
+\reviewresponsesfalse  % don't include them
 \input{review-response-commands}
 \newif\ifbiorxiv
 \biorxivfalse
@@ -90,9 +93,6 @@
     \renewcommand{\llabel}[1]{\relax}
 \fi
 % set this to show line numbers and include responses to reviews or not
-\newif\ifreviewresponses
-\reviewresponsestrue  % include them
-% \reviewresponsesfalse  % don't include them
 \ifbiorxiv\reviewresponsesfalse\fi
 \newcommand{\responsefile}{review-responses.tex}  % name of the review reponses file
 
@@ -1492,7 +1492,9 @@ and leads to a moderate number of balanced polymorphisms.
     \clearpage
 \fi
 
-\section{Supplementary Tables}
+\pagenumbering{gobble}
+
+\section{Supplementary Tables and Figures}
 
 % latex table generated in R 3.3.1 by xtable 1.8-2 package
 % Wed Feb  8 16:17:12 2017
@@ -1535,8 +1537,6 @@ and leads to a moderate number of balanced polymorphisms.
         but plots of MDS values along the genome are visually very similar.
     } \label{tab:param_cors}
 \end{table}
-
-\section{Supplementary Figures}
 
 
 \begin{figure}
