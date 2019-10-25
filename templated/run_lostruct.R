@@ -107,6 +107,7 @@ if (is.numeric(opt$missing) && (opt$missing > 0)) {
 
 # setup
 library(lostruct)
+options(datatable.fread.input.cmd.message=FALSE)
 
 all.pcas <- numeric(0)       # will be a numeric matrix of eigen values/vectors
 all.lengths <- numeric(0)    # will be a numeric vector of numbers of windows per chromosome
