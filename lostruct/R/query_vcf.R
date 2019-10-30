@@ -48,22 +48,32 @@ vcf_query <- function (file, regions, samples, verbose=FALSE, recode=TRUE) {
     bcf.call <- paste(bcf.args, collapse=" ")
     if (verbose) cat(bcf.call, "\n")
     gt.text <- tryCatch( as.matrix(data.table::fread( bcf.call, header=FALSE, sep=' ', data.table=FALSE )),
-                   error=function (e) { if ( grepl("File is empty", e$message) ) { NULL } else { stop(paste("Error. Is bcftools installed?\n",e)) } } )
+                   error=function (e) { if ( grepl("File is empty", e$message) ) { NULL } else { stop(paste("Error. Is bcftools installed?\n",e)) } },
+                   warning=function (w) { if ( grepl("has size 0", w$message) ) { NULL } else { stop(paste("Error. Is bcftools installed?\n",e)) } } )
     if (is.null(gt.text) || !recode) { return(gt.text) }
     if (is.numeric(gt.text)) {  # haploid
         gt <- pmin(1L,gt.text)
     }
+    diploid <- TRUE
     if (sum(grepl("[0-9]\\|[0-9]", gt.text[seq_len(min(nrow(gt.text),100)),seq_len(min(ncol(gt.text),100))]))>0) {
         gt <- c(0L,1L,1L,2L)[match( unlist(gt.text), c("0|0","0|1","1|0","1|1") )]
-        gt[ grep( "([2-9]\\|0)|(0\\|[2-9])", gt.text ) ] <- 1L
-        gt[ grep( "([2-9]\\|1)|(1\\|[2-9])|([2-9]\\|[2-9])", gt.text ) ] <- 2L
+        # VCF can have both phased and unphased entries; deal with both
+        gt[ grep( "(0\\/0)|(0\\/0)", gt.text ) ] <- 0L
+        gt[ grep( "(1\\/0)|(0\\/1)", gt.text ) ] <- 1L
+        gt[ grep( "(1\\/1)|(1\\/1)|(1\\/1)", gt.text ) ] <- 2L
     } else if (sum(grepl("[0-9]\\/[0-9]", gt.text[seq_len(min(nrow(gt.text),100)),seq_len(min(ncol(gt.text),100))]))>0) {
         gt <- c(0L,1L,1L,2L)[match( unlist(gt.text), c("0/0","0/1","1/0","1/1") )]
-        gt[ grep( "([2-9]\\/0)|(0\\/[2-9])", gt.text ) ] <- 1L
-        gt[ grep( "([2-9]\\/1)|(1\\/[2-9])|([2-9]\\/[2-9])", gt.text ) ] <- 2L
+        gt[ grep( "(0\\|0)|(0\\|0)", gt.text ) ] <- 0L
+        gt[ grep( "(1\\|0)|(0\\|1)", gt.text ) ] <- 1L
+        gt[ grep( "(1\\|1)|(1\\|1)|(1\\|1)", gt.text ) ] <- 2L
     } else {
+        diploid <- FALSE
         gt <- c(0L,1L)[match( unlist(gt.text), c("0","1") )]
         gt[ grep( "[2-9]", gt.text ) ] <- 1L
+    }
+    if (diploid) {
+        gt[ grep( "([2-9][\\|\\/]0)|(0[\\|\\/][2-9])", gt.text ) ] <- 1L
+        gt[ grep( "([2-9][\\|\\/]1)|(1[\\|\\/][2-9])|([2-9][\\|\\/][2-9])", gt.text ) ] <- 2L
     }
     dim(gt) <- dim(gt.text)
     return(gt)

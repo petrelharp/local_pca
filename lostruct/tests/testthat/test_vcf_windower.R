@@ -1,6 +1,8 @@
 context("reading windows from VCF files")
 context("with '0|1' genotypes")
 
+options(datatable.fread.input.cmd.message=FALSE)
+
 # has 7 individuals at 71 loci across 4334 bases
 # need to run
 #   bcftools view -O b -o test.bcf test.vcf
@@ -33,12 +35,13 @@ expect_equal( colnames(vcf.mat), samples(win.fn) )
 # get the first window
 expect_equal( win.fn(1,recode=FALSE),
             structure(c("0|0", "0|0", "0|0", "0|0", "0|0", "0|0", "0|0", 
-            "0|0", "0|0", "0|0", "0|0", "0|1", "0|0", "0|0", "0|0", "0|0", 
-            "0|0", "0|0", "2|0", "0|0", ".", "0|0", "0|0", "0|0", "0|0", 
-            "0|0", "0|0", "0|0", "0|0", "0|0", "0|0", "0|0", "1|2", "0|0", 
-            "1|1", "0|0", "0|0", "0|1", "0|0", "0|0", "0|0", "1|0", "0|0", 
-            "0|0", "0|0", "0|0", "0|0", "0|0", "0|0"), .Dim = c(7L, 7L), .Dimnames = list(
-                NULL, c("V1", "V2", "V3", "V4", "V5", "V6", "V7")))
+                        "0|0", "0|0", "0|0", "0|0", "0|1", "0|0", "0|0",
+                        "0|0", "0|0", "0|0", "0|0", "2|0", "0|0", ".",
+                        "0|0", "0|0", "0|0", "0|0", "0|0", "0|0", "0|0",
+                        "0|0", "0|0", "0|0", "0|0", "1|2", "0|0", "1|1",
+                        "0|0", "0/0", "0/1", "0|0", "0|0", "0|0", "1|0",
+                        "0|0", "0/0", "0/0", "0|0", "0|0", "0|0", "0|0"),
+                      .Dim = c(7L, 7L), .Dimnames = list(NULL, c("V1", "V2", "V3", "V4", "V5", "V6", "V7")))
         )
 
 expect_equivalent( win.fn(1,recode=FALSE), as.matrix(vcf.mat[1:7,]) )
@@ -85,11 +88,13 @@ expect_equal( region(win.fn)(),
 
 expect_true( all( region(win.fn)()[,"end"] - region(win.fn)()[,"start"] == 399 ) )
 
-expect_equal( 
-        sapply( lapply( 1:10, win.fn ), length ),
-        c(105L, 42L, 0L, 0L, 0L, 0L, 0L, 0L, 49L, 154L)
-    )
-
+expect_equal( length(win.fn(1)), 105L )
+expect_equal( length(win.fn(2)), 42L )
+for (k in 3:8) {
+    expect_equal(length(win.fn(k)), 0)
+}
+expect_equal( length(win.fn(9)), 49L )
+expect_equal( length(win.fn(10)), 154L )
 
 expect_equal( win.fn(1), 
             structure(c(0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, NA, 0L, 0L, 0L, 
@@ -107,8 +112,6 @@ expect_equal( win.fn(3), NULL )
 
 # do local PCA
 pca.stuff <- eigen_windows( win.fn, k=2 )
-# not enough nonzero eigenvalues
-expect_warning( eigen_windows( win.fn, k=4 ) )
 
 expect_equivalent( pca.stuff[1,2:3],  eigen( cov(sweep( win.fn(1), 1, rowMeans(win.fn(1),na.rm=TRUE), "-" ), use='pairwise') )$values[1:2] )
 expect_equivalent( pca.stuff[2,2],  eigen( cov(sweep( win.fn(2), 1, rowMeans(win.fn(2),na.rm=TRUE), "-" ), use='pairwise') )$values[1] )
