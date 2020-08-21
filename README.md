@@ -1,6 +1,26 @@
 Local PCA/population structure (lostruct)
 =========================================
 
+If you use this method, please cite [Li & Ralph 2019](https://www.genetics.org/content/211/1/289):
+
+*Local PCA Shows How the Effect of Population Structure Differs Along the Genome*,
+Han Li and Peter Ralph,
+Genetics January 1, 2019 vol. 211 no. 1 289-304.
+
+```
+
+@article {li2019local,
+	author = {Li, Han and Ralph, Peter},
+	title = {Local PCA Shows How the Effect of Population Structure Differs Along the Genome},
+	volume = {211}, number = {1}, pages = {289--304}, year = {2019},
+	doi = {10.1534/genetics.118.301747}, publisher = {Genetics}, journal = {Genetics}
+}
+```
+
+*Note:* a prototype python implementation by Joseph Guhlin is available at [github:jghulin/lostruct-py](https://github.com/jguhlin/lostruct-py).
+
+## Installation
+
 To install the package, make sure you have `devtools` (by doing `install.packages("devtools")`),
 and then running 
 ```
