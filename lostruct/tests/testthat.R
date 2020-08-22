@@ -1,3 +1,3 @@
 library(testthat)
-library(landsim)
-test_check("landsim")
+library(lostruct)
+test_check("lostruct")
