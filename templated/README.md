@@ -46,10 +46,10 @@ Using windows of 20 adjacent SNPs
 compute everything:
 
 ```bash
-./run_lostruct.R -i data -t snp -s 20 -I data/sample_info.tsv
+./run_lostruct.R -i data -t snp -s 20 -I data/sample_info.tsv -j 0001
 # ...
-# Finding PCs for data/chr1.bcf and writing out to lostruct_results/type_snp_size_20_weights_none_jobid_589131/chr1.pca.csv and lostruct_results/type_snp_size_20_weights_none_jobid_589131/chr1.regions.csv 
-# Finding PCs for data/chr2.bcf and writing out to lostruct_results/type_snp_size_20_weights_none_jobid_589131/chr2.pca.csv and lostruct_results/type_snp_size_20_weights_none_jobid_589131/chr2.regions.csv 
+# Finding PCs for data/chr1.bcf and writing out to lostruct_results/type_snp_size_20_weights_none_jobid_0001/chr1.pca.csv and lostruct_results/type_snp_size_20_weights_none_jobid_0001/chr1.regions.csv 
+# Finding PCs for data/chr2.bcf and writing out to lostruct_results/type_snp_size_20_weights_none_jobid_0001/chr2.pca.csv and lostruct_results/type_snp_size_20_weights_none_jobid_0001/chr2.regions.csv 
 # Warning messages:
 # 1: In vcf_windower_snp(file = file, sites = sites, size = size, samples = samples) :
 #   Trimming from chromosome ends: 1: 14 SNPs.
@@ -58,16 +58,17 @@ compute everything:
 # Done finding PCs, computing distances.
 #    user  system elapsed 
 #   0.268   0.012   0.280 
-# Done computing distances, running MDS and writing results to lostruct_results/type_snp_size_20_weights_none_jobid_589131/mds_coords.csv 
+# Done computing distances, running MDS and writing results to lostruct_results/type_snp_size_20_weights_none_jobid_0001/mds_coords.csv 
 
 ```
 
+*(Note: we're setting the jobid explicitly here, with `-j 0001`, but recommend leaving it unset, so that it is randomly generated, and you don't overwrite previous results.)*
 This may take a long time on your real dataset.
 The warning is because since the number of SNPs isn't evenly divisible by 20, it discards the dangling 14 at the end of each chromosome.
-It's put everything in the directory `lostruct_results/type_snp_size_20_weights_none_jobid_589131/`:
+It's put everything in the directory `lostruct_results/type_snp_size_20_weights_none_jobid_0001/`:
 
 ```bash
-ls lostruct_results/type_snp_size_20_weights_none_jobid_589131/
+ls lostruct_results/type_snp_size_20_weights_none_jobid_0001/
 # chr1.pca.csv  chr1.regions.csv  chr2.pca.csv  chr2.regions.csv  config.json  mds_coords.csv
 ```
 These files are:
@@ -81,9 +82,9 @@ The `589131` suffix on the directory is to make the directory unique - override 
 
 Now we want to compile the template.  You can do this from the command line as
 ```bash
-Rscript -e 'templater::render_template("summarize_run.Rmd",output="lostruct_results/type_snp_size_20_weights_none_jobid_589131/run_summary.html",change.rootdir=TRUE)'
+Rscript -e 'templater::render_template("summarize_run.Rmd",output="lostruct_results/type_snp_size_20_weights_none_jobid_0001/run_summary.html",change.rootdir=TRUE)'
 ```
-This will produce the file [lostruct_results/type_snp_size_20_weights_none_jobid_589131/run_summary.html](lostruct_results/type_snp_size_20_weights_none_jobid_589131/run_summary.html),
+This will produce the file [lostruct_results/type_snp_size_20_weights_none_jobid_0001/run_summary.html](lostruct_results/type_snp_size_20_weights_none_jobid_0001/run_summary.html),
 which you can view in a web browser.
 
 If you want to examing things in more detail,
@@ -93,7 +94,7 @@ and run
 library(templater)
 render_template(
         "summarize_run.Rmd",
-        output="lostruct_results/type_snp_size_20_weights_none_jobid_589131/run_summary.html",
+        output="lostruct_results/type_snp_size_20_weights_none_jobid_0001/run_summary.html",
         change.rootdir=TRUE,
         envir=environment())
 ```
@@ -107,4 +108,4 @@ The report will make pdf versions of the figures, also -- just edit `summarize_r
 and change `do.pdfs <- FALSE` to `do.pdfs <- TRUE`.
 The pdfs will show up in the figure subdirectory for the report
 (also listed in the report under the figure if you turn this on.
-In the example above it is `lostruct_results/type_snp_size_20_weights_none_jobid_589131/figure/run_summary/`.
+In the example above it is `lostruct_results/type_snp_size_20_weights_none_jobid_0001/figure/run_summary/`.

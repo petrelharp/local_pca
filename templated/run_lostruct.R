@@ -81,14 +81,9 @@ if (length(bcf.files)==0) {
     stop(sprintf("No bcf or vcf.gz files found in input directory %s",opt$input_dir))
 }
 bcf.files <- normalizePath(bcf.files)
-chroms <- make.names(gsub("[.](bcf|vcf.gz|vcf.bgz)$","",basename(bcf.files)))
-names(bcf.files) <- chroms
-
-opt$bcf_files <- bcf.files
-opt$bcf_file_names <- names(bcf.files)
+names(bcf.files) <- make.names(gsub("[.](bcf|vcf.gz|vcf.bgz)$","",basename(bcf.files)))
 
 dir.create( opt$outdir, showWarnings=FALSE, recursive=TRUE )
-cat( jsonlite::toJSON( opt, pretty=TRUE ), file=file.path( opt$outdir, "config.json" ) )
 
 # override vcf_windower to introduce missing data if desired
 if (is.numeric(opt$missing) && (opt$missing > 0)) {
@@ -112,37 +107,61 @@ options(datatable.fread.input.cmd.message=FALSE)
 all.pcas <- numeric(0)       # will be a numeric matrix of eigen values/vectors
 all.lengths <- numeric(0)    # will be a numeric vector of numbers of windows per chromosome
 all.regions <- data.frame()  # will be a data.frame of the chromsome, start, stop for each window
+chroms <- c()                # a list of chromosome names
+all.files <- c()             # a list of the files the chromosomes appear in
 
 # local PCA, by chromosome
 for (k in seq_along(bcf.files)) {
     bcf.file <- bcf.files[k]
-    pca.file <- file.path( opt$outdir, paste0(chroms[k],".pca.csv") )
-    regions.file <- file.path( opt$outdir, paste0(chroms[k],".regions.csv") )
-    if (file.exists(pca.file)) { 
-        warning(paste("File",pca.file,"already exists! Not recomputing.")) 
-        pca.stuff <- as.matrix( data.table::fread(pca.file,header=TRUE) )
-        these.regions <- data.table::fread(regions.file,header=TRUE)
-    } else {
-        cat("Finding PCs for", bcf.file, "and writing out to", pca.file, "and", regions.file, "\n")
-        if (opt$subsample < 1.0) {
-            win.fn <- vcf_windower(bcf.file, size=opt$size, type=tolower(opt$type),
-                                   samples=subsamps)
+
+    file.positions <- vcf_positions(bcf.file)
+    for (chrom.index in seq_along(file.positions)) {
+        chrom.name <- names(file.positions)[chrom.index]
+        # prefix with 'chr' if numeric
+        if (suppressWarnings(!is.na(as.numeric(chrom.name)))) {
+            chrom.name <- paste0('chr', chrom.name)
+        }
+        if (chrom.name %in% chroms) {
+            stop(sprintf("Chromosome %s appears in more than one file.", chrom.name))
+        }
+        chroms <- c(chroms, chrom.name)
+        all.files <- c(all.files, bcf.file)
+        pca.file <- file.path( opt$outdir, paste0(chrom.name,".pca.csv") )
+        regions.file <- file.path( opt$outdir, paste0(chrom.name,".regions.csv") )
+        if (file.exists(pca.file)) { 
+            warning(paste("File",pca.file,"already exists! Not recomputing.")) 
+            pca.stuff <- as.matrix( data.table::fread(pca.file,header=TRUE) )
+            these.regions <- data.table::fread(regions.file,header=TRUE)
         } else {
-            win.fn <- vcf_windower(bcf.file, size=opt$size, type=tolower(opt$type))
-        } 
-        these.regions <- region(win.fn)()
-        system.time( 
-                    pca.stuff <- eigen_windows( win.fn, k=opt$npc, w=opt$weights ) 
-                )
-        write.csv( pca.stuff, file=pca.file, row.names=FALSE )
-        write.csv( these.regions, file=regions.file, row.names=FALSE )
+            cat("Finding PCs for chromsome", chrom.name,
+                "in file", bcf.file, "and writing out to", pca.file, "and", regions.file, "\n")
+            sites <- file.positions[chrom.index]
+            if (opt$subsample < 1.0) {
+                win.fn <- vcf_windower(bcf.file, size=opt$size, type=tolower(opt$type),
+                                       samples=subsamps, sites=sites)
+            } else {
+                win.fn <- vcf_windower(bcf.file, size=opt$size, type=tolower(opt$type),
+                                       sites=sites)
+            } 
+            these.regions <- region(win.fn)()
+            system.time( 
+                        pca.stuff <- eigen_windows( win.fn, k=opt$npc, w=opt$weights ) 
+                    )
+            write.csv( pca.stuff, file=pca.file, row.names=FALSE )
+            write.csv( these.regions, file=regions.file, row.names=FALSE )
+        }
+        all.pcas <- rbind( all.pcas, pca.stuff )
+        all.lengths <- c(all.lengths, nrow(pca.stuff))
+        all.regions <- rbind( all.regions, these.regions )
     }
-    all.pcas <- rbind( all.pcas, pca.stuff )
-    all.lengths <- c(all.lengths, nrow(pca.stuff))
-    all.regions <- rbind( all.regions, these.regions )
 }
 names(all.lengths) <- chroms
 rm(pca.stuff)
+
+# write out the config json
+opt$bcf_files <- all.files
+opt$chrom.names <- chroms
+cat( jsonlite::toJSON( opt, pretty=TRUE ), file=file.path( opt$outdir, "config.json" ) )
 
 # distance matrix
 cat("Done finding PCs, computing distances.\n")

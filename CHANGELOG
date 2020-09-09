@@ -1,0 +1,3 @@
+Updates:
+
+- Modified scripts in the `templated/` directory to allow more than one chromosome per bcf file. (@petrelharp, @TeresaPagan)
