@@ -47,9 +47,9 @@ vcf_query <- function (file, regions, samples, verbose=FALSE, recode=TRUE) {
 	bcf.args <- c( bcf.args, file )
     bcf.call <- paste(bcf.args, collapse=" ")
     if (verbose) cat(bcf.call, "\n")
-    gt.text <- tryCatch( as.matrix(data.table::fread( bcf.call, header=FALSE, sep=' ', data.table=FALSE )),
-                   error=function (e) { if ( grepl("File is empty", e$message) ) { NULL } else { stop(paste("Error. Is bcftools installed?\n",e)) } },
-                   warning=function (w) { if ( grepl("has size 0", w$message) ) { NULL } else { stop(paste("Error. Is bcftools installed?\n",e)) } } )
+    gt.text <- tryCatch( as.matrix(data.table::fread( cmd=bcf.call, header=FALSE, sep=' ', data.table=FALSE )),
+                   error=function (e) { if ( grepl("File is empty", e$message) ) { NULL } else { stop(paste("Error. Is bcftools installed?\n",e$message)) } },
+                   warning=function (w) { if ( grepl("has size 0", w$message) ) { NULL } else { stop(paste("Error. Is bcftools installed?\n",w$message)) } } )
     if (is.null(gt.text) || !recode) { return(gt.text) }
     if (is.numeric(gt.text)) {  # haploid
         gt <- pmin(1L,gt.text)
