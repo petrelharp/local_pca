@@ -41,7 +41,7 @@ region_string <- function (regions) {
 #'
 #' @export
 vcf_query <- function (file, regions, samples, verbose=FALSE, recode=TRUE) {
-	bcf.args <- c("bcftools", "query", "-f", "'[ %GT]\\n'")
+	bcf.args <- c("bcftools", "query", "-f", "'[ %GT]\n'")
 	if (!missing(regions) && length(regions)>0) { bcf.args <- c( bcf.args, "-r", region_string(regions) ) }
 	if (!missing(samples) && length(samples)>0) { bcf.args <- c( bcf.args, "-s", paste(samples,collapse=',') ) }
 	bcf.args <- c( bcf.args, file )
@@ -140,7 +140,7 @@ vcf_positions <- function (file) {
 	# bcf.con <- pipe(paste("bcftools query -f '%CHROM\\t%POS\\n'",file),open="r")
 	# bcf.sites <- read.table(bcf.con, sep='\t')
 	# close(bcf.con)
-	bcf.sites <- data.table::fread(paste("bcftools query -f '%CHROM\\t%POS\\n'",file), header=FALSE, sep='\t', data.table=FALSE)
+	bcf.sites <- data.table::fread(paste("bcftools query -f '%CHROM\t%POS\n'",file), header=FALSE, sep='\t', data.table=FALSE)
 	colnames(bcf.sites) <- c("chrom","pos")
 	return( tapply( bcf.sites$pos, bcf.sites$chrom, identity) )
 }
