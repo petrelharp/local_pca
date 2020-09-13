@@ -55,7 +55,7 @@ opt <- fromJSON("config.json")
 if (is.null(opt$weights)) { opt$weights <- 1 }
 
 # original data files
-chroms <- opt$bcf_file_names
+chroms <- opt$chrom_names
 bcf.files <- opt$bcf_files
 names(bcf.files) <- chroms
 
@@ -189,7 +189,8 @@ if (do.pdfs) { pdf_copy() }
 
 Now, we'll look at PCA plots from the extracted corners.
 (this is done without a ton of memory by accumulating the covariance matrix in `running_cov`):
-```{r corner_pca, cache=TRUE}
+```{r corner_pca, cache=TRUE, echo=-1}
+options(datatable.fread.input.cmd.message=FALSE)
 corner.npc <- 4
 corner.regions <- vector(mode='list', length=ncol(mds.corners))
 for (k in seq_along(corner.regions)) {
