@@ -42,5 +42,7 @@ jobs:
 
       - name: Run tests
         run: |
-          devtools::test("lostruct")
+          res=devtools::test("lostruct")
+          df=as.data.frame(res)
+          if(sum(df$failed) > 0 || any(df$error)) {q(status=1)}
         shell: Rscript {0}
