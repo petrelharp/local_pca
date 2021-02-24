@@ -209,7 +209,7 @@ vcf_windower_bp <- function (file, sites, size, samples=vcf_samples(file)) {
 		cn <- n - chrom.breaks[this.chrom]
 		win.start <- chrom.starts[this.chrom] + (cn-1)*size
 		win.end <- win.start + size-1
-        return( data.frame( chrom=chroms[this.chrom], start=win.start, end=win.end ) )
+        return( data.frame( chrom=chroms[this.chrom], start=win.start, end=win.end, stringsAsFactors=TRUE ) )
     }
 	win.fn <- function (n,...) {
 		if (n<1 || n>max(chrom.breaks)) { stop("No such window.") }
@@ -239,7 +239,8 @@ vcf_windower_snp <- function (file, sites, size, samples=vcf_samples(file)) {
         return( data.frame(
                     chrom=chroms[this.chrom],
                     start=win.start,
-                    end=win.end
+                    end=win.end,
+                    stringsAsFactors=TRUE
                 ) )
     }
 	win.fn <- function (n,...) {

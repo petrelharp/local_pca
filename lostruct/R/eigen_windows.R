@@ -42,7 +42,7 @@ winfun_matrix <- function (data,win) {
     win.fn <- function(n,...){ data[seq( ((n-1)*win+1), (n*win) ),] }
     attr(win.fn,"max.n") <- floor( nrow(data)/win )
     attr(win.fn,"samples") <- if (is.null(colnames(data))) { 1:ncol(data) } else { colnames(data) }
-    attr(win.fn,"region") <- function (n) { data.frame( chrom="matrix", start=((n-1)*win+1), end=n*win ) }
+    attr(win.fn,"region") <- function (n) { data.frame( chrom="matrix", start=((n-1)*win+1), end=n*win, stringsAsFactors=TRUE ) }
     return( win.fn )
 }
 
