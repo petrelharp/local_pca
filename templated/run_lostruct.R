@@ -54,7 +54,7 @@ if (is.null(opt$sample_info)) {
 # subsamples
 if (opt$subsample < 1.0) {
     if (is.null(opt$sample_info)) { stop("Cannot subsample without a sample file.") }
-    samps <- read.table(opt$sample_info, sep="\t", header=TRUE)
+    samps <- read.table(opt$sample_info, sep="\t", header=TRUE, stringsAsFactors=TRUE)
     names(samps) <- tolower(names(samps))
     # hack for msprime output
     if (is.numeric(samps$id)) { samps$id <- factor(paste0("msp_", samps$id)) }
@@ -69,7 +69,7 @@ if (is.null(opt$weightfile)) {
     if (!file.exists(opt$weightfile)){
         stop(sprintf("Weight file %s does not exist.",opt$weightfile))
     }
-    opt$weights <- read.table(opt$weightfile,sep='\t',header=TRUE)$weight
+    opt$weights <- read.table(opt$weightfile,sep='\t',header=TRUE, stringsAsFactors=TRUE)$weight
 }
 
 # VCF files

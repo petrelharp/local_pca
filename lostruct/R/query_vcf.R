@@ -9,7 +9,7 @@
 #' @export
 region_string <- function (regions) {
     if (nrow(regions)==0) { return( NULL ) }
-    paste( paste0( regions$chrom, ":", as.numeric(regions$start), "-", as.numeric(regions$end) ), collapse="," )
+    paste( paste0( "'", regions$chrom, ":", as.numeric(regions$start), "-", as.numeric(regions$end), "'" ), collapse="," )
 }
 
 
