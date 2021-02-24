@@ -62,7 +62,7 @@ names(bcf.files) <- chroms
 sample.ids <- vcf_samples(bcf.files[1])
 if (!is.null(opt$sample_info)) {
     samp.file <- opt$sample_info
-    samps <- read.table(samp.file,sep="\t",header=TRUE)
+    samps <- read.table(samp.file,sep="\t",header=TRUE, stringsAsFactors=TRUE)
     names(samps) <- tolower(names(samps))
     # hack for msprime output
     if (all(grepl("^msp_",sample.ids)) & is.numeric(samps$id)) {

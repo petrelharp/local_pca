@@ -42,8 +42,8 @@ region_string <- function (regions) {
 #' @export
 vcf_query <- function (file, regions, samples, verbose=FALSE, recode=TRUE) {
 	bcf.args <- c("bcftools", "query", "-f", "'[ %GT]\\n'")
-	if (!missing(regions) && length(regions)>0) { bcf.args <- c( bcf.args, "-r", region_string(regions) ) }
-	if (!missing(samples) && length(samples)>0) { bcf.args <- c( bcf.args, "-s", paste(samples,collapse=',') ) }
+	if (!missing(regions) && length(regions)>0) { bcf.args <- c( bcf.args, "-r", shQuote(region_string(regions)) ) }
+	if (!missing(samples) && length(samples)>0) { bcf.args <- c( bcf.args, "-s", shQuote(paste(samples,collapse=',')) ) }
 	bcf.args <- c( bcf.args, file )
     bcf.call <- paste(bcf.args, collapse=" ")
     if (verbose) cat(bcf.call, "\n")
@@ -209,7 +209,7 @@ vcf_windower_bp <- function (file, sites, size, samples=vcf_samples(file)) {
 		cn <- n - chrom.breaks[this.chrom]
 		win.start <- chrom.starts[this.chrom] + (cn-1)*size
 		win.end <- win.start + size-1
-        return( data.frame( chrom=chroms[this.chrom], start=win.start, end=win.end ) )
+        return( data.frame( chrom=chroms[this.chrom], start=win.start, end=win.end, stringsAsFactors=TRUE ) )
     }
 	win.fn <- function (n,...) {
 		if (n<1 || n>max(chrom.breaks)) { stop("No such window.") }
@@ -239,7 +239,8 @@ vcf_windower_snp <- function (file, sites, size, samples=vcf_samples(file)) {
         return( data.frame(
                     chrom=chroms[this.chrom],
                     start=win.start,
-                    end=win.end
+                    end=win.end,
+                    stringsAsFactors=TRUE
                 ) )
     }
 	win.fn <- function (n,...) {

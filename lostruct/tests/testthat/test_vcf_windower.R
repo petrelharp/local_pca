@@ -118,6 +118,47 @@ expect_equivalent( pca.stuff[2,2],  eigen( cov(sweep( win.fn(2), 1, rowMeans(win
 expect_true( all( is.na( pca.stuff[3,] ) ) )
 
 ###############
+context("with a pipe in the contig name")
+
+# copy of test.bcf but with contig named "2|false"
+bcf.file <- "test_with_pipes.bcf"
+
+vcf.text <- read.table("test_with_pipes.vcf", sep="\t", skip=30, header=TRUE, comment.char="" )
+vcf.mat <- vcf.text[,10:16]
+
+# read in data
+#  (will warn about truncated SNP)
+expect_warning( 
+                 win.fn <- vcf_windower(bcf.file, size=7, type='snp' ) 
+         )
+expect_equal( attr(win.fn,"max.n"), 10 )
+
+# get regions
+expect_equal( region(win.fn)(),
+             structure(list(chrom = structure(c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+                                                1L, 1L, 1L), .Label = "2|false", class = "factor"), start = c(10179L, 
+                                              10199L, 10574L, 13630L, 13811L, 13970L, 14058L, 14151L, 14238L, 
+                                              14411L), end = c(10190L, 10572L, 10753L, 13750L, 13949L, 14027L, 
+                                              14146L, 14234L, 14393L, 14494L)), .Names = c("chrom", "start", 
+                            "end"), row.names = c(NA, -10L), class = "data.frame")
+             )
+
+expect_equal( colnames(vcf.mat), samples(win.fn) )
+
+# get the first window
+expect_equal( win.fn(1,recode=FALSE),
+            structure(c("0|0", "0|0", "0|0", "0|0", "0|0", "0|0", "0|0", 
+                        "0|0", "0|0", "0|0", "0|0", "0|1", "0|0", "0|0",
+                        "0|0", "0|0", "0|0", "0|0", "2|0", "0|0", ".",
+                        "0|0", "0|0", "0|0", "0|0", "0|0", "0|0", "0|0",
+                        "0|0", "0|0", "0|0", "0|0", "1|2", "0|0", "1|1",
+                        "0|0", "0/0", "0/1", "0|0", "0|0", "0|0", "1|0",
+                        "0|0", "0/0", "0/0", "0|0", "0|0", "0|0", "0|0"),
+                      .Dim = c(7L, 7L), .Dimnames = list(NULL, c("V1", "V2", "V3", "V4", "V5", "V6", "V7")))
+        )
+
+
+###############
 context("with '0/1' genotypes")
 
 # has 9 rows of header

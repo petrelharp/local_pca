@@ -1,0 +1,46 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+
+  test:
+    name: R
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:  [ ubuntu-latest ]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Install bcftools
+        if: startsWith(matrix.os, 'ubuntu')
+        run: |
+          sudo apt-get install bcftools build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev
+
+      - name: Install package
+        run: |
+          dir.create(Sys.getenv("R_LIBS_USER"), recursive = TRUE)
+          .libPaths(Sys.getenv("R_LIBS_USER")) 
+          install.packages("devtools")
+          devtools::install("lostruct")
+        shell: Rscript {0}
+
+      - name: Run tests
+        run: |
+          devtools::test("lostruct")
+        shell: Rscript {0}
