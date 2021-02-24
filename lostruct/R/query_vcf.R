@@ -9,7 +9,7 @@
 #' @export
 region_string <- function (regions) {
     if (nrow(regions)==0) { return( NULL ) }
-    paste( paste0( "'", regions$chrom, ":", as.numeric(regions$start), "-", as.numeric(regions$end), "'" ), collapse="," )
+    paste( paste0( regions$chrom, ":", as.numeric(regions$start), "-", as.numeric(regions$end) ), collapse="," )
 }
 
 
@@ -42,8 +42,8 @@ region_string <- function (regions) {
 #' @export
 vcf_query <- function (file, regions, samples, verbose=FALSE, recode=TRUE) {
 	bcf.args <- c("bcftools", "query", "-f", "'[ %GT]\\n'")
-	if (!missing(regions) && length(regions)>0) { bcf.args <- c( bcf.args, "-r", region_string(regions) ) }
-	if (!missing(samples) && length(samples)>0) { bcf.args <- c( bcf.args, "-s", paste(samples,collapse=',') ) }
+	if (!missing(regions) && length(regions)>0) { bcf.args <- c( bcf.args, "-r", shQuote(region_string(regions)) ) }
+	if (!missing(samples) && length(samples)>0) { bcf.args <- c( bcf.args, "-s", shQuote(paste(samples,collapse=',')) ) }
 	bcf.args <- c( bcf.args, file )
     bcf.call <- paste(bcf.args, collapse=" ")
     if (verbose) cat(bcf.call, "\n")
