@@ -120,10 +120,12 @@ expect_true( all( is.na( pca.stuff[3,] ) ) )
 ###############
 context("with a pipe in the contig name")
 
-# copy of test.bcf but with contig named "2|false"
+# copy of test.bcf but with contig named "2|false" and a sample named "HG000|96"
+#   bcftools view -O b -o test_with_pipes.bcf test_with_pipes.vcf
+#   bcftools index test_with_pipes.bcf
 bcf.file <- "test_with_pipes.bcf"
 
-vcf.text <- read.table("test_with_pipes.vcf", sep="\t", skip=30, header=TRUE, comment.char="" )
+vcf.text <- read.table("test_with_pipes.vcf", sep="\t", skip=30, header=TRUE, comment.char="", check.names=FALSE )
 vcf.mat <- vcf.text[,10:16]
 
 # read in data
