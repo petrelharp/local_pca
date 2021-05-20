@@ -84,11 +84,11 @@ mds.file <- "mds_coords.csv"
 regions.files <- list.files(".",".*.regions.csv")
 
 # read in mds
-mds.coords <- read.csv(mds.file,header=TRUE)
+mds.coords <- read.csv(mds.file,header=TRUE,stringsAsFactors=TRUE)
 mds.cols <- (1:ncol(mds.coords))[-(1:2)]
 
 # position information
-regions <- do.call( rbind, lapply( regions.files, read.csv, header=TRUE ) )
+regions <- do.call( rbind, lapply( regions.files, read.csv, header=TRUE,stringsAsFactors=TRUE ) )
 # figure out where to plot things at
 chroms <- unique(regions$chrom)
 chrom.starts <- tapply( regions$start, regions$chrom, min, na.rm=TRUE )
