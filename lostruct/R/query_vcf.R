@@ -140,7 +140,13 @@ vcf_positions <- function (file) {
 	# bcf.con <- pipe(paste("bcftools query -f '%CHROM\\t%POS\\n'",file),open="r")
 	# bcf.sites <- read.table(bcf.con, sep='\t')
 	# close(bcf.con)
-	bcf.sites <- data.table::fread(cmd=paste("bcftools query -f '%CHROM\\t%POS\\n'",file), header=FALSE, sep='\t', data.table=FALSE)
+	bcf.sites <- data.table::fread(
+                   cmd=paste("bcftools query -f '%CHROM\\t%POS\\n'",file),
+                   header=FALSE,
+                   sep='\t',
+                   data.table=FALSE,
+                   colClasses=c("character", "numeric")
+    )
 	colnames(bcf.sites) <- c("chrom","pos")
 	return( tapply( bcf.sites$pos, bcf.sites$chrom, identity) )
 }
