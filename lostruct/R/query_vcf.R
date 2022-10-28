@@ -206,6 +206,10 @@ vcf_windower_bp <- function (file, sites, size, samples=vcf_samples(file)) {
 	chrom.starts <- sapply( sites, min )
 	chrom.lens <- sapply( sites, max ) - chrom.starts
 	chrom.wins <- floor(chrom.lens / size)  # number of windows
+    if (any(chrom.wins) == 0) {
+        badones = names(chrom.wins)[chrom.wins == 0]
+        stop(sprintf("No windows on chromosome(s) %s: these have fewer %s than the provided size of %d %s.", paste(badones, collapse=", "), "bps", size, "bps"))
+    }
 	warning(paste("Trimming from chromosome ends:",paste(paste(chroms,chrom.lens-size*chrom.wins,sep=": "),collapse=", "),"bp."))
 	chrom.breaks <- c(0,cumsum(chrom.wins)) # 0, and then indices of *last* windows in each chromosome
     pos.fn <- function (n) {
@@ -233,6 +237,10 @@ vcf_windower_snp <- function (file, sites, size, samples=vcf_samples(file)) {
 	chroms <- names(sites)
 	chrom.lens <- sapply( sites, length )
 	chrom.wins <- floor(chrom.lens / size)
+    if (any(chrom.wins) == 0) {
+        badones = names(chrom.wins)[chrom.wins == 0]
+        stop(sprintf("No windows on chromosome(s) %s: these have fewer %s than the provided size of %d %s.", paste(badones, collapse=", "), "snps", size, "snps"))
+    }
 	warning(paste("Trimming from chromosome ends:",paste(paste(chroms,chrom.lens-size*chrom.wins,sep=": "),collapse=", "),"SNPs."))
 	chrom.breaks <- c(0,cumsum(chrom.wins))  # 0, and then indices of *last* windows in each chromosome
     pos.fn <- function (n) {
