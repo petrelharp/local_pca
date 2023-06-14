@@ -215,14 +215,14 @@ vcf_windower_bp <- function (file, sites, size, samples=vcf_samples(file)) {
     pos.fn <- function (n) {
         # return chromsome, start, and end of these windows
 		this.chrom <- findInterval(n-1,chrom.breaks)
-        this.chrom[ n<1 || n>max(chrom.breaks) ] <- NA
+        this.chrom[ n<1 | n>max(chrom.breaks) ] <- NA
 		cn <- n - chrom.breaks[this.chrom]
 		win.start <- chrom.starts[this.chrom] + (cn-1)*size
 		win.end <- win.start + size-1
         return( data.frame( chrom=chroms[this.chrom], start=win.start, end=win.end, stringsAsFactors=TRUE ) )
     }
 	win.fn <- function (n,...) {
-		if (n<1 || n>max(chrom.breaks)) { stop("No such window.") }
+		if (any(n<1 | n>max(chrom.breaks))) { stop("No such window.") }
         regions <- pos.fn(n)
 		vcf_query( file=file, regions=regions, samples=samples, ... )
 	}
@@ -246,7 +246,7 @@ vcf_windower_snp <- function (file, sites, size, samples=vcf_samples(file)) {
     pos.fn <- function (n) {
         # return chromsome, start, and end of these windows
 		this.chrom <- findInterval(n-1,chrom.breaks)
-        this.chrom[ n<1 || n>max(chrom.breaks) ] <- NA
+        this.chrom[ n<1 | n>max(chrom.breaks) ] <- NA
 		cn <- n - chrom.breaks[this.chrom]
         win.start <- sapply( seq_along(n), function (k) { sites[[this.chrom[k]]][1+(cn[k]-1)*size] } )
         win.end <- sapply( seq_along(n), function (k) { sites[[this.chrom[k]]][cn[k]*size] } )
@@ -258,7 +258,7 @@ vcf_windower_snp <- function (file, sites, size, samples=vcf_samples(file)) {
                 ) )
     }
 	win.fn <- function (n,...) {
-		if (n<1 || n>max(chrom.breaks)) { stop("No such window.") }
+		if (any(n<1 | n>max(chrom.breaks))) { stop("No such window.") }
 		regions <- pos.fn(n)
 		vcf_query( file=file, regions=regions, samples=samples, ... )
 	}
