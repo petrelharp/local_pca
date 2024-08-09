@@ -30,8 +30,8 @@ and \code{region}, which is a function that takes an integer vector and returns 
 }
 \section{Functions}{
 \itemize{
-\item \code{region}: Returns the \code{region} function of a window extractor function.
+\item \code{region()}: Returns the \code{region} function of a window extractor function.
 
-\item \code{samples}: Gives the sample IDs returned by a window extractor function.
+\item \code{samples()}: Gives the sample IDs returned by a window extractor function.
+
 }}
-

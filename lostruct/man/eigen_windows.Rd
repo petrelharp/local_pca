@@ -37,4 +37,3 @@ and returns for each window the total sum of squares
 and the given number of eigenvector/eigenvalue pairs.
 Omits the last (short) window.
 }
-

@@ -22,4 +22,3 @@ The results of the separate \code{vcf_query} calls, \code{rbind}'ed together
 \description{
 Applies \code{vcf_query} to multiple VCF files: must specify which chromosomes are in which file with \code{chrom.list}.
 }
-

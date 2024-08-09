@@ -9,7 +9,7 @@ multi_vcf_query_fn(chrom.list, file = names(chrom.list), regions, ...)
 \arguments{
 \item{chrom.list}{A list of character vectors of chromosome names, the \code{n}th saying which chromosomes are available in the \code{n}th vcf file.}
 
-\item{file}{The name(s) of the indexed vcf file(s).}
+\item{file}{The name(s) of the indexed vcf file(s), of the same length as \code{chrom.list}.}
 
 \item{regions}{A data frame containing chrom, start, and end of the regions to be extracted.}
 
@@ -21,4 +21,3 @@ A function, say, \code{f}, so that \code{f(n)} is the result of \code{n}th \code
 \description{
 Returns a function that when called with an integer \code{n} will return the \code{n}th region.
 }
-

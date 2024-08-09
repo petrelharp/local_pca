@@ -1,15 +1,21 @@
 #' Find Points in a 2D Cloud Closest to the "Corners"
 #'
-#' Finds the k "extreme points" that lie closest to the minimal enclosing circle,
-#' and returns a matrix with k columns containing the portion of points 
-#' that lie closest to those extreme points.
+#' Finds the k "extreme points" (the "corners") that lie closest
+#' to the minimal circle enclosing the input collection of points
+#' in two dimensions, and returns for each of these 'corners'
+#' which of the input points are closest to that corner.
+#' The return value is a matrix with k columns,
+#' whose i-th column contains the indices of those points
+#' that lie closest to the i-th corner.
+#' Each column has (indices for) a given proportion of the input points,
+#' and so points may appear in more than one column.
 #' If k is larger than the number of points on the minimal enclosing circle,
-#' adds the closest points to that circle that are not in previously added points' neighborhoods
-#' until k is reached.
+#' this adds the closest points to that circle that are not in previously
+#' added points' neighborhoods until k is reached.
 #'
 #' @param xy A two-column numeric matrix of coordinates.
 #' @param prop The proportion of points to return for each corner.
-#' @return A three column integer matrix giving the indices of the corresponding points.
+#' @return A k-column integer matrix whose i-th column gives the indices of the points closest to the i-th corner.
 #' @export
 corners <- function (xy, prop, k=3) {
     xy <- as.matrix(xy)

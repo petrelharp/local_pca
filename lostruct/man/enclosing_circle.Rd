@@ -30,6 +30,6 @@ Finds the minimum enclosing circle to a set of points,
 }
 \section{Functions}{
 \itemize{
-\item \code{plot_circle}: Plots a circle.
-}}
+\item \code{plot_circle()}: Plots a circle.
 
+}}

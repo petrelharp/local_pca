@@ -4,8 +4,12 @@
 \alias{recode_numeric}
 \title{Convert Matrix of Alleles to Numeric}
 \usage{
-recode_numeric(x, ploidy = 2, triallelic = TRUE, alleles = c("A", "C",
-  "G", "T"))
+recode_numeric(
+  x,
+  ploidy = 2,
+  triallelic = TRUE,
+  alleles = c("A", "C", "G", "T")
+)
 }
 \arguments{
 \item{x}{Character matrix of alleles.}
@@ -28,4 +32,3 @@ For speed, currently only deals with alleles that are A, C, G, or T (not indels)
 
 Values range from 0 (all minor alleles) to \code{ploidy} (all major alleles).
 }
-

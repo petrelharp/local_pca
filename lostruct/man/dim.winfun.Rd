@@ -9,4 +9,3 @@
 \description{
 Gives the number of samples of matrices returned by a window extractor function (the number of rows is NA).
 }
-

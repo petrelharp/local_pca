@@ -30,4 +30,3 @@ Assumes that anything not in "ACGT" is NA (case-sensitive).
 A .tped has one row per SNP, *two* columns per sample.  The first column is chromosome, the fourth is position.
 Does no error checking: let the user beware.
 }
-

@@ -9,4 +9,3 @@ eigen_windows_winfn(win.fn, do.windows = NULL, k, w, mc.cores = 1, ...)
 \description{
 Does the work of eigen_windows.
 }
-

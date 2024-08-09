@@ -9,4 +9,3 @@ eigen_windows_matrix(data, k, win, w, do.windows = NULL, mc.cores)
 \description{
 Sets up eigen_windows_winfn to work on a matrix.
 }
-

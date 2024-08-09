@@ -16,4 +16,3 @@ A named list of integer vectors; names correspond to chromosomes.
 Reads the CHROM and POS columns of a VCF file, with bcftools,
 returning a list of positions named by the corresponding chromosomes.
 }
-
