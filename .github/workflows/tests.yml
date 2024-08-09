@@ -31,7 +31,7 @@ jobs:
         if: startsWith(matrix.os, 'ubuntu')
         run: |
           sudo apt-get update
-          sudo apt-get install bcftools build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev
+          sudo apt-get install bcftools build-essential libcurl4-gnutls-dev libxml2-dev libssl-dev libzmq3-dev libharfbuzz-dev libfribidi-dev libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev libcurl4-openssl-dev libxml2-dev libfontconfig1-dev
 
       - name: Install package
         run: |
