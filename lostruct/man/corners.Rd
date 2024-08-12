@@ -10,21 +10,37 @@ corners(xy, prop, k = 3)
 \item{xy}{A two-column numeric matrix of coordinates.}
 
 \item{prop}{The proportion of points to return for each corner.}
+
+\item{k}{The number of corners (should be at least 3).}
 }
 \value{
 A k-column integer matrix whose i-th column gives the indices of the points closest to the i-th corner.
 }
 \description{
-Finds the k "extreme points" (the "corners") that lie closest
+Finds the 'k' "extreme points" (the "corners") that lie closest
 to the minimal circle enclosing the input collection of points
-in two dimensions, and returns for each of these 'corners'
+in two dimensions, and returns for each of these corners
 which of the input points are closest to that corner.
-The return value is a matrix with k columns,
-whose i-th column contains the indices of those points
-that lie closest to the i-th corner.
-Each column has (indices for) a given proportion of the input points,
-and so points may appear in more than one column.
+The return value is a matrix with 'k' columns,
+whose 'i'-th column contains the indices of those points
+that lie closest to the 'i'-th corner.
+}
+\details{
+If the output is 'out', then 'out[,i]' is a vector of
+length 'nrow(xy) * prop' for which 'xy[ out[,i], ]' is
+the coordinates of the closest points to the 'i'th corner.
+The rows of 'out' are in no particular order.
+
 If k is larger than the number of points on the minimal enclosing circle,
 this adds the closest points to that circle that are not in previously
 added points' neighborhoods until k is reached.
+If k is less than 3, this will behave as if k=3.
+}
+\examples{
+xy <- runif(200) |> matrix(ncol=2)
+out <- corners(xy, k=4, prop=0.05)
+\dontrun{
+plot(xy)
+for (i in 1:4) points(xy[out[,i],], col=i, pch=20, cex=2)
+}
 }
