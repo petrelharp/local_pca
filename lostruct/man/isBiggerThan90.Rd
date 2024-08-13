@@ -9,4 +9,3 @@ isBiggerThan90(xy)
 \description{
 Check if the angle at B in triangle ABC exceeds 90 degrees
 }
-

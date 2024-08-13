@@ -9,4 +9,3 @@ getMaxRad(xy, S)
 \description{
 Vertex that produces the circle with the maximum radius
 }
-

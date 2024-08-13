@@ -9,9 +9,9 @@ pc_dist(x, npc = attr(x, "npc"), w = 1, normalize = "L1", mc.cores = 1)
 \arguments{
 \item{x}{Matrix as output by eigen_windows(): one row per window, with entries (sum squares), (eigenvalues), (eigenvectors).}
 
-\item{npc}{Number of pcas computed.}
+\item{npc}{Number of PCs computed.}
 
-\item{w}{A vector of weights corresponding to columns of \code{x}.}
+\item{w}{A vector of weights corresponding to samples (of same length as an eigenvector).}
 
 \item{normalize}{Normalize the matrices to have the same norm?  Can be "L1" (default), "L2", or FALSE.}
 
@@ -32,4 +32,3 @@ If \code{normalize} is set, then the the matrices are normalized to have norm 1,
 The norm is also weighted by the weights \code{w}:
   dist(A,B) = sqrt( sum_{i,j}  w[i] * w[j] * ( A[i,j] - B[i,j] )^2 )
 }
-

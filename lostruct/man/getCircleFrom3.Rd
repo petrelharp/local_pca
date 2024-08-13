@@ -9,4 +9,3 @@ getCircleFrom3(xy)
 \description{
 Circle defined by three points
 }
-

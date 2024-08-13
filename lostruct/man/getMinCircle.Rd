@@ -9,4 +9,3 @@ getMinCircle(xy)
 \description{
 Minimal enclosing circle
 }
-

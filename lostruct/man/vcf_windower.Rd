@@ -4,8 +4,13 @@
 \alias{vcf_windower}
 \title{Construct a Window Extractor for a VCF File}
 \usage{
-vcf_windower(file, size, type, sites = vcf_positions(file),
-  samples = vcf_samples(file))
+vcf_windower(
+  file,
+  size,
+  type,
+  sites = vcf_positions(file),
+  samples = vcf_samples(file)
+)
 }
 \arguments{
 \item{file}{The name of the indexed vcf file.}
@@ -38,4 +43,3 @@ The resulting function can also be passed additional options through to \code{vc
 \description{
 Returns a function that, given an integer \code{n}, returns a numeric matrix of genotypes from the the \code{n}th window of the VCF file.
 }
-

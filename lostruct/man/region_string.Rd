@@ -16,4 +16,3 @@ A character string of the form "chr1:start1-end1,chr2:start2,end2".
 Given a data frame with variables \code{chrom}, \code{start}, and \code{end},
 make a regions string that can be passed to bcftools.
 }
-

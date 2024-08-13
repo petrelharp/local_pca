@@ -15,4 +15,3 @@ A character vector of sample IDs.
 \description{
 Returns the character vector of samples (by calling \code{bcftools query -l}).
 }
-

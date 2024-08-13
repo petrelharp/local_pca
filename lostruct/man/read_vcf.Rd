@@ -24,4 +24,3 @@ Reads specified chromsomes from a .vcf file and recodes the data into numeric fo
 where "major" is the most common allele at that site, and all others are lumped as "minor".
 Assumes that anything not in "ACGT" is NA (case-sensitive).
 }
-

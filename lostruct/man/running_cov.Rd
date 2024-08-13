@@ -4,12 +4,14 @@
 \alias{running_cov}
 \title{Construct the Covariance Matrix from the Data in Pieces}
 \usage{
-running_cov(f, n)
+running_cov(f, n, normalize.rows = TRUE)
 }
 \arguments{
 \item{f}{A function such that f(k) returns the k-th chunk of data.}
 
 \item{n}{The number of chunks of data, or a vector of indices.}
+
+\item{normalize.rows}{Whether to subtract row means.}
 }
 \value{
 A numeric matrix:
@@ -23,4 +25,3 @@ where the sums are over the n shared nonmissings.
 This will compute the covariance matrix for a dataset
 that is only available in disjoint pieces (because it is too big to keep in memory at once, for instance).
 }
-

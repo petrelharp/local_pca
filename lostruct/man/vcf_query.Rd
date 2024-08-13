@@ -38,4 +38,3 @@ returning the genotypes in numeric format, giving the number of nonreference all
 Assumes the data are in the format either "0/1", "0|1" (for diploids), or "0" (for haploids).
 Data are returned in the order encountered in the VCF file even if the regions are not in this order.
 }
-

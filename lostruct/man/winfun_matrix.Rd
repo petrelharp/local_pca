@@ -9,4 +9,3 @@ winfun_matrix(data, win)
 \description{
 Sets up a winfun-like accessor to a matrix.
 }
-

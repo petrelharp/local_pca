@@ -9,4 +9,3 @@ getMaxPairDist(xy)
 \description{
 Maximum pairwise distance between two 2D-points
 }
-

@@ -22,4 +22,3 @@ which means premultiplying U and V by sqrt(w); assume this has been done already
 \details{
 The code does not check that vectors1 and vectors2 are each orthonormal.
 }
-

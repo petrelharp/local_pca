@@ -4,8 +4,12 @@
 \alias{cov_pca}
 \title{Find the Top k Eigenvalues and Eigenvectors of the Covariance Matrix}
 \usage{
-cov_pca(x, k, w = 1, covmat = cov(sweep(x, 1, rowMeans(x, na.rm = TRUE),
-  "-"), use = "pairwise"))
+cov_pca(
+  x,
+  k,
+  w = 1,
+  covmat = cov(sweep(x, 1, rowMeans(x, na.rm = TRUE), "-"), use = "pairwise")
+)
 }
 \arguments{
 \item{x}{A numeric matrix, possibly with missing values.}
@@ -32,4 +36,3 @@ and the sum-of-squares (equal to the sum of the eigenvalues squared) is
 This takes a numeric matrix, subtracts row means, finds the covariance matrix of the columns (using \code{use="pairwise"}),
 and returns a vector containing: the sum of squared entries in the covariance matrix; the top k eigenvalues, and the top k eigenvectors.
 }
-
